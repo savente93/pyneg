@@ -1,11 +1,10 @@
-from problog.tasks.dtproblog import dtproblog
-from problog.program import PrologString
-from problog import get_evaluatable
 from numpy import isclose
 from re import search, sub
 from message import Message
 from numpy.random import choice
-from multiprocessing import Process
+import subprocess as sp
+from os import remove, getcwd, getpid
+from os.path import join
 
 
 class BaseProbAwareAgent():
@@ -231,9 +230,9 @@ class BaseProbAwareAgent():
         problogModel = decisionFactsString + kbString + queryString
         if self.verbose >= 2:
             print(problogModel)
-        probabilityOfFacts = get_evaluatable().create_from(
-            PrologString(problogModel)).evaluate()
-        probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
+        probabilityOfFacts = self.non_leaky_problog(problogModel)
+            #get_evaluatable().create_from(PrologString(problogModel)).evaluate()
+        # probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
 
         score = 0
         for fact, reward in self.utilities.items():
@@ -255,15 +254,37 @@ class BaseProbAwareAgent():
 
         problogModel = decisionFactsString + "\n" + kbString + "\n" + queryString
 
-        probabilityOfFacts = get_evaluatable().create_from(
-            PrologString(problogModel)).evaluate()
-        probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
+        probabilityOfFacts = self.non_leaky_problog(problogModel)
+            #get_evaluatable().create_from(PrologString(problogModel)).evaluate()
+        # probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
 
         score = 0
         for fact, reward in self.utilities.items():
             score += reward * probabilityOfFacts[fact]
 
         return score
+
+
+    # using the python implementation of problog causes memory leaks
+    # so we use the commandline interface seperately to avoid this as a temp fix
+    def non_leaky_problog(self,model):
+        with open('temp_model_{}.pl'.format(getpid()),"w") as temp_file:
+            temp_file.write(model)
+
+        process = sp.Popen(["problog",join(getcwd(),'temp_model_{}.pl'.format(getpid()))],stdout=sp.PIPE)
+        output, error = process.communicate()
+
+        ans = {}
+
+        for string in output.decode("ascii").split("\n"):
+            if string:
+                key, prob = string.strip().split(":\t")
+                ans[key] = float(prob)
+
+        remove('temp_model_{}.pl'.format(getpid()))
+
+        return ans
+
 
 
     def accepts(self, offer):
@@ -275,8 +296,6 @@ class BaseProbAwareAgent():
             return False
 
         if type(offer) == Message:
-            p = Process(target=self.calcOfferUtility, args=(offer.offer,))
-
             util = self.calcOfferUtility(offer.offer)
         else:
             util = self.calcOfferUtility(offer)

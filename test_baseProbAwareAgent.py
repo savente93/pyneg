@@ -17,6 +17,7 @@ class TestBaseProbAwareAgent(ut.TestCase):
         pass
 
     def setUp(self):
+        # print("In method", self._testMethodName)
         self.genericIssues = {
             "boolean": ["True", "False"],
             "integer": list(map(str, list(range(10)))),
@@ -198,6 +199,7 @@ class TestBaseProbAwareAgent(ut.TestCase):
                          self.denseNestedTestOffer)
 
     def test_generateOfferExitsIfUnableToFindSolution(self):
+        self.agent.maxGenerationTries = 10
         self.agent.stratDict = self.denseNestedTestOffer
         self.assertEqual(self.agent.generateOffer(),
                          Message(self.agent.agentName,

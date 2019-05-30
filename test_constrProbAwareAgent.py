@@ -1,7 +1,6 @@
 import unittest
 from math import pi
 from constrProbAwareAgent import ConstrProbAwareAgent
-from test_baseProbAwareAgent import TestBaseProbAwareAgent
 from message import Message
 from constraint import NoGood
 
@@ -24,8 +23,6 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         }
 
         self.arbitraryConstraint = NoGood("boolean", "False")
-        self.constraintMessage = Message(
-            "constraint", self.arbitraryConstraint)
         self.arbitraryUtilities = {
             "boolean_True": 100,
             "integer_2": -1000,
@@ -60,6 +57,7 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         self.denseNestedTestOffer["integer"]["3"] = 1
         self.denseNestedTestOffer['float']["0.6"] = 1
 
+
         self.agent = ConstrProbAwareAgent(
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.agent.agentName = "agent"
@@ -67,6 +65,12 @@ class TestConstrProbAwareAgent(unittest.TestCase):
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
+
+        self.acceptanceMessage = Message(self.agent.agentName,self.opponent.agentName,"accept",self.denseNestedTestOffer)
+        self.acceptanceMessage = Message(self.agent.agentName, self.opponent.agentName, "terminate",
+                                         self.denseNestedTestOffer)
+        self.constraintMessage = Message(self.agent.agentName,self.opponent.agentName,
+            "offer", self.denseNestedTestOffer, self.arbitraryConstraint)
 
     def tearDown(self):
         pass
@@ -76,7 +80,6 @@ class TestConstrProbAwareAgent(unittest.TestCase):
             self.agent, self.genericIssues))
 
     def test_receiveAcceptationMessageEndsNegotiation(self):
-        terminationMessage = Message("accept")
         self.agent.negotiationActive = True
         self.agent.receiveMessage(terminationMessage)
         self.assertFalse(self.agent.negotiationActive)
@@ -87,7 +90,7 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         self.assertTrue(self.agent.sucessfull)
 
     def test_receiveTerminationMessageEndsNegotiation(self):
-        terminationMessage = Message("terminate")
+        terminationMessage = Message(self.agent.agentName,self"terminate")
         self.agent.negotiationActive = True
         self.agent.receiveMessage(terminationMessage)
         self.assertFalse(self.agent.negotiationActive)
@@ -95,7 +98,7 @@ class TestConstrProbAwareAgent(unittest.TestCase):
     def test_receiveTerminationMessageNegotiationWasUncusessful(self):
         terminationMessage = Message("terminate")
         self.agent.receiveMessage(terminationMessage)
-        self.assertFalse(self.agent.sucessfull)
+        self.assertFalse(self.agent.successful)
 
     def test_receiveConstraintSavesConstraint(self):
         self.agent.addOwnConstraint(self.arbitraryConstraint)
