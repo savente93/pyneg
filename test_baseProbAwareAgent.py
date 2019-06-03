@@ -383,3 +383,6 @@ class TestBaseProbAwareAgent(ut.TestCase):
         self.agent.receiveMessage(self.terminationMessage)
         self.agent.generateNextMessageFromTranscript()
         self.assertFalse(self.agent.successful)
+
+    # def test_TerminationMessageHasUtilityNonAgreementCost(self):
+    #     self.assertEqual(self.agent.nonAgreementCost,self.agent.calcMessageUtility(self.terminationMessage))

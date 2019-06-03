@@ -70,7 +70,6 @@ class TestConstrProbAwareAgent(unittest.TestCase):
             "offer", self.denseNestedTestOffer, self.arbitraryConstraint)
         self.offerMessage = Message(self.agent.agentName, self.opponent.agentName,
                                          "offer", self.denseNestedTestOffer)
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
         # print("In method: {}".format( self._testMethodName))
 
     def tearDown(self):
@@ -117,7 +116,26 @@ class TestConstrProbAwareAgent(unittest.TestCase):
 
     def test_doesNotAcceptViolatingOffer(self):
         # self.agent.receiveMessage(self.violatingOffer)
+        self.agent.addOwnConstraint(self.arbitraryConstraint)
         self.assertFalse(self.agent.accepts(self.violatingOffer))
 
     def test_worthOfViolatingOfferIsNonAgreementCost(self):
+        self.agent.addOwnConstraint(self.arbitraryConstraint)
         self.assertEqual(self.agent.calcOfferUtility((self.violatingOffer)),self.arbitraryNonAgreementCost)
+
+    def test_endsNegotiationAfterFindingNonCompatibleConstraints(self):
+        opponentConstraint = NoGood("boolean","True")
+        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.denseNestedTestOffer,constraint=opponentConstraint))
+        agentResponse = self.agent.generateNextMessageFromTranscript()
+        self.assertEqual(Message(self.agent.agentName,self.opponent.agentName,"terminate",None),agentResponse)
+
+    def test_receivingConstraintOnBinaryConstraintDoesntResultInZeroStrategy(self):
+        self.agent.stratDict = self.denseNestedTestOffer
+        self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.denseNestedTestOffer,constraint=NoGood("boolean","True")))
+        # violating offer simply has the correct value for the boolean issue, there is no other connection
+        self.assertEqual(self.agent.stratDict,self.violatingOffer)
+
+    def test_receivingOfferWithConstraintRecordsConstraint(self):
+        self.agent.receiveMessage(self.constraintMessage)
+        self.assertTrue(self.constraintMessage.constraint in self.agent.opponentConstraints)

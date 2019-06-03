@@ -15,6 +15,7 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         self.maxRounds = maxRounds
         self.ownConstraints = set()
         self.opponentConstraints = set()
+        self.constraintsSatisfyable = True
 
 
     def addOwnConstraint(self, constraint):
@@ -24,15 +25,23 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         self.ownConstraints.add(constraint)
         for issue in self.stratDict.keys():
             issueConstrainedValues = [
-                constr.value for constr in self.ownConstraints if constr.issue == issue]
+                constr.value for constr in self.ownConstraints.copy().union(self.opponentConstraints) if constr.issue == issue]
             issueUnConstrainedValues = set(
-                self.stratDict[issue].values()) - set(issueConstrainedValues)
+                self.stratDict[issue].keys()) - set(issueConstrainedValues)
+            if self.verbose >= 2:
+
+                print("{} has values: {}".format(issue,self.stratDict[issue].keys()))
+                print("{} has constrained values: {}".format(issue,issueConstrainedValues))
+                print("{} has unconstrained values: {}".format(issue,issueUnConstrainedValues))
             if len(issueUnConstrainedValues) == 0:
                 if self.verbose >= 2:
+
                     print("Own constraint base: {}".format(self.ownConstraints))
                     print("received constraint: {}".format(constraint))
-                raise RuntimeError(
-                    "Unsatisfyable constraints on issue {}".format(issue))
+                self.constraintsSatisfyable = False
+                #Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
+                return
+
 
             for value in self.stratDict[issue].keys():
                 if not constraint.isSatisfiedByAssignement(issue, value):
@@ -55,9 +64,40 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
                 self.agentName, constraint))
         self.opponentConstraints.add(constraint)
         for issue in self.stratDict.keys():
+            issueConstrainedValues = [
+                constr.value for constr in self.opponentConstraints.copy().union(self.ownConstraints) if constr.issue == issue]
+            issueUnConstrainedValues = set(
+                self.stratDict[issue].keys()) - set(issueConstrainedValues)
+
+            if self.verbose:
+                print("{} has values: {}".format(issue,self.stratDict[issue].values()))
+                print("{} has constrained values: {}".format(issue,issueConstrainedValues))
+                print("{} has unconstrained values: {}".format(issue,issueUnConstrainedValues))
+
+            if len(issueUnConstrainedValues) == 0:
+                if self.verbose >= 2:
+                    print("Opponent constraint base: {}".format(self.opponentConstraints))
+                    print("received constraint: {}".format(constraint))
+
+                self.constraintsSatisfyable = False
+                #Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
+                return
+            
             for value in self.stratDict[issue].keys():
                 if not constraint.isSatisfiedByAssignement(issue, value):
                     self.stratDict[issue][value] = 0
+
+            # it's possible we just made the last value in the stratagy 0 so we have to figure out which value is still unconstrained
+            # and set that one to 1
+            if sum(self.stratDict[issue].values()) == 0:
+                self.stratDict[issue][next(iter(issueUnConstrainedValues))] = 1
+            else:
+                stratSum = sum(self.stratDict[issue].values())
+                self.stratDict[issue] = {
+                    key: prob / stratSum for key, prob in self.stratDict[issue].items()}
+
+        self.addUtilities(
+            {"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.nonAgreementCost})
 
     def satisfiesAllConstraints(self, offer):
         allConstraints = self.ownConstraints.copy().union(self.opponentConstraints)
@@ -89,7 +129,7 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
             self.negotiationActive = False
             self.successful = False
             self.report()
-            return Message(self.agentName, self.opponent.agentName, "terminate", lastMessage.offer)
+            return Message(self.agentName, self.opponent.agentName, "terminate", None)
 
         if self.accepts(lastMessage.offer):
             self.negotiationActive = False
@@ -119,8 +159,21 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
 
     def calcOfferUtility(self, offer):
         if not self.isOfferValid(offer):
-            raise ValueError("Invalid offer received")
-        if not self.satisfiesAllConstraints((offer)):
+            raise ValueError("Invalid offer received: {}".format((offer)))
+        if not self.satisfiesAllConstraints(offer):
             return self.nonAgreementCost
 
         return super().calcOfferUtility(offer)
+
+    def shouldTerminate(self, msg):
+        return self.messageCount >= self.maxRounds or not self.constraintsSatisfyable
+
+
+    def receiveMessage(self, msg):
+        if self.verbose >= 1:
+            print("{}: received message: {}".format(self.agentName, msg))
+        self.recordMessage(msg)
+        if msg.constraint:
+            self.addOpponentConstraint(msg.constraint)
+            if self.verbose:
+                print("constraints still consistant: {}".format(self.constraintsSatisfyable))

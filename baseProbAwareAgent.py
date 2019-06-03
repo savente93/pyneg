@@ -218,6 +218,15 @@ class BaseProbAwareAgent():
                 self.stratDict[issue] = {}
             for val in self.issues[issue]:
                 self.stratDict[issue][str(val)] = 1/len(self.issues[issue])
+    #
+    # # message could be termination notice which needs to be handled differently
+    # def calcMessageUtility(self,msg):
+    #     if msg.kind == "terminate":
+    #         return self.nonAgreementCost
+    #
+    #     if msg.kind == "offer":
+    #         if msg.constraint:
+    #
 
 
 
