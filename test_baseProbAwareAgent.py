@@ -102,6 +102,13 @@ class TestBaseProbAwareAgent(ut.TestCase):
         self.agent.opponent = self.opponent
         self.opponent.opponent = self.agent
 
+        self.acceptanceMessage = Message(self.agent.agentName, self.opponent.agentName, "accept",
+                                         self.denseNestedTestOffer)
+        self.terminationMessage = Message(self.agent.agentName, self.opponent.agentName, "terminate",
+                                          self.denseNestedTestOffer)
+        self.offerMessage = Message(self.agent.agentName, self.opponent.agentName,
+                                    "offer", self.denseNestedTestOffer)
+
     def tearDown(self):
         pass
 
@@ -350,3 +357,29 @@ class TestBaseProbAwareAgent(ut.TestCase):
                       self.agent.agentName, "offer", self.denseNestedTestOffer)
         self.agent.receiveMessage(msg)
         self.assertEqual(self.agent.transcript[-1], msg)
+
+    def test_receiveValidNegotiationRequest(self):
+        self.assertTrue(self.opponent.receiveNegotiationRequest(
+            self.agent, self.genericIssues))
+
+    def test_receiveAcceptationMessageEndsNegotiation(self):
+        self.agent.negotiationActive = True
+        self.agent.receiveMessage(self.acceptanceMessage)
+        self.agent.generateNextMessageFromTranscript()
+        self.assertFalse(self.agent.negotiationActive)
+
+    def test_receiveAcceptationMessageNegotiationWasUncusessful(self):
+        self.agent.receiveMessage(self.acceptanceMessage)
+        self.agent.generateNextMessageFromTranscript()
+        self.assertTrue(self.agent.successful)
+
+    def test_receiveTerminationMessageEndsNegotiation(self):
+        self.agent.negotiationActive = True
+        self.agent.receiveMessage(self.terminationMessage)
+        self.agent.generateNextMessageFromTranscript()
+        self.assertFalse(self.agent.negotiationActive)
+
+    def test_receiveTerminationMessageNegotiationWasUncusessful(self):
+        self.agent.receiveMessage(self.terminationMessage)
+        self.agent.generateNextMessageFromTranscript()
+        self.assertFalse(self.agent.successful)

@@ -16,7 +16,7 @@ class BaseProbAwareAgent():
         self.negotiationActive = False
         self.totalOffersGenerated = 0
         self.messageCount = 0
-        self.stratName = "Random Problog"
+        self.stratName = "Random"
         self.agentName = name
         self.reservationValue = reservationValue
         self.stratDict = {}
@@ -26,7 +26,6 @@ class BaseProbAwareAgent():
         # self.utilityCache = {}
         if issues:
             self.setIssues(issues)
-            self.initUniformStrategy()
 
         self.maxGenerationTries = 500
 
@@ -125,6 +124,7 @@ class BaseProbAwareAgent():
             print("{} is setting up the negotiation issues: {}".format(
                 self.agentName, issues))
         self.setIssues(issues)
+        self.initUniformStrategy()
 
     def report(self):
         if self.verbose:
@@ -220,10 +220,10 @@ class BaseProbAwareAgent():
                 self.stratDict[issue][str(val)] = 1/len(self.issues[issue])
 
 
+
     def calcOfferUtility(self, offer):
         if not self.isOfferValid(offer):
             raise ValueError("Invalid offer received")
-
         decisionFactsString = self.formatProblogStrat(offer)
         queryString = self.formatQueryString()
         kbString = "\n".join(self.KB) + "\n"
@@ -265,13 +265,13 @@ class BaseProbAwareAgent():
         return score
 
 
-    # using the python implementation of problog causes memory leaks
-    # so we use the commandline interface seperately to avoid this as a temp fix
     def non_leaky_problog(self,model):
-        with open('temp_model_{}.pl'.format(getpid()),"w") as temp_file:
+        # using the python implementation of problog causes memory leaks
+        # so we use the commandline interface seperately to avoid this as a temp fix
+        with open('temp_model_{}.pl'.format(getpid()), "w") as temp_file:
             temp_file.write(model)
 
-        process = sp.Popen(["problog",join(getcwd(),'temp_model_{}.pl'.format(getpid()))],stdout=sp.PIPE)
+        process = sp.Popen(["problog", join(getcwd(), 'temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
         output, error = process.communicate()
 
         ans = {}
