@@ -7,8 +7,8 @@ class Constraint():
 
 class NoGood(Constraint):
     def __init__(self, issue, value):
-        self.issue = issue
-        self.value = value
+        self.issue = str(issue)
+        self.value = str(value)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

@@ -15,30 +15,26 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         self.maxRounds = maxRounds
         self.ownConstraints = set()
         self.opponentConstraints = set()
-        self.constraintsSatisfyable = True
+        self.constraintsSatisfiable = True
 
 
     def addOwnConstraint(self, constraint):
         if self.verbose >= 2:
             print("{} is adding own constraint: {}".format(
                 self.agentName, constraint))
+
+            if self.verbose >= 3:
+                print("stratagy before adding constraint: {}".format(self.stratDict))
         self.ownConstraints.add(constraint)
         for issue in self.stratDict.keys():
             issueConstrainedValues = [
-                constr.value for constr in self.ownConstraints.copy().union(self.opponentConstraints) if constr.issue == issue]
+                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
             issueUnConstrainedValues = set(
                 self.stratDict[issue].keys()) - set(issueConstrainedValues)
-            if self.verbose >= 2:
-
-                print("{} has values: {}".format(issue,self.stratDict[issue].keys()))
-                print("{} has constrained values: {}".format(issue,issueConstrainedValues))
-                print("{} has unconstrained values: {}".format(issue,issueUnConstrainedValues))
             if len(issueUnConstrainedValues) == 0:
                 if self.verbose >= 2:
-
-                    print("Own constraint base: {}".format(self.ownConstraints))
-                    print("received constraint: {}".format(constraint))
-                self.constraintsSatisfyable = False
+                    print("Found incompatible constraint: {}".format(constraint))
+                self.constraintsSatisfiable = False
                 #Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
                 return
 
@@ -58,28 +54,30 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
 
         self.addUtilities({"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.nonAgreementCost})
 
+
+        if self.verbose >= 3:
+            print("stratagy after adding constraint: {}".format(self.stratDict))
+
+
     def addOpponentConstraint(self, constraint):
         if self.verbose >= 2:
             print("{} is adding opponent constraint: {}".format(
                 self.agentName, constraint))
+        if self.verbose >= 3:
+            print("stratagy before adding constraint: {}".format(self.stratDict))
         self.opponentConstraints.add(constraint)
         for issue in self.stratDict.keys():
             issueConstrainedValues = [
-                constr.value for constr in self.opponentConstraints.copy().union(self.ownConstraints) if constr.issue == issue]
+                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
             issueUnConstrainedValues = set(
                 self.stratDict[issue].keys()) - set(issueConstrainedValues)
 
-            if self.verbose:
-                print("{} has values: {}".format(issue,self.stratDict[issue].values()))
-                print("{} has constrained values: {}".format(issue,issueConstrainedValues))
-                print("{} has unconstrained values: {}".format(issue,issueUnConstrainedValues))
-
             if len(issueUnConstrainedValues) == 0:
                 if self.verbose >= 2:
-                    print("Opponent constraint base: {}".format(self.opponentConstraints))
-                    print("received constraint: {}".format(constraint))
+                    print("Found incompatible constraint: {}".format(constraint))
 
-                self.constraintsSatisfyable = False
+
+                self.constraintsSatisfiable = False
                 #Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
                 return
             
@@ -99,8 +97,11 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         self.addUtilities(
             {"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.nonAgreementCost})
 
+        if self.verbose >= 3:
+            print("stratagy after adding constraint: {}".format(self.stratDict))
+
     def satisfiesAllConstraints(self, offer):
-        allConstraints = self.ownConstraints.copy().union(self.opponentConstraints)
+        allConstraints = self.getAllConstraints()
         for constr in allConstraints:
             if not constr.isSatisfiedByStrat(offer):
                 return False
@@ -142,12 +143,22 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
 
     def generateOfferMessage(self,constr = None):
         offer = self.generateOffer()
+        if not offer:
+            return Message(self.agentName, self.opponent.agentName,"terminate",None)
+        if not self.satisfiesAllConstraints(offer):
+            raise RuntimeError("should not be able to generate constraint violating offer")
         # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
         if type(offer) == dict:
             return Message(self.agentName, self.opponent.agentName, kind="offer", offer=offer, constraint=constr)
         elif type(offer) == Message:
             offer.constraint = constr
             return offer
+
+    def generateOffer(self):
+        if self.constraintsSatisfiable:
+            return super().generateOffer()
+        else:
+            raise RuntimeError("Cannot generate offer with incompatable constraints: {}".format(self.getAllConstraints()))
 
     def generateViolatedConstraint(self, offer):
 
@@ -166,7 +177,7 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         return super().calcOfferUtility(offer)
 
     def shouldTerminate(self, msg):
-        return self.messageCount >= self.maxRounds or not self.constraintsSatisfyable
+        return self.messageCount >= self.maxRounds or not self.constraintsSatisfiable
 
 
     def receiveMessage(self, msg):
@@ -175,5 +186,31 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
         self.recordMessage(msg)
         if msg.constraint:
             self.addOpponentConstraint(msg.constraint)
-            if self.verbose:
-                print("constraints still consistant: {}".format(self.constraintsSatisfyable))
+            if self.verbose >= 3:
+                print("constraints still consistant: {}".format(self.constraintsSatisfiable))
+
+    def getAllConstraints(self):
+        return self.ownConstraints.copy().union(self.opponentConstraints)
+
+    def accepts(self, offer):
+        if self.verbose >= 2:
+            print("{}: considering \n{}".format(
+                self.agentName, self.formatOffer(offer)))
+
+        if not offer:
+            return False
+
+        if not self.satisfiesAllConstraints(offer):
+            return False
+
+        if type(offer) == Message:
+            util = self.calcOfferUtility(offer.offer)
+        else:
+            util = self.calcOfferUtility(offer)
+
+        if self.verbose >= 2:
+            if util >= self.reservationValue:
+                print("{}: offer is acceptable\n".format(self.agentName))
+            else:
+                print("{}: offer is not acceptable\n".format(self.agentName))
+        return util >= self.reservationValue

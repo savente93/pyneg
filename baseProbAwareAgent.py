@@ -127,7 +127,7 @@ class BaseProbAwareAgent():
         self.initUniformStrategy()
 
     def report(self):
-        if self.verbose:
+        if self.verbose >= 1:
             if self.successful:
                 print("Negotiation suceeded after {} rounds!".format(
                     self.messageCount))
@@ -171,23 +171,21 @@ class BaseProbAwareAgent():
         return True
 
     def isOfferValid(self, offer):
-        # if self.verbose >= 4:
-        #     print("checking offer: \n{offer}".format(offer=Offer(offer)))
-        for issue in offer.keys():
+       for issue in offer.keys():
             if not isclose(sum(offer[issue].values()), 1):
-                if self.verbose >= 2:
+                if self.verbose >= 3:
                     print("Failed sum!")
                 return False
             for value, prob in offer[issue].items():
                 if not (isclose(prob, 1) or isclose(prob, 0)):
-                    if self.verbose >= 2:
+                    if self.verbose >= 3:
                         print("Failed value!")
                     return False
                 if not value in self.issues[issue]:
-                    if self.verbose >= 2:
+                    if self.verbose >= 3:
                         print("Failed, unkown fact!")
                     return False
-        return True
+       return True
 
     def setStrat(self, strat):
         self.generateDecisionFacts()
@@ -237,7 +235,7 @@ class BaseProbAwareAgent():
         queryString = self.formatQueryString()
         kbString = "\n".join(self.KB) + "\n"
         problogModel = decisionFactsString + kbString + queryString
-        if self.verbose >= 2:
+        if self.verbose >= 3:
             print(problogModel)
         probabilityOfFacts = self.non_leaky_problog(problogModel)
             #get_evaluatable().create_from(PrologString(problogModel)).evaluate()
@@ -311,9 +309,9 @@ class BaseProbAwareAgent():
 
         if self.verbose >= 2:
             if util >= self.reservationValue:
-                print("{}: offer is acceptable".format(self.agentName))
+                print("{}: offer is acceptable\n".format(self.agentName))
             else:
-                print("{}: offer is not acceptable".format(self.agentName))
+                print("{}: offer is not acceptable\n".format(self.agentName))
         return util >= self.reservationValue
 
     def formatProblogStrat(self, stratDict):
@@ -383,10 +381,7 @@ class BaseProbAwareAgent():
                 return offer
 
         # we can't find a solution we can accept so just give up
-        if self.transcript:
-            return Message(self.agentName, self.opponent.agentName, "terminate", self.transcript[-1].offer)
-        else:
-            return Message(self.agentName, self.opponent.agentName, "terminate", None)
+        return None
 
 
         # decisionFactsString = self.formatProblogStrat(self.stratDict)

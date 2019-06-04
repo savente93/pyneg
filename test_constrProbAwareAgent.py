@@ -3,6 +3,7 @@ from math import pi
 from constrProbAwareAgent import ConstrProbAwareAgent
 from message import Message
 from constraint import NoGood
+from numpy.random import choice
 
 
 class TestConstrProbAwareAgent(unittest.TestCase):
@@ -22,7 +23,9 @@ class TestConstrProbAwareAgent(unittest.TestCase):
             "float": [float("{0:.2f}".format(0.1 * i)) for i in range(10)]
         }
 
-        self.arbitraryConstraint = NoGood("boolean", "False")
+        self.arbitraryOwnConstraint = NoGood("boolean", "False")
+        self.arbitraryOpponentConstraint = NoGood("boolean", "True")
+        self.arbitraryIntegerConstraint = NoGood("integer","2")
         self.arbitraryUtilities = {
             "boolean_True": 100,
             "integer_2": -1000,
@@ -63,11 +66,11 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         self.agent.setupNegotiation(self.genericIssues)
         self.agent.callForNegotiation(self.opponent, self.genericIssues)
 
-        self.acceptanceMessage = Message(self.agent.agentName,self.opponent.agentName,"accept",self.denseNestedTestOffer)
+        self.acceptanceMessage = Message(self.agent.agentName,self.opponent.agentName, "accept", self.denseNestedTestOffer)
         self.terminationMessage = Message(self.agent.agentName, self.opponent.agentName, "terminate",
                                          self.denseNestedTestOffer)
         self.constraintMessage = Message(self.agent.agentName,self.opponent.agentName,
-            "offer", self.denseNestedTestOffer, self.arbitraryConstraint)
+            "offer", self.denseNestedTestOffer, self.arbitraryOpponentConstraint)
         self.offerMessage = Message(self.agent.agentName, self.opponent.agentName,
                                          "offer", self.denseNestedTestOffer)
         # print("In method: {}".format( self._testMethodName))
@@ -75,17 +78,23 @@ class TestConstrProbAwareAgent(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_receiveConstraintSavesConstraint(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
-        self.assertTrue(self.arbitraryConstraint in self.agent.ownConstraints)
+    def test_receiveingOwnConstraintSavesConstraint(self):
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        self.assertTrue(self.arbitraryOwnConstraint in self.agent.ownConstraints)
+
+    def test_receiveingOpponentConstraintSavesConstraint(self):
+        self.agent.addOpponentConstraint(self.arbitraryOpponentConstraint)
+        self.assertTrue(self.arbitraryOpponentConstraint in self.agent.opponentConstraints)
 
     def test_ownStratSatisfiesAllConstraints(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
-        for constr in self.agent.ownConstraints:
-            self.assertTrue(constr.isSatisfiedByStrat(self.agent.stratDict))
+        # make sure that these constraints are compatable
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        self.agent.addOpponentConstraint(self.arbitraryIntegerConstraint)
+        for constr in self.agent.getAllConstraints():
+            self.assertTrue(constr.isSatisfiedByStrat(self.agent.stratDict), constr)
 
     def test_stratViolatingConstrIsCaught(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.agent.stratDict["boolean"]["False"] = 0.5
         for constr in self.agent.ownConstraints:
             self.assertFalse(constr.isSatisfiedByStrat(self.agent.stratDict))
@@ -99,33 +108,38 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         self.assertEqual(Message(self.agent.agentName,self.opponent.agentName,"offer",self.agent.stratDict, NoGood("boolean","False")),
                          response)
 
-    def test_receivingConstraintAdjustsStratAccordingly(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
-        self.assertAlmostEqual(self.agent.stratDict['boolean']['False'], 0)
+    def test_receivingOwnConstraintAdjustsStratAccordingly(self):
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        self.assertAlmostEqual(self.agent.stratDict[self.arbitraryOwnConstraint.issue][self.arbitraryOwnConstraint.value], 0)
+
+    def test_receivingOpponentConstraintAdjustsStratAccordingly(self):
+        self.agent.addOpponentConstraint(self.arbitraryOpponentConstraint)
+        self.assertAlmostEqual(self.agent.stratDict[self.arbitraryOpponentConstraint.issue][self.arbitraryOpponentConstraint.value], 0)
+
 
     def test_testingConstraintSatisfactionDoesntAffectStoredConstraints(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.agent.satisfiesAllConstraints(
             self.denseNestedTestOffer)
         self.assertEqual(self.agent.ownConstraints,
-                        set([self.arbitraryConstraint]))
+                        set([self.arbitraryOwnConstraint]))
 
     def test_easyNegotiationsWithConstraintsEndsSuccessfully(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.assertTrue(self.agent.negotiate(self.opponent))
 
     def test_doesNotAcceptViolatingOffer(self):
         # self.agent.receiveMessage(self.violatingOffer)
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.assertFalse(self.agent.accepts(self.violatingOffer))
 
     def test_worthOfViolatingOfferIsNonAgreementCost(self):
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.assertEqual(self.agent.calcOfferUtility((self.violatingOffer)),self.arbitraryNonAgreementCost)
 
     def test_endsNegotiationAfterFindingNonCompatibleConstraints(self):
         opponentConstraint = NoGood("boolean","True")
-        self.agent.addOwnConstraint(self.arbitraryConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.denseNestedTestOffer,constraint=opponentConstraint))
         agentResponse = self.agent.generateNextMessageFromTranscript()
         self.assertEqual(Message(self.agent.agentName,self.opponent.agentName,"terminate",None),agentResponse)
@@ -139,3 +153,38 @@ class TestConstrProbAwareAgent(unittest.TestCase):
     def test_receivingOfferWithConstraintRecordsConstraint(self):
         self.agent.receiveMessage(self.constraintMessage)
         self.assertTrue(self.constraintMessage.constraint in self.agent.opponentConstraints)
+
+    def test_negotiationWithIncompatableConstraintsFails(self):
+        # just to make sure the tests don't take for ever
+        self.agent.maxRounds = 20
+        self.agent.maxRounds = 20
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        self.opponent.addOwnConstraint(NoGood("boolean","True"))
+        self.agent.negotiate(self.opponent)
+        self.assertFalse(self.agent.successful or self.opponent.successful)
+
+    def test_wontGenerateOffersWhenIncompatableConstraintsArePresent(self):
+        self.agent.addOpponentConstraint(self.arbitraryOpponentConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        with self.assertRaises(RuntimeError):
+            self.agent.generateOffer()
+
+    # def test_generatesOffersThatSatisfyConstraints(self):
+    #     trails = 50
+    #     self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+    #     self.agent.addOpponentConstraint(self.arbitraryIntegerConstraint)
+    #     for _ in range(trails):
+    #         offer = self.agent.generateOfferMessage().offer
+    #         self.assertTrue(self.agent.satisfiesAllConstraints(offer))
+
+    def test_addingRandomConstraintsAdjustsStrategyCorrectly(self):
+        iters = 10
+        for _ in range(iters):
+            issue = choice(list(self.genericIssues.keys()))
+            if issue == "boolean":
+                continue
+            value = str(choice(list(self.genericIssues[issue])))
+            # print(issue)
+            # print(value)
+            self.agent.addOwnConstraint(NoGood(issue, value))
+            self.assertAlmostEqual(self.agent.stratDict[issue][value],0,msg="failed with constraint base: {}".format(self.agent.ownConstraints))
