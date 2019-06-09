@@ -259,4 +259,4 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv("logs/{}.log".format(self.uuid))
+            log.to_csv("../logs/{}.log".format(self.uuid))

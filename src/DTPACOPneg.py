@@ -91,8 +91,6 @@ with Pool(4) as p:
           ["messageCount", "totalGeneratedOffers","numbOfConstraints", "runTime"]])
     print("total CPU time: {sum}".format(sum=pd_res.loc[:, "runTime"].sum()))
     print("Real world time: {t}".format(t=float(time()-start_time)))
-    pd_res.to_csv("ACOPsim.log")
-
 
 # sims = simulateNNegs(hostageIssues, numbOfSimulations)
 # print(sims)

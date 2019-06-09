@@ -151,7 +151,7 @@ class RandomNegotiationAgent():
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv("logs/{}.log".format(self.uuid))
+            log.to_csv("../logs/{}.log".format(self.uuid))
 
 
     def receiveMessage(self, msg):
@@ -289,10 +289,11 @@ class RandomNegotiationAgent():
     def non_leaky_problog(self,model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface seperately to avoid this as a temp fix
-        with open('models/temp_model_{}.pl'.format(getpid()), "w") as temp_file:
+
+        with open('../models/temp_model_{}.pl'.format(getpid()), "w") as temp_file:
             temp_file.write(model)
 
-        process = sp.Popen(["problog", join(getcwd(), 'models/temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
+        process = sp.Popen(["problog", join(getcwd(), '../models/temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
         output, error = process.communicate()
 
         ans = {}
@@ -302,7 +303,7 @@ class RandomNegotiationAgent():
                 key, prob = string.strip().split(":\t")
                 ans[key] = float(prob)
 
-        remove('models/temp_model_{}.pl'.format(getpid()))
+        remove('../models/temp_model_{}.pl'.format(getpid()))
 
         return ans
 
