@@ -5,11 +5,14 @@ from numpy.random import choice
 import subprocess as sp
 from os import remove, getcwd, getpid
 from os.path import join
+from pandas import Series
+from time import time
 
-
-class BaseProbAwareAgent():
-    def __init__(self, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=100, smart=True, name="",  verbose=0):
+class RandomNegotiationAgent():
+    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=100, smart=True, name="",  verbose=0, reporting=False):
         self.verbose = verbose
+        self.uuid = uuid
+        self.reporting = reporting
         self.maxRounds = maxRounds
         self.nonAgreementCost = nonAgreementCost
         self.successful = False
@@ -23,6 +26,7 @@ class BaseProbAwareAgent():
         self.transcript = []
         self.nextMessageToSend = None
         self.opponent = None
+        self.startTime = 0
         # self.utilityCache = {}
         if issues:
             self.setIssues(issues)
@@ -69,6 +73,7 @@ class BaseProbAwareAgent():
         # make initial offer
         # if self.negotiationActive:
         #     oppResponse = opponent.receiveMessage(self.generateOfferMessage())
+        self.startTime = time()
         while self.negotiationActive:
             self.nextMessageToSend = self.generateNextMessageFromTranscript()
             if self.nextMessageToSend:
@@ -134,6 +139,20 @@ class BaseProbAwareAgent():
             else:
                 print("Negotiation vailed after {} rounds!".format(
                     self.messageCount))
+        if self.reporting:
+            log = Series()
+            log['id'] = self.uuid
+            log['runtime'] =  time() - self.startTime
+            log['success'] = self.successful
+            log['messageCount'] = self.messageCount
+            log['numbOfConstraints'] = 0
+            log['strat'] = self.stratName
+            log['opponentStrat'] = self.opponent.stratName
+            log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
+            log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
+            log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
+            log.to_csv("logs/{}.log".format(self.uuid))
+
 
     def receiveMessage(self, msg):
         if self.verbose >= 1:
@@ -226,15 +245,17 @@ class BaseProbAwareAgent():
     #         if msg.constraint:
     #
 
+    def compileProblogModel(self, offer):
+        decisionFactsString = self.formatProblogStrat(offer)
+        queryString = self.formatQueryString()
+        kbString = "\n".join(self.KB) + "\n"
+        return decisionFactsString + kbString + queryString
 
 
     def calcOfferUtility(self, offer):
         if not self.isOfferValid(offer):
             raise ValueError("Invalid offer received")
-        decisionFactsString = self.formatProblogStrat(offer)
-        queryString = self.formatQueryString()
-        kbString = "\n".join(self.KB) + "\n"
-        problogModel = decisionFactsString + kbString + queryString
+        problogModel = self.compileProblogModel(offer)
         if self.verbose >= 3:
             print(problogModel)
         probabilityOfFacts = self.non_leaky_problog(problogModel)
@@ -253,14 +274,7 @@ class BaseProbAwareAgent():
     def calcStratUtility(self, strat):
         if not self.isStratValid(strat):
             raise ValueError("Invalid strat detected: {}".format(strat))
-        decisionFactsString = self.formatProblogStrat(strat)
-        queryString = self.formatQueryString()
-        # "\n".join(
-        #     map(lambda x: "query({fact}).".format(fact=x), self.utilities.keys()))
-        kbString = "\n".join(self.KB)
-
-        problogModel = decisionFactsString + "\n" + kbString + "\n" + queryString
-
+        problogModel = self.compileProblogModel(offer)
         probabilityOfFacts = self.non_leaky_problog(problogModel)
             #get_evaluatable().create_from(PrologString(problogModel)).evaluate()
         # probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
@@ -275,10 +289,10 @@ class BaseProbAwareAgent():
     def non_leaky_problog(self,model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface seperately to avoid this as a temp fix
-        with open('temp_model_{}.pl'.format(getpid()), "w") as temp_file:
+        with open('models/temp_model_{}.pl'.format(getpid()), "w") as temp_file:
             temp_file.write(model)
 
-        process = sp.Popen(["problog", join(getcwd(), 'temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
+        process = sp.Popen(["problog", join(getcwd(), 'models/temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
         output, error = process.communicate()
 
         ans = {}
@@ -288,7 +302,7 @@ class BaseProbAwareAgent():
                 key, prob = string.strip().split(":\t")
                 ans[key] = float(prob)
 
-        remove('temp_model_{}.pl'.format(getpid()))
+        remove('models/temp_model_{}.pl'.format(getpid()))
 
         return ans
 
@@ -356,6 +370,8 @@ class BaseProbAwareAgent():
 
     def generateOfferMessage(self):
         offer = self.generateOffer()
+        if not offer:
+            return Message(self.agentName, self.opponent.agentName,"terminate",None)
         # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
         if type(offer) == dict:
             return Message(self.agentName, self.opponent.agentName, kind="offer", offer=offer)
@@ -429,6 +445,9 @@ class BaseProbAwareAgent():
                 nestedDict[issue] = {}
 
             nestedDict[issue][value] = atomDict[atom]
+            for otherValue in self.stratDict[issue].keys():
+                if otherValue != value:
+                    nestedDict[issue][otherValue] = 0.0
 
         return nestedDict
 

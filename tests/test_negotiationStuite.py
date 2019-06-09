@@ -1,0 +1,6 @@
+# import unittest
+from test_randomNegotiationAgent import TestBaseProbAwareAgent
+from test_ConstraintNegotiationAgent import TestConstraintNegotiationAgent
+from test_message import TestMessage
+# from test_Issue import TestIssue
+from test_noGood import TestNoGood

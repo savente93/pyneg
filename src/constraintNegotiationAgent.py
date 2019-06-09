@@ -1,16 +1,17 @@
-from baseProbAwareAgent import BaseProbAwareAgent
+from randomNegotiationAgent import RandomNegotiationAgent
 from message import Message
 from constraint import Constraint, NoGood
+from pandas import Series
+from time import time
 
-
-class ConstrProbAwareAgent(BaseProbAwareAgent):
-    def __init__(self, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name=""):
-        super().__init__(utilities, kb, reservationValue,
-                         nonAgreementCost, issues=issues, verbose=verbose)
+class ConstraintNegotiationAgent(RandomNegotiationAgent):
+    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name="", reporting=False):
+        super().__init__(uuid,utilities, kb, reservationValue,
+                         nonAgreementCost, issues=issues, verbose=verbose,reporting=reporting)
         self.negotiationActive = False
         self.agentName = name
         self.successful = False
-        self.stratName = "ACOP"
+        self.stratName = "Constrained"
         self.messageCount = 0
         self.maxRounds = maxRounds
         self.ownConstraints = set()
@@ -214,3 +215,48 @@ class ConstrProbAwareAgent(BaseProbAwareAgent):
             else:
                 print("{}: offer is not acceptable\n".format(self.agentName))
         return util >= self.reservationValue
+
+    def receiveNegotiationRequest(self, opponent, issues):
+        # allows others to initiate negotiations with us
+        # we allways accept calls for negotiation if we can init propperly and don't have incompatable constraints
+        try:
+            if self.constraintsSatisfiable:
+                self.setupNegotiation(issues)
+                self.opponent = opponent
+                return True
+            else:
+                return False
+        except:
+            # something went wrong setting up so reject request
+            print("{} failed to setup negotiation propperly".format(self.agentName))
+            return False
+
+
+    def negotiate(self, opponent):
+        if self.constraintsSatisfiable:
+            return super().negotiate(opponent)
+        else:
+            return False
+
+
+    def report(self):
+        if self.verbose >= 1:
+            if self.successful:
+                print("Negotiation suceeded after {} rounds!".format(
+                    self.messageCount))
+            else:
+                print("Negotiation vailed after {} rounds!".format(
+                    self.messageCount))
+        if self.reporting:
+            log = Series()
+            log['id'] = self.uuid
+            log['runtime'] =  time() - self.startTime
+            log['success'] = self.successful
+            log['messageCount'] = self.messageCount
+            log['numbOfConstraints'] = len(self.ownConstraints)
+            log['strat'] = self.stratName
+            log['opponentStrat'] = self.opponent.stratName
+            log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
+            log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
+            log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
+            log.to_csv("logs/{}.log".format(self.uuid))

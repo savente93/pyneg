@@ -1,8 +1,9 @@
-from baseProbAwareAgent import BaseProbAwareAgent
+from randomNegotiationAgent import RandomNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from numpy.random import normal,seed
+from numpy.random import normal, seed
+from uuid import uuid4
 
 
 def generateDummyIssues(AUtilities, BUtilities, issues, numberOfIssuesToGenerate, issueCardinality):
@@ -10,10 +11,10 @@ def generateDummyIssues(AUtilities, BUtilities, issues, numberOfIssuesToGenerate
         issues["dummy{i}".format(i=i)] = range(issueCardinality)
         for j in range(issueCardinality):
             AUtilities["dummy{i}_{j}".format(
-                i=i, j=j)] = normal(0, 10)  # -(2**31)
+                i=i, j=j)] = normal(10, 10)  # -(2**31)
         for j in range(issueCardinality):
             BUtilities["dummy{i}_{j}".format(
-                i=i, j=j)] = normal(0, 10)  # -(2**31)  # normal(0,100)
+                i=i, j=j)] = normal(10, 10)  # -(2**31)  # normal(0,100)
 
 
 def simulateAOPNeg(i):
@@ -26,10 +27,10 @@ def simulateAOPNeg(i):
     generateDummyIssues(NegeotiatorUtilities,
                         TerroristUtilities, issues, dummyIssues, issueCardinality)
 
-    AgentT = BaseProbAwareAgent(
-        TerroristUtilities, [], 50, -1000, name="negotiator")
-    AgentN = BaseProbAwareAgent(
-        NegeotiatorUtilities, [], 50, -1000, name="terrorist")
+    AgentT = RandomNegotiationAgent( uuid4(),
+        TerroristUtilities, [], 50, -1000, name="negotiator",reporting=True)
+    AgentN = RandomNegotiationAgent( uuid4(),
+        NegeotiatorUtilities, [], 50, -1000, name="terrorist",reporting=True)
     AgentN.setIssues(issues)
     # AgentN.verbose = 3
     # AgentT.verbose = 3
@@ -50,8 +51,8 @@ def simulateAOPNeg(i):
 
 
 numbOfSimulations = 4
-numbOfDummyIssues = 20
-issueCardinality = 10
+numbOfDummyIssues = 5
+issueCardinality = 5
 start_time = time()
 # res = list(map(simulateAOPNeg, [(i, numbOfDummyIssues)
 #                                 for i in range(numbOfSimulations)]))

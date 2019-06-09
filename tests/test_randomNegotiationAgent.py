@@ -1,12 +1,10 @@
 import unittest as ut
 from math import pi
-from random import choice
-from problog.logic import Term
-from baseProbAwareAgent import BaseProbAwareAgent
+from randomNegotiationAgent import RandomNegotiationAgent
 from message import Message
 
 
-class TestBaseProbAwareAgent(ut.TestCase):
+class TestRandomNegotiationAgent(ut.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -92,10 +90,10 @@ class TestBaseProbAwareAgent(ut.TestCase):
             "'float_0.9'": 0
         }
 
-        self.agent = BaseProbAwareAgent(
+        self.agent = RandomNegotiationAgent(
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.agent.agentName = "agent"
-        self.opponent = BaseProbAwareAgent(
+        self.opponent = RandomNegotiationAgent(
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
@@ -181,7 +179,7 @@ class TestBaseProbAwareAgent(ut.TestCase):
             "raincoat": {"False": 1, "True": 0}
         }
 
-        umbrellaAgent = BaseProbAwareAgent(
+        umbrellaAgent = RandomNegotiationAgent(
             umbrellaUtils, umbrellaKb, 0, 0, umbrellaIssues, smart=False)
         umbrellaAnswer = 43
 
@@ -208,7 +206,7 @@ class TestBaseProbAwareAgent(ut.TestCase):
     def test_generateOfferExitsIfUnableToFindSolution(self):
         self.agent.maxGenerationTries = 10
         self.agent.stratDict = self.denseNestedTestOffer
-        self.assertEqual(self.agent.generateOffer(),
+        self.assertEqual(self.agent.generateOfferMessage(),
                          Message(self.agent.agentName,
                                  self.opponent.agentName,
                                  "terminate",

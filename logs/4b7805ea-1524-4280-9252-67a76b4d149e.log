@@ -1,0 +1,10 @@
+id,4b7805ea-1524-4280-9252-67a76b4d149e
+runtime,1560091427.4220645
+success,True
+messageCount,3
+numbOfConstraints,9
+strat,Constrained
+opponentStrat,Constrained
+utility,68.04945213981495
+opponentUtility,67.89511810568501
+totalGeneratedOffers,13

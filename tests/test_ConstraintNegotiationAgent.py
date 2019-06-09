@@ -1,12 +1,12 @@
 import unittest
 from math import pi
-from constrProbAwareAgent import ConstrProbAwareAgent
+from constraintNegotiationAgent import ConstraintNegotiationAgent
 from message import Message
 from constraint import NoGood
 from numpy.random import choice
 
 
-class TestConstrProbAwareAgent(unittest.TestCase):
+class TestConstraintNegotiationAgent(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -57,10 +57,10 @@ class TestConstrProbAwareAgent(unittest.TestCase):
         self.violatingOffer["integer"]["3"] = 1
         self.violatingOffer['float']["0.6"] = 1
 
-        self.agent = ConstrProbAwareAgent(
+        self.agent = ConstraintNegotiationAgent(
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.agent.agentName = "agent"
-        self.opponent = ConstrProbAwareAgent(
+        self.opponent = ConstraintNegotiationAgent(
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
@@ -184,7 +184,10 @@ class TestConstrProbAwareAgent(unittest.TestCase):
             if issue == "boolean":
                 continue
             value = str(choice(list(self.genericIssues[issue])))
-            # print(issue)
-            # print(value)
             self.agent.addOwnConstraint(NoGood(issue, value))
             self.assertAlmostEqual(self.agent.stratDict[issue][value],0,msg="failed with constraint base: {}".format(self.agent.ownConstraints))
+
+    def test_refusesNegotiationIfConstraintsAreIncompatable(self):
+        self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
+        self.agent.addOwnConstraint(self.arbitraryOpponentConstraint)
+        self.assertFalse(self.agent.receiveNegotiationRequest(self.opponent,self.genericIssues))
