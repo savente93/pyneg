@@ -1,10 +1,10 @@
 from numpy import isclose
 from re import search, sub
-from message import Message
+from src.message import Message
 from numpy.random import choice
 import subprocess as sp
 from os import remove, getcwd, getpid
-from os.path import join
+from os.path import join, abspath, dirname
 from pandas import Series
 from time import time
 
@@ -137,22 +137,23 @@ class RandomNegotiationAgent():
                 print("Negotiation suceeded after {} rounds!".format(
                     self.messageCount))
             else:
-                print("Negotiation vailed after {} rounds!".format(
+                print("Negotiation failed after {} rounds!".format(
                     self.messageCount))
         if self.reporting:
+
             log = Series()
             log['id'] = self.uuid
             log['runtime'] =  time() - self.startTime
             log['success'] = self.successful
-            log['messageCount'] = self.messageCount
-            log['numbOfConstraints'] = 0
+            log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
+            log['numbOfOwnConstraints'] = 0
+            log['numbOfDiscoveredConstraints'] = 0
             log['strat'] = self.stratName
             log['opponentStrat'] = self.opponent.stratName
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv("../logs/{}.log".format(self.uuid))
-
+            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))))
 
     def receiveMessage(self, msg):
         if self.verbose >= 1:
@@ -215,6 +216,8 @@ class RandomNegotiationAgent():
 
     def setUtilities(self, utilities):
         self.utilities = utilities
+        if self.verbose >= 3:
+            print("{}'s utilities: {}".format(self.agentName,self.utilities))
 
     def generateDecisionFacts(self):
         self.decisionFacts = []
@@ -235,15 +238,7 @@ class RandomNegotiationAgent():
                 self.stratDict[issue] = {}
             for val in self.issues[issue]:
                 self.stratDict[issue][str(val)] = 1/len(self.issues[issue])
-    #
-    # # message could be termination notice which needs to be handled differently
-    # def calcMessageUtility(self,msg):
-    #     if msg.kind == "terminate":
-    #         return self.nonAgreementCost
-    #
-    #     if msg.kind == "offer":
-    #         if msg.constraint:
-    #
+
 
     def compileProblogModel(self, offer):
         decisionFactsString = self.formatProblogStrat(offer)
@@ -253,6 +248,8 @@ class RandomNegotiationAgent():
 
 
     def calcOfferUtility(self, offer):
+        if not offer:
+            return self.nonAgreementCost
         if not self.isOfferValid(offer):
             raise ValueError("Invalid offer received")
         problogModel = self.compileProblogModel(offer)
@@ -274,7 +271,7 @@ class RandomNegotiationAgent():
     def calcStratUtility(self, strat):
         if not self.isStratValid(strat):
             raise ValueError("Invalid strat detected: {}".format(strat))
-        problogModel = self.compileProblogModel(offer)
+        problogModel = self.compileProblogModel(strat)
         probabilityOfFacts = self.non_leaky_problog(problogModel)
             #get_evaluatable().create_from(PrologString(problogModel)).evaluate()
         # probabilityOfFacts = {str(u): r for u, r in probabilityOfFacts.items()}
@@ -289,11 +286,11 @@ class RandomNegotiationAgent():
     def non_leaky_problog(self,model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface seperately to avoid this as a temp fix
-
-        with open('../models/temp_model_{}.pl'.format(getpid()), "w") as temp_file:
+        modelPath = abspath(join(dirname(__file__), '../models/temp_model_{}.pl'.format(getpid())))
+        with open(modelPath, "w") as temp_file:
             temp_file.write(model)
 
-        process = sp.Popen(["problog", join(getcwd(), '../models/temp_model_{}.pl'.format(getpid()))], stdout=sp.PIPE)
+        process = sp.Popen(["problog", modelPath], stdout=sp.PIPE)
         output, error = process.communicate()
 
         ans = {}
@@ -303,7 +300,7 @@ class RandomNegotiationAgent():
                 key, prob = string.strip().split(":\t")
                 ans[key] = float(prob)
 
-        remove('../models/temp_model_{}.pl'.format(getpid()))
+        remove(modelPath)
 
         return ans
 
@@ -353,16 +350,10 @@ class RandomNegotiationAgent():
 
     def formatQueryString(self):
         queryString = ""
-        # if self.verbose >= 3:
-        #     print(self.KB)
-        #     print(self.nestedDictToAtomDict(self.stratDict).keys())
 
         for utilFact in self.utilities.keys():
             # we shouldn't ask problog for facts that we currently have no rules for
             # like we might not have after new issues are set so we'll skip those
-            # if self.verbose >= 3:
-            #     print("checking if utilities are present for {}: {}".format(utilFact, any([utilFact in rule for rule in self.KB]) or any(
-            #         [utilFact in atom for atom in self.nestedDictToAtomDict(self.stratDict).keys()])))
             if any([utilFact in rule for rule in self.KB]) or any([utilFact in atom for atom in self.nestedDictToAtomDict(self.stratDict).keys()]):
                 queryString += "query({utilFact}).\n".format(utilFact=utilFact)
 
@@ -372,7 +363,9 @@ class RandomNegotiationAgent():
     def generateOfferMessage(self):
         offer = self.generateOffer()
         if not offer:
-            return Message(self.agentName, self.opponent.agentName,"terminate",None)
+            terminationMessage = Message(self.agentName, self.opponent.agentName,"terminate",None)
+            self.recordMessage(terminationMessage)
+            return terminationMessage
         # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
         if type(offer) == dict:
             return Message(self.agentName, self.opponent.agentName, kind="offer", offer=offer)
@@ -401,34 +394,6 @@ class RandomNegotiationAgent():
         return None
 
 
-        # decisionFactsString = self.formatProblogStrat(self.stratDict)
-        # queryString = ""
-        # for issue in self.stratDict.keys():
-        #     for value in self.stratDict[issue].keys():
-        #         if "." in str(value):
-        #             queryString += "query('{issue}_{value}').\n".format(
-        #                 issue=issue, value=value)
-        #         else:
-        #             queryString += "query({issue}_{value}).\n".format(
-        #                 issue=issue, value=value)
-        # problogModel = decisionFactsString + "\n" + queryString
-        # program = PrologString(problogModel)
-        # offer = next(sample.sample(program, n=1, format='dict'))
-        # offer = {str(u): float(r) for u, r in offer.items()}
-        # self.totalOffersGenerated += 1
-        # for _ in range(self.maxGenerationTries):
-        #     if self.accepts(self.atomDictToNestedDict(offer)):
-        #         return self.atomDictToNestedDict(offer)
-        #     else:
-        #         offer = next(sample.sample(program, n=1, format='dict'))
-        #         offer = {str(u): float(r) for u, r in offer.items()}
-        #         self.totalOffersGenerated += 1
-        # # we can't find a solution we can accept so just give up
-        # if self.transcript:
-        #     return Message(self.agentName, self.opponent.agentName, "terminate", self.transcript[-1].offer)
-        # else:
-        #     return Message(self.agentName, self.opponent.agentName, "terminate", None)
-
     def atomDictToNestedDict(self, atomDict):
         nestedDict = {}
         for atom in atomDict.keys():
@@ -439,16 +404,19 @@ class RandomNegotiationAgent():
                     "Coult not parse atom: {atom}".format(atom=atom))
 
             issue, value = s.group(1, 2)
-            # atoms containing floats with have extra ' which we need to remove
+            # atoms containing floats have an extra ' which we need to remove
             issue = sub("'", "", issue)
             value = sub("'", "", value)
             if issue not in nestedDict.keys():
                 nestedDict[issue] = {}
 
-            nestedDict[issue][value] = atomDict[atom]
-            for otherValue in self.stratDict[issue].keys():
-                if otherValue != value:
-                    nestedDict[issue][otherValue] = 0.0
+            nestedDict[issue][value] = float(atomDict[atom])
+
+        for issue in self.stratDict.keys():
+            for value in self.stratDict[issue].keys():
+                if not value in nestedDict[issue].keys():
+                    nestedDict[issue][value] = 0.0
+
 
         return nestedDict
 

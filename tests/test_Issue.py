@@ -1,5 +1,5 @@
 import unittest
-from Issue import BooleanIssue, NumericIssue
+from src.Issue import BooleanIssue, NumericIssue
 
 
 class TestIssue(unittest.TestCase):

@@ -1,8 +1,8 @@
 import unittest as ut
 from math import pi
-from randomNegotiationAgent import RandomNegotiationAgent
-from message import Message
-
+from src.randomNegotiationAgent import RandomNegotiationAgent
+from src.message import Message
+from uuid import uuid4
 
 class TestRandomNegotiationAgent(ut.TestCase):
 
@@ -58,12 +58,12 @@ class TestRandomNegotiationAgent(ut.TestCase):
         }
 
         self.denseNestedTestOffer = {
-            "boolean": {"True": 1, "False": 0},
-            "integer": {str(i): 0 for i in range(10)},
-            "float": {"{0:.1f}".format(i*0.1): 0 for i in range(10)}
+            "boolean": {"True": 1.0, "False": 0.0},
+            "integer": {str(i): 0.0 for i in range(10)},
+            "float": {"{0:.1f}".format(i*0.1): 0.0 for i in range(10)}
         }
-        self.denseNestedTestOffer["integer"]["2"] = 1
-        self.denseNestedTestOffer['float']["0.5"] = 1
+        self.denseNestedTestOffer["integer"]["2"] = 1.0
+        self.denseNestedTestOffer['float']["0.5"] = 1.0
 
         self.denseAtomTestOffer = {
             "boolean_True": 1,
@@ -90,10 +90,10 @@ class TestRandomNegotiationAgent(ut.TestCase):
             "'float_0.9'": 0
         }
 
-        self.agent = RandomNegotiationAgent(
+        self.agent = RandomNegotiationAgent(uuid4(),
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.agent.agentName = "agent"
-        self.opponent = RandomNegotiationAgent(
+        self.opponent = RandomNegotiationAgent(uuid4(),
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
@@ -179,7 +179,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
             "raincoat": {"False": 1, "True": 0}
         }
 
-        umbrellaAgent = RandomNegotiationAgent(
+        umbrellaAgent = RandomNegotiationAgent(uuid4(),
             umbrellaUtils, umbrellaKb, 0, 0, umbrellaIssues, smart=False)
         umbrellaAnswer = 43
 
@@ -270,9 +270,9 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.assertTrue(self.agent.accepts(
             self.agent.generateOffer()))
 
-    def test_sparseAtomDictToNestedDictValid(self):
-        self.assertEqual(self.validSparseNestedTestOffer, self.agent.atomDictToNestedDict(
-            self.validSparseAtomTestOffer))
+    # def test_sparseAtomDictToNestedDictValid(self):
+    #     self.assertEqual(self.validSparseNestedTestOffer, self.agent.atomDictToNestedDict(
+    #         self.validSparseAtomTestOffer))
 
     def test_validSparseNestedDictToAtomDict(self):
         self.assertEqual(self.validSparseAtomTestOffer, self.agent.nestedDictToAtomDict(
@@ -285,6 +285,13 @@ class TestRandomNegotiationAgent(ut.TestCase):
     def test_validSparseAtomDictToNestedDict(self):
         self.assertEqual(self.denseAtomTestOffer, self.agent.nestedDictToAtomDict(
             self.denseNestedTestOffer))
+
+    def test_atomToNestedDict(self):
+        self.agent.setIssues({"dummy0":range(3),"dummy1":range(3),"dummy2":range(3)})
+        atomDict = {'dummy0_0': 0.0, 'dummy0_1': 1.0, 'dummy0_2': 0.0, 'dummy1_0': 0.0, 'dummy1_1': 1.0, 'dummy1_2': 0.0, 'dummy2_0': 0.0, 'dummy2_1': 0.0, 'dummy2_2': 1.0}
+        nestedDict = {'dummy0': {'0': 0.0, '1': 1.0, '2': 0.0}, 'dummy1': {'0': 0.0, '1': 1.0, '2': 0.0}, 'dummy2': {'0': 0.0, '1': 0.0, '2': 1.0}}
+        self.assertEqual(nestedDict,self.agent.atomDictToNestedDict(atomDict))
+
 
     def test_resettingIssuesResetsStrategy(self):
         newIssues = {"first": ["True", "False"]}

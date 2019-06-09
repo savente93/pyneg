@@ -1,0 +1,11 @@
+id,
+runtime,1560122980.3494759
+success,False
+totalMessageCount,2
+numbOfOwnConstraints,0
+numbOfDiscoveredConstraints,0
+strat,DTP
+opponentStrat,DTP
+utility,-1000
+opponentUtility,-1000
+totalGeneratedOffers,1

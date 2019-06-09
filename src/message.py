@@ -1,4 +1,4 @@
-from constraint import Constraint
+from src.constraint import Constraint
 
 
 class Message():

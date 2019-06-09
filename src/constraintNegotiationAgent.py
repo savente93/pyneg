@@ -1,8 +1,9 @@
-from randomNegotiationAgent import RandomNegotiationAgent
-from message import Message
-from constraint import Constraint, NoGood
+from src.randomNegotiationAgent import RandomNegotiationAgent
+from src.message import Message
+from src.constraint import Constraint, NoGood
 from pandas import Series
 from time import time
+from os.path import abspath, dirname, join
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name="", reporting=False):
@@ -145,7 +146,12 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def generateOfferMessage(self,constr = None):
         offer = self.generateOffer()
         if not offer:
-            return Message(self.agentName, self.opponent.agentName,"terminate",None)
+            self.negotiationActive = False
+            self.successful = False
+            terminationMessage = Message(self.agentName, self.opponent.agentName, "terminate", None)
+            self.recordMessage(terminationMessage)
+            return terminationMessage
+
         if not self.satisfiesAllConstraints(offer):
             raise RuntimeError("should not be able to generate constraint violating offer")
         # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
@@ -170,6 +176,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                         return NoGood(issue, value)
 
     def calcOfferUtility(self, offer):
+        if not offer:
+            return self.nonAgreementCost
         if not self.isOfferValid(offer):
             raise ValueError("Invalid offer received: {}".format((offer)))
         if not self.satisfiesAllConstraints(offer):
@@ -245,18 +253,19 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                 print("Negotiation suceeded after {} rounds!".format(
                     self.messageCount))
             else:
-                print("Negotiation vailed after {} rounds!".format(
+                print("Negotiation failed after {} rounds!".format(
                     self.messageCount))
         if self.reporting:
             log = Series()
             log['id'] = self.uuid
             log['runtime'] =  time() - self.startTime
             log['success'] = self.successful
-            log['messageCount'] = self.messageCount
-            log['numbOfConstraints'] = len(self.ownConstraints)
+            log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
+            log['numbOfOwnConstraints'] = len(self.ownConstraints)
+            log['numbOfDiscoveredConstraints'] = len(self.opponentConstraints)
             log['strat'] = self.stratName
             log['opponentStrat'] = self.opponent.stratName
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv("../logs/{}.log".format(self.uuid))
+            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))))

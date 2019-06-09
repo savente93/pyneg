@@ -1,5 +1,5 @@
 import unittest
-from constraint import NoGood
+from src.constraint import NoGood
 
 
 class TestNoGood(unittest.TestCase):

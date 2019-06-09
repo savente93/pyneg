@@ -1,8 +1,8 @@
-from DTPAgent import DTPNegotiationAgent
+from src.DTPAgent import DTPNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from constraint import NoGood
+from src.constraint import NoGood
 from numpy.random import normal, choice, seed
 from random import randint
 from uuid import uuid4
@@ -12,10 +12,10 @@ def generateDummyIssues(AUtilities, Aconstraints, BUtilities, Bconstraints, issu
         issues["dummy{i}".format(i=i)] = list(range(issueCardinality))
         for j in range(issueCardinality):
             AUtilities["dummy{i}_{j}".format(
-                i=i, j=j)] = normal(0, 10)  # -(2**31)
+                i=i, j=j)] = normal(10, 10)  # -(2**31)
         for j in range(issueCardinality):
             BUtilities["dummy{i}_{j}".format(
-                i=i, j=j)] = normal(0, 10)  # -(2**31)  # normal(0,100)
+                i=i, j=j)] = normal(10, 10)  # -(2**31)  # normal(0,100)
 
     while len(Aconstraints) < numberOfConstraintsPerAgent:
         Aissue = choice(list(issues.keys()))
@@ -41,7 +41,7 @@ def simulateACOPNeg(i):
     generateDummyIssues(NegeotiatorUtilities, NegotiatorConstraints,
                         TerroristUtilities,TerroristConstraints, issues, dummyIssues,issueCardinality, numbOfConstraints)
     AgentT = DTPNegotiationAgent(uuid4(),
-        TerroristUtilities, [], 50, -1000, name="negotiator",reporting=True)
+        TerroristUtilities, [], 50, -1000, name="negotiator",reporting=False)
     AgentN = DTPNegotiationAgent(uuid4(),
         NegeotiatorUtilities, [], 50, -1000, name="terrorist",reporting=True)
 
@@ -68,7 +68,7 @@ def simulateACOPNeg(i):
     result['runTime'] = float(time()-t_start)
 
     result['success'] = AgentN.successful
-    result['messageCount'] = AgentN.messageCount
+    result['messageCount'] = AgentN.messageCount + AgentT.messageCount
     result['TStrat'] = AgentT.stratName
     result['Nstrat'] = AgentN.stratName
     result['numbOfConstraints'] = numbOfConstraints
@@ -83,7 +83,7 @@ numbOfDummyIssues = 3
 issueCardinality = 3
 numberOfConstraintsPerAgent = 0
 start_time = time()
-with Pool(4) as p:
+with Pool(1) as p:
     res = p.map(simulateACOPNeg, [(i, numbOfDummyIssues)
                                   for i in range(numbOfSimulations)])
     pd_res = pd.DataFrame(res)

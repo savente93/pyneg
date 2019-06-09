@@ -1,9 +1,10 @@
 import unittest
 from math import pi
-from constraintNegotiationAgent import ConstraintNegotiationAgent
-from message import Message
-from constraint import NoGood
+from src.constraintNegotiationAgent import ConstraintNegotiationAgent
+from src.message import Message
+from src.constraint import NoGood
 from numpy.random import choice
+from uuid import uuid4
 
 
 class TestConstraintNegotiationAgent(unittest.TestCase):
@@ -57,10 +58,10 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.violatingOffer["integer"]["3"] = 1
         self.violatingOffer['float']["0.6"] = 1
 
-        self.agent = ConstraintNegotiationAgent(
+        self.agent = ConstraintNegotiationAgent(uuid4(),
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.agent.agentName = "agent"
-        self.opponent = ConstraintNegotiationAgent(
+        self.opponent = ConstraintNegotiationAgent(uuid4(),
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost, verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
@@ -68,7 +69,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
         self.acceptanceMessage = Message(self.agent.agentName,self.opponent.agentName, "accept", self.denseNestedTestOffer)
         self.terminationMessage = Message(self.agent.agentName, self.opponent.agentName, "terminate",
-                                         self.denseNestedTestOffer)
+                                         None)
         self.constraintMessage = Message(self.agent.agentName,self.opponent.agentName,
             "offer", self.denseNestedTestOffer, self.arbitraryOpponentConstraint)
         self.offerMessage = Message(self.agent.agentName, self.opponent.agentName,

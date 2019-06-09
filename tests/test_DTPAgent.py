@@ -1,9 +1,10 @@
-from DTPAgent import DTPNegotiationAgent
-from message import Message
+from src.DTPAgent import DTPNegotiationAgent
+from src.message import Message
 import unittest
+from src.constraint import NoGood
 
 
-class TestConstraintNegotiationAgent(unittest.TestCase):
+class TestDTPNegotiationAgent(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -55,17 +56,19 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.optimalOffer['float']["0.1"] = 1.0
 
 
-        self.agent = DTPNegotiationAgent(
+        self.agent = DTPNegotiationAgent("",
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
             verbose=0)
         self.agent.agentName = "agent"
-        self.opponent = DTPNegotiationAgent(
+        self.opponent = DTPNegotiationAgent("",
             self.arbitraryUtilities, self.arbitraryKb, self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
             verbose=0)
         self.opponent.agentName = "opponent"
         self.agent.setupNegotiation(self.genericIssues)
         self.agent.callForNegotiation(self.opponent, self.genericIssues)
         self.optimalOfferMessage = Message(self.agent.agentName, self.opponent.agentName,"offer",self.optimalOffer)
+        self.terminationMessage = Message(self.agent.agentName, self.opponent.agentName, "terminate",
+                                         None)
 
 
         # print("In method: {}".format( self._testMethodName))
@@ -123,17 +126,44 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
             self.agent.stratDict["float"][val] = 0
 
         self.agent.stratDict["float"]["0.1"] = 1
-        self.assertEqual(self.agent.generateNextMessageFromTranscript(),self.optimalOfferMessage)
+        response = self.agent.generateNextMessageFromTranscript()
+        self.assertEqual(response,self.optimalOfferMessage)
 
 
     def test_endsNegotiationIfOffersGeneratedAreNotAcceptable(self):
+        # simply a set of impossible utilities to check that we exit immediately
         self.arbitraryUtilities = {
-            "boolean_True": 100,
-            "boolean_False": 10,
-            "integer_9": 100,
-            "integer_3": 10,
-            "integer_1": 0.1,
+            "boolean_True": -100,
+            "boolean_False": -10,
+            "integer_9": -100,
+            "integer_3": -10,
+            "integer_1": -0.1,
             "integer_4": -10,
             "integer_5": -100,
         }
-        self.assertTrue(False)
+        self.agent.setUtilities(self.arbitraryUtilities)
+        self.assertEqual(self.terminationMessage,self.agent.generateNextMessageFromTranscript())
+
+    def test_countsMessagesCorrectlyInSuccessfulNegotiation(self):
+        self.agent.negotiate(self.opponent)
+        self.assertEqual(self.agent.messageCount, 1)
+
+    def test_countsMessagesCorrectlyInUnsuccessfulNegotiation(self):
+        self.arbitraryUtilities = {
+            "boolean_True": -100,
+            "boolean_False": -10,
+            "integer_9": -100,
+            "integer_3": -10,
+            "integer_1": -0.1,
+            "integer_4": -10,
+            "integer_5": -100,
+        }
+        self.agent.setUtilities(self.arbitraryUtilities)
+        self.agent.negotiate(self.opponent)
+        self.assertEqual(self.agent.messageCount,1)
+
+
+    def test_valuesViolatingConstraintWithNonAgreementCost(self):
+        constraint = NoGood("boolean","True")
+        self.agent.addOwnConstraint(constraint)
+        self.assertEqual(self.agent.calcOfferUtility(self.optimalOffer),self.agent.nonAgreementCost)

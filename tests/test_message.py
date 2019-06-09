@@ -1,6 +1,6 @@
 import unittest
-from message import Message
-from constraint import NoGood, Constraint
+from src.message import Message
+from src.constraint import NoGood, Constraint
 
 
 class TestMessage(unittest.TestCase):

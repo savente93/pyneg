@@ -9,6 +9,7 @@ from numpy.random import normal, choice, seed
 from numpy import arange
 from uuid import uuid4
 import itertools as it
+from src.notify import try_except_notify
 
 
 def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfConstraintsPerAgent,
@@ -94,14 +95,20 @@ def simulateNegotiation(config):
 # constraintCounts = range(0,15)
 # strats = ["Random", "Constrained","DTP"]
 
-means = [100]
-stds = [10]
-issueCardinalities = [3]
-issueCounts = [3]
-constraintCounts = [2]
-strats = ["Constrained"]
+@try_except_notify
+def parallelSimulation():
+    trailsPerConfig = 5
+    means = [100]
+    stds = [10]
+    issueCardinalities = [3]
+    issueCounts = [3]
+    constraintCounts = [2]
+    strats = ["Constrained"]
+
+    for _ in range(trailsPerConfig):
+        configs = it.product(*[issueCounts, issueCardinalities, constraintCounts, means, stds, strats])
+        with Pool() as p:
+            res = p.map(simulateNegotiation, configs)
 
 
-configs = it.product(*[issueCounts, issueCardinalities, constraintCounts,means,stds, strats])
-with Pool() as p:
-    res = p.map(simulateNegotiation, configs)
+parallelSimulation(1)
