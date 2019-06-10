@@ -1,23 +1,19 @@
-from src.DTPAgent import DTPNegotiationAgent
-from src.constraintNegotiationAgent import ConstraintNegotiationAgent
-from src.randomNegotiationAgent import RandomNegotiationAgent
+from DTPAgent import DTPNegotiationAgent
+from constraintNegotiationAgent import ConstraintNegotiationAgent
+from randomNegotiationAgent import RandomNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from src.constraint import NoGood
+from constraint import NoGood
 from numpy.random import normal, choice, seed
 from numpy import arange
 from uuid import uuid4
 import itertools as it
-from src.notify import try_except_notify
+from notify import try_except_notify
 
 
 def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfConstraintsPerAgent,
                         meanUtility, stdUtility, strat):
-
-    # avoid rerunning the same simulations multiple times
-    if strat == "Random" and numberOfConstraintsPerAgent > 0:
-        return
 
     negotiationID = uuid4()
     TerroristUtilities = {}
@@ -37,12 +33,12 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
 
     if strat == "Random":
         terrorist = RandomNegotiationAgent(negotiationID,TerroristUtilities,[],reservationValue,nonAgreementCost,
-                                           issues,name="terrorist")
+                                           issues,name="terrorist",meanUtility=meanUtility,stdUtility=stdUtility)
         negotiator = RandomNegotiationAgent(negotiationID, NegotiatorUtilities,[],reservationValue,nonAgreementCost,
-                                            issues,name="negotiatior",reporting=True)
+                                            issues,name="negotiatior",reporting=True,meanUtility=meanUtility,stdUtility=stdUtility)
     elif strat == "Constrained":
         terrorist = ConstraintNegotiationAgent(negotiationID,TerroristUtilities,[],reservationValue,nonAgreementCost,
-                                               issues=issues,name="terrorist")
+                                               issues=issues,name="terrorist",meanUtility=meanUtility,stdUtility=stdUtility)
         # use while loop instead of a for loop to ensure generating the same constraint doesn't matter
         while len(terrorist.ownConstraints) < numberOfConstraintsPerAgent:
             Tissue = choice(list(issues.keys()))
@@ -50,7 +46,7 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
             terrorist.addOwnConstraint(NoGood(Tissue, TValue))
 
         negotiator = ConstraintNegotiationAgent(negotiationID, NegotiatorUtilities, [], reservationValue, nonAgreementCost,
-                                            issues, name="negotiatior", reporting=True)
+                                            issues, name="negotiatior", reporting=True,meanUtility=meanUtility,stdUtility=stdUtility)
         while len(negotiator.ownConstraints) < numberOfConstraintsPerAgent:
             Nissue = choice(list(issues.keys()))
             NValue = choice(list(issues[Nissue]))
@@ -59,7 +55,7 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
     else:
         terrorist = DTPNegotiationAgent(negotiationID, TerroristUtilities, [], reservationValue,
                                                nonAgreementCost,
-                                               issues=issues, name="terrorist")
+                                               issues=issues, name="terrorist",meanUtility=meanUtility,stdUtility=stdUtility)
         # use while loop instead of a for loop to ensure generating the same constraint doesn't matter
         while len(terrorist.ownConstraints) < numberOfConstraintsPerAgent:
             Tissue = choice(list(issues.keys()))
@@ -68,7 +64,7 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
 
         negotiator = DTPNegotiationAgent(negotiationID, NegotiatorUtilities, [], reservationValue,
                                                 nonAgreementCost,
-                                                issues, name="negotiatior", reporting=True)
+                                                issues, name="negotiatior", reporting=True,meanUtility=meanUtility,stdUtility=stdUtility)
         while len(negotiator.ownConstraints) < numberOfConstraintsPerAgent:
             Nissue = choice(list(issues.keys()))
             NValue = choice(list(issues[Nissue]))
@@ -78,22 +74,28 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
 
 
 def simulateNegotiation(config):
+
     seed()
-    print("starting simulation: numbOfIssues={}, issueCard={}, numbOfConstraints={}, meanUtil={}, stdUtil={}, strat={}".format(*config))
     numberOfIssuesToGenerate, issueCardinality, numberOfConstraintsPerAgent, meanUtility, stdUtility, strat = config
+
+    # avoid rerunning the same simulations multiple times
+    if strat == "Random" and numberOfConstraintsPerAgent > 0:
+        return
+    print(
+        "starting simulation: numbOfIssues={}, issueCard={}, numbOfConstraints={}, meanUtil={}, stdUtil={}, strat={}".format(
+            *config))
 
     negotiator, terrorist = generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfConstraintsPerAgent,
                         meanUtility, stdUtility, strat)
 
     negotiator.negotiate(terrorist)
-    print("simulation with config numbOfIssues={}, issueCard={}, numbOfConstraints={}, meanUtil={}, stdUtil={}, strat={} finished!".format(*config))
+    if negotiator.successful:
+        print("simulation with config numbOfIssues={}, issueCard={}, numbOfConstraints={}, meanUtil={}, stdUtil={}, strat={} finished successfully!".format(*config))
+    else:
+        print("simulation with config numbOfIssues={}, issueCard={}, numbOfConstraints={}, meanUtil={}, stdUtil={}, strat={} finished unsuccessfully!".format(*config))
 
-# means = arange(-50,50,10)
-# stds = arange(1,20,5)
-# issueCardinalities = range(1,15)
-# issueCounts = range(1,15)
-# constraintCounts = range(0,15)
-# strats = ["Random", "Constrained","DTP"]
+
+
 
 @try_except_notify
 def parallelSimulation():
@@ -102,13 +104,21 @@ def parallelSimulation():
     stds = [10]
     issueCardinalities = [3]
     issueCounts = [3]
-    constraintCounts = [2]
-    strats = ["Constrained"]
+    constraintCounts = [0,2]
+    strats = ["Random", "Constrained","DTP"]
+
+    # means = arange(-50,50,10)
+    # stds = arange(1,20,5)
+    # issueCardinalities = range(1,7)
+    # issueCounts = range(1,7)
+    # constraintCounts = range(0,15)
+    # strats = ["Random", "Constrained", "DTP"]
 
     for _ in range(trailsPerConfig):
         configs = it.product(*[issueCounts, issueCardinalities, constraintCounts, means, stds, strats])
-        with Pool() as p:
-            res = p.map(simulateNegotiation, configs)
+        with Pool(15) as p:
+            p.map(simulateNegotiation, configs)
+        # simulateNegotiation(next(configs))
 
 
 parallelSimulation(1)

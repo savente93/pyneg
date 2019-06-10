@@ -1,7 +1,7 @@
-from src.DTPAgent import DTPNegotiationAgent
-from src.message import Message
+from DTPAgent import DTPNegotiationAgent
+from message import Message
 import unittest
-from src.constraint import NoGood
+from constraint import NoGood
 
 
 class TestDTPNegotiationAgent(unittest.TestCase):
@@ -94,6 +94,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         self.assertEqual({"raincoat": 0.0, "umbrella": 1.0}, offer )
         self.assertAlmostEqual(score,43)
 
+
     def test_dtpGeneratesOptimalBidInSimpleNegotiationSetting(self):
         expectedMessage = Message(self.agent.agentName,self.opponent.agentName,"offer",self.optimalOffer)
         response = self.agent.generateNextMessageFromTranscript()
@@ -122,13 +123,33 @@ class TestDTPNegotiationAgent(unittest.TestCase):
             "integer_4" : -10,
             "integer_5" : -100,
          }
-        for val in self.agent.stratDict["float"].keys():
-            self.agent.stratDict["float"][val] = 0
-
-        self.agent.stratDict["float"]["0.1"] = 1
+        # for val in self.agent.stratDict["float"].keys():
+        #     self.agent.stratDict["float"][val] = 0
+        #
+        # self.agent.stratDict["float"]["0.1"] = 1
         response = self.agent.generateNextMessageFromTranscript()
-        self.assertEqual(response,self.optimalOfferMessage)
+        # self.assertEqual(response,self.optimalOfferMessage)
+        self.assertTrue(self.agent.isOfferValid(response.offer))
 
+
+    def test_generatesValidOffersWhenConstraintsArePresent(self):
+        self.arbitraryUtilities = {
+            "boolean_True": 100,
+            "boolean_False": 10,
+            "integer_9" : 100,
+            "integer_3" : 10,
+            "integer_1" : 0.1,
+            "integer_4" : -10,
+            "integer_5" : -100,
+         }
+        self.agent.addOwnConstraint(NoGood("boolean","True"))
+        # for val in self.agent.stratDict["float"].keys():
+        #     self.agent.stratDict["float"][val] = 0
+        #
+        # self.agent.stratDict["float"]["0.1"] = 1
+        response = self.agent.generateNextMessageFromTranscript()
+        # self.assertEqual(response,self.optimalOfferMessage)
+        self.assertTrue(self.agent.isOfferValid(response.offer))
 
     def test_endsNegotiationIfOffersGeneratedAreNotAcceptable(self):
         # simply a set of impossible utilities to check that we exit immediately
@@ -167,3 +188,24 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         constraint = NoGood("boolean","True")
         self.agent.addOwnConstraint(constraint)
         self.assertEqual(self.agent.calcOfferUtility(self.optimalOffer),self.agent.nonAgreementCost)
+
+    def test_generatesConstraintIfOfferViolates(self):
+        self.opponent.addOwnConstraint(NoGood("boolean", "True"))
+        self.opponent.receiveMessage(self.agent.generateNextMessageFromTranscript())
+        opponentResponse = self.opponent.generateNextMessageFromTranscript()
+        self.assertEqual(opponentResponse.constraint, NoGood("boolean", "True"))
+
+    def test_recordsConstraintIfReceived(self):
+        self.agent.verbose = 3
+        # self.opponent.verbose = 3
+        self.opponent.addOwnConstraint(NoGood("boolean", "True"))
+        self.opponent.receiveMessage(self.agent.generateNextMessageFromTranscript())
+        self.agent.receiveResponse(self.opponent)
+        print(self.agent.transcript[-1])
+        self.agent.generateNextMessageFromTranscript()
+        self.assertTrue(NoGood("boolean", "True") in self.agent.opponentConstraints)
+
+    def test_ownOfferDoesNotViolateConstraint(self):
+        self.agent.addOwnConstraint(NoGood("boolean", "True"))
+        generatedMessage = self.agent.generateNextMessageFromTranscript()
+        self.assertAlmostEqual(generatedMessage.offer["boolean"]['True'], 0.0)

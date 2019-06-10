@@ -1,14 +1,14 @@
-from src.randomNegotiationAgent import RandomNegotiationAgent
-from src.message import Message
-from src.constraint import Constraint, NoGood
+from randomNegotiationAgent import RandomNegotiationAgent
+from message import Message
+from constraint import Constraint, NoGood
 from pandas import Series
 from time import time
 from os.path import abspath, dirname, join
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name="", reporting=False):
+    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name="", reporting=False, meanUtility=0,stdUtility=0):
         super().__init__(uuid,utilities, kb, reservationValue,
-                         nonAgreementCost, issues=issues, verbose=verbose,reporting=reporting)
+                         nonAgreementCost, issues=issues, verbose=verbose,reporting=reporting,meanUtility=meanUtility,stdUtility=stdUtility)
         self.negotiationActive = False
         self.agentName = name
         self.successful = False
@@ -116,6 +116,15 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             # if our transcript is empty, we should make the initial offer
             return self.generateOfferMessage()
 
+        if self.verbose >= 3:
+            print("{} is using {} to generate next offer.".format(self.agentName,lastMessage))
+
+
+        if lastMessage.constraint:
+            if self.verbose >= 2:
+                print("{} is adding opponent constraint {}".format(self.agentName,lastMessage.constraint))
+            self.addOpponentConstraint(lastMessage.constraint)
+
         if lastMessage.isAcceptance():
             self.negotiationActive = False
             self.successful = True
@@ -150,10 +159,18 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             self.successful = False
             terminationMessage = Message(self.agentName, self.opponent.agentName, "terminate", None)
             self.recordMessage(terminationMessage)
+            self.report()
             return terminationMessage
 
         if not self.satisfiesAllConstraints(offer):
+            if self.verbose>=3:
+                raise RuntimeError("should not be able to generate constraint violating offer: {}".format(offer))
             raise RuntimeError("should not be able to generate constraint violating offer")
+
+        if not self.isOfferValid(offer):
+            if self.verbose>=3:
+                raise RuntimeError("{} generated invalid offer: {}".format(self.agentName,offer))
+            raise RuntimeError("{} generated invalid offer".format(self.agentName))
         # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
         if type(offer) == dict:
             return Message(self.agentName, self.opponent.agentName, kind="offer", offer=offer, constraint=constr)
@@ -257,7 +274,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                     self.messageCount))
         if self.reporting:
             log = Series()
-            log['id'] = self.uuid
+            log.rename(self.uuid)
             log['runtime'] =  time() - self.startTime
             log['success'] = self.successful
             log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
@@ -268,4 +285,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))))
+            log['issueCount'] = len(self.issues)
+            log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
+            log['meanUtility'] = self.meanUtility
+            log['stdUtility'] = self.stdUtility
+            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))), header=0)

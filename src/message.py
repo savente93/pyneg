@@ -1,4 +1,4 @@
-from src.constraint import Constraint
+from constraint import Constraint
 
 
 class Message():
@@ -61,6 +61,8 @@ class Message():
             return False
 
         if other.offer != self.offer:
+            # print(self.offer)
+            # print(other.offer)
             # print("unequal offer")
             return False
 

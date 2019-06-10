@@ -1,8 +1,8 @@
-from src.DTPAgent import DTPNegotiationAgent
+from DTPAgent import DTPNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from src.constraint import NoGood
+from constraint import NoGood
 from numpy.random import normal, choice, seed
 from random import randint
 from uuid import uuid4

@@ -1,6 +1,6 @@
 from numpy import isclose
 from re import search, sub
-from src.message import Message
+from message import Message
 from numpy.random import choice
 import subprocess as sp
 from os import remove, getcwd, getpid
@@ -9,7 +9,7 @@ from pandas import Series
 from time import time
 
 class RandomNegotiationAgent():
-    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=100, smart=True, name="",  verbose=0, reporting=False):
+    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=100, smart=True, name="",  verbose=0, reporting=False, meanUtility=0,stdUtility=0):
         self.verbose = verbose
         self.uuid = uuid
         self.reporting = reporting
@@ -27,6 +27,8 @@ class RandomNegotiationAgent():
         self.nextMessageToSend = None
         self.opponent = None
         self.startTime = 0
+        self.meanUtility = meanUtility # for results collection only not used internally
+        self.stdUtility = stdUtility # for results collection only not used internally
         # self.utilityCache = {}
         if issues:
             self.setIssues(issues)
@@ -78,13 +80,14 @@ class RandomNegotiationAgent():
             self.nextMessageToSend = self.generateNextMessageFromTranscript()
             if self.nextMessageToSend:
                 opponent.receiveMessage(self.nextMessageToSend)
-                oppResponse = self.receiveResponse(opponent)
-                self.recordMessage(oppResponse)
+                self.receiveResponse(opponent)
 
         return self.successful
 
     def receiveResponse(self, sender):
-        return sender.generateNextMessageFromTranscript()
+        response = sender.generateNextMessageFromTranscript()
+        self.recordMessage(response)
+
 
     def recordMessage(self, msg):
         if msg:
@@ -142,7 +145,7 @@ class RandomNegotiationAgent():
         if self.reporting:
 
             log = Series()
-            log['id'] = self.uuid
+            log.rename(self.uuid)
             log['runtime'] =  time() - self.startTime
             log['success'] = self.successful
             log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
@@ -153,7 +156,11 @@ class RandomNegotiationAgent():
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
             log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
-            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))))
+            log['issueCount'] = len(self.issues)
+            log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
+            log['meanUtility'] = self.meanUtility
+            log['stdUtility'] = self.stdUtility
+            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))), header=0)
 
     def receiveMessage(self, msg):
         if self.verbose >= 1:
@@ -194,16 +201,16 @@ class RandomNegotiationAgent():
        for issue in offer.keys():
             if not isclose(sum(offer[issue].values()), 1):
                 if self.verbose >= 3:
-                    print("Failed sum!")
+                    print("Failed sum in issue {}!".format(issue))
                 return False
             for value, prob in offer[issue].items():
                 if not (isclose(prob, 1) or isclose(prob, 0)):
                     if self.verbose >= 3:
-                        print("Failed value!")
+                        print("Failed value in issue {}!".format(issue))
                     return False
                 if not value in self.issues[issue]:
                     if self.verbose >= 3:
-                        print("Failed, unkown fact!")
+                        print("Failed, unkown fact in issue {}!".format(issue))
                     return False
        return True
 
