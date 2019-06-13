@@ -9,10 +9,10 @@ from numpy.random import choice
 
 class DTPNegotiationAgent(ConstraintNegotiationAgent):
     def __init__(self, uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0,
-                 name="", reporting=True, meanUtility=0,stdUtility=0):
+                 name="", reporting=True, meanUtility=0,stdUtility=0,constraintThreshold=-20):
         super().__init__(uuid, utilities, kb, reservationValue, nonAgreementCost, issues=issues, maxRounds=maxRounds,
                          verbose=verbose,
-                         name=name, reporting=reporting, meanUtility=meanUtility,stdUtility=stdUtility)
+                         name=name, reporting=reporting, meanUtility=meanUtility,stdUtility=stdUtility,constraintThreshold=constraintThreshold)
         self.stratName = "DTP"
         self.generatedOffers = []
 
@@ -79,6 +79,9 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
             returnString += "offer{} :- {}.\n".format(offerCounter, ",".join(atomList))
             returnString += "utility(offer{},{}).\n".format(offerCounter, -score + self.nonAgreementCost)
             offerCounter += 1
+
+        for constr in self.getAllConstraints():
+            returnString += "utility({}_{},{}).\n".format(constr.issue,constr.value,-(2**31))
 
         return returnString
 

@@ -1,5 +1,5 @@
 import unittest
-from src.constraint import NoGood
+from constraint import AtomicConstraint
 
 
 class TestNoGood(unittest.TestCase):
@@ -13,17 +13,17 @@ class TestNoGood(unittest.TestCase):
         pass
 
     def setUp(self):
-        self.testNoGood = NoGood("dummy1", "True")
+        self.testNoGood = AtomicConstraint("dummy1", "True")
 
     def tearDown(self):
         pass
 
     def test_noGoodWithDifferentIssueAreUnequal(self):
-        other = NoGood("Dummy1", "True")
+        other = AtomicConstraint("Dummy1", "True")
         self.assertFalse(self.testNoGood == other)
 
     def test_noGoodWithDifferentValueAreUnequal(self):
-        other = NoGood("dummy1", "False")
+        other = AtomicConstraint("dummy1", "False")
         self.assertFalse(self.testNoGood == other)
 
     def test_equalNoGoodsAreEqual(self):

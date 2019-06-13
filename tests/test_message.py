@@ -1,6 +1,6 @@
 import unittest
-from src.message import Message
-from src.constraint import NoGood, Constraint
+from message import Message
+from constraint import AtomicConstraint, Constraint
 
 
 class TestMessage(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestMessage(unittest.TestCase):
         self.terminationMessage = Message(
             "A", "B", "terminate", self.genericOffer)
         self.constraintMessage = Message(
-            "A", "B", "offer", self.genericOffer, NoGood("dummy1", "True"))
+            "A", "B", "offer", self.genericOffer, AtomicConstraint("dummy1", "True"))
         self.offerMessage = Message("A", "B",
                                     "offer", self.genericOffer)
 
@@ -33,7 +33,7 @@ class TestMessage(unittest.TestCase):
         self.acceptMessageString = "Message(A, B, accept, \n{}\n)".format(
             self.offerString)
         self.constraintMessageString = "Message(A, B, offer, \n{offer}, \n{constraint}\n)".format(
-            offer=self.offerString, constraint=NoGood("dummy1", "True"))
+            offer=self.offerString, constraint=AtomicConstraint("dummy1", "True"))
         self.terminationMessageString = "Message(A, B, terminate, \n{}\n)".format(
             self.offerString)
 
@@ -61,7 +61,7 @@ class TestMessage(unittest.TestCase):
 
     def test_getConstraint(self):
         self.assertEqual(self.constraintMessage.getConstraint(),
-                         NoGood("dummy1", "True"))
+                         AtomicConstraint("dummy1", "True"))
 
     def test_emptyMessageIsEmpty(self):
         self.assertTrue(self.emptyMessage.isEmpty())

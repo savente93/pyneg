@@ -1,7 +1,7 @@
 from DTPAgent import DTPNegotiationAgent
 from message import Message
 import unittest
-from constraint import NoGood
+from constraint import AtomicConstraint
 
 
 class TestDTPNegotiationAgent(unittest.TestCase):
@@ -142,7 +142,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
             "integer_4" : -10,
             "integer_5" : -100,
          }
-        self.agent.addOwnConstraint(NoGood("boolean","True"))
+        self.agent.addOwnConstraint(AtomicConstraint("boolean", "True"))
         # for val in self.agent.stratDict["float"].keys():
         #     self.agent.stratDict["float"][val] = 0
         #
@@ -185,27 +185,24 @@ class TestDTPNegotiationAgent(unittest.TestCase):
 
 
     def test_valuesViolatingConstraintWithNonAgreementCost(self):
-        constraint = NoGood("boolean","True")
+        constraint = AtomicConstraint("boolean", "True")
         self.agent.addOwnConstraint(constraint)
         self.assertEqual(self.agent.calcOfferUtility(self.optimalOffer),self.agent.nonAgreementCost)
 
     def test_generatesConstraintIfOfferViolates(self):
-        self.opponent.addOwnConstraint(NoGood("boolean", "True"))
+        self.opponent.addOwnConstraint(AtomicConstraint("boolean", "True"))
         self.opponent.receiveMessage(self.agent.generateNextMessageFromTranscript())
         opponentResponse = self.opponent.generateNextMessageFromTranscript()
-        self.assertEqual(opponentResponse.constraint, NoGood("boolean", "True"))
+        self.assertEqual(opponentResponse.constraint, AtomicConstraint("boolean", "True"))
 
     def test_recordsConstraintIfReceived(self):
-        self.agent.verbose = 3
-        # self.opponent.verbose = 3
-        self.opponent.addOwnConstraint(NoGood("boolean", "True"))
+        self.opponent.addOwnConstraint(AtomicConstraint("boolean", "True"))
         self.opponent.receiveMessage(self.agent.generateNextMessageFromTranscript())
         self.agent.receiveResponse(self.opponent)
-        print(self.agent.transcript[-1])
         self.agent.generateNextMessageFromTranscript()
-        self.assertTrue(NoGood("boolean", "True") in self.agent.opponentConstraints)
+        self.assertTrue(AtomicConstraint("boolean", "True") in self.agent.opponentConstraints)
 
     def test_ownOfferDoesNotViolateConstraint(self):
-        self.agent.addOwnConstraint(NoGood("boolean", "True"))
+        self.agent.addOwnConstraint(AtomicConstraint("boolean", "True"))
         generatedMessage = self.agent.generateNextMessageFromTranscript()
         self.assertAlmostEqual(generatedMessage.offer["boolean"]['True'], 0.0)

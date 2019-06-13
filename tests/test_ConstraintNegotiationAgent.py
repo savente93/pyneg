@@ -1,8 +1,8 @@
 import unittest
 from math import pi
-from src.constraintNegotiationAgent import ConstraintNegotiationAgent
-from src.message import Message
-from src.constraint import NoGood
+from constraintNegotiationAgent import ConstraintNegotiationAgent
+from message import Message
+from constraint import AtomicConstraint
 from numpy.random import choice
 from uuid import uuid4
 
@@ -24,9 +24,9 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
             "float": [float("{0:.2f}".format(0.1 * i)) for i in range(10)]
         }
 
-        self.arbitraryOwnConstraint = NoGood("boolean", "False")
-        self.arbitraryOpponentConstraint = NoGood("boolean", "True")
-        self.arbitraryIntegerConstraint = NoGood("integer","2")
+        self.arbitraryOwnConstraint = AtomicConstraint("boolean", "False")
+        self.arbitraryOpponentConstraint = AtomicConstraint("boolean", "True")
+        self.arbitraryIntegerConstraint = AtomicConstraint("integer", "2")
         self.arbitraryUtilities = {
             "boolean_True": 100,
             "integer_2": -1000,
@@ -103,10 +103,10 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
     def test_respondsToViolatingOfferWithConstraint(self):
         # set stratagy to something constant so we can predict what message it will generate
         self.agent.stratDict = self.denseNestedTestOffer.copy()
-        self.agent.addOwnConstraint(NoGood("boolean","False"))
+        self.agent.addOwnConstraint(AtomicConstraint("boolean", "False"))
         self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.violatingOffer))
         response = self.agent.generateNextMessageFromTranscript()
-        self.assertEqual(Message(self.agent.agentName,self.opponent.agentName,"offer",self.agent.stratDict, NoGood("boolean","False")),
+        self.assertEqual(Message(self.agent.agentName, self.opponent.agentName,"offer", self.agent.stratDict, AtomicConstraint("boolean", "False")),
                          response)
 
     def test_receivingOwnConstraintAdjustsStratAccordingly(self):
@@ -139,7 +139,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.assertEqual(self.agent.calcOfferUtility((self.violatingOffer)),self.arbitraryNonAgreementCost)
 
     def test_endsNegotiationAfterFindingNonCompatibleConstraints(self):
-        opponentConstraint = NoGood("boolean","True")
+        opponentConstraint = AtomicConstraint("boolean", "True")
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.denseNestedTestOffer,constraint=opponentConstraint))
         agentResponse = self.agent.generateNextMessageFromTranscript()
@@ -147,7 +147,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
     def test_receivingConstraintOnBinaryConstraintDoesntResultInZeroStrategy(self):
         self.agent.stratDict = self.denseNestedTestOffer
-        self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.denseNestedTestOffer,constraint=NoGood("boolean","True")))
+        self.agent.receiveMessage(Message(self.opponent.agentName, self.agent.agentName,"offer", self.denseNestedTestOffer, constraint=AtomicConstraint("boolean", "True")))
         # violating offer simply has the correct value for the boolean issue, there is no other connection
         self.assertEqual(self.agent.stratDict,self.violatingOffer)
 
@@ -157,12 +157,12 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
     def test_negotiationWithIncompatableConstraintsFails(self):
         # just to make sure the tests don't take for ever
-        self.agent.maxRounds = 20
-        self.agent.maxRounds = 20
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
-        self.opponent.addOwnConstraint(NoGood("boolean","True"))
+        self.opponent.addOwnConstraint(AtomicConstraint("boolean", "True"))
+        self.opponent.utilities["boolean_False"] = 1000
         self.agent.negotiate(self.opponent)
         self.assertFalse(self.agent.successful or self.opponent.successful)
+        self.assertFalse(self.agent.constraintsSatisfiable)
 
     def test_wontGenerateOffersWhenIncompatableConstraintsArePresent(self):
         self.agent.addOpponentConstraint(self.arbitraryOpponentConstraint)
@@ -185,10 +185,15 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
             if issue == "boolean":
                 continue
             value = str(choice(list(self.genericIssues[issue])))
-            self.agent.addOwnConstraint(NoGood(issue, value))
+            self.agent.addOwnConstraint(AtomicConstraint(issue, value))
             self.assertAlmostEqual(self.agent.stratDict[issue][value],0,msg="failed with constraint base: {}".format(self.agent.ownConstraints))
 
     def test_refusesNegotiationIfConstraintsAreIncompatable(self):
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.agent.addOwnConstraint(self.arbitraryOpponentConstraint)
         self.assertFalse(self.agent.receiveNegotiationRequest(self.opponent,self.genericIssues))
+
+    def test_gettingUtilityBelowThresholdCreatesConstraint(self):
+        lowUtilDict = {"integer_4":-100}
+        self.agent.addUtilities(lowUtilDict)
+        self.assertTrue(AtomicConstraint("integer","4") in self.agent.ownConstraints)

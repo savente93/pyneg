@@ -4,7 +4,7 @@ from randomNegotiationAgent import RandomNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from constraint import NoGood
+from constraint import AtomicConstraint
 from numpy.random import normal, choice, seed
 from numpy import arange
 from uuid import uuid4
@@ -43,14 +43,14 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
         while len(terrorist.ownConstraints) < numberOfConstraintsPerAgent:
             Tissue = choice(list(issues.keys()))
             TValue = choice(list(issues[Tissue]))
-            terrorist.addOwnConstraint(NoGood(Tissue, TValue))
+            terrorist.addOwnConstraint(AtomicConstraint(Tissue, TValue))
 
         negotiator = ConstraintNegotiationAgent(negotiationID, NegotiatorUtilities, [], reservationValue, nonAgreementCost,
                                             issues, name="negotiatior", reporting=True,meanUtility=meanUtility,stdUtility=stdUtility)
         while len(negotiator.ownConstraints) < numberOfConstraintsPerAgent:
             Nissue = choice(list(issues.keys()))
             NValue = choice(list(issues[Nissue]))
-            negotiator.addOwnConstraint(NoGood(Nissue, NValue))
+            negotiator.addOwnConstraint(AtomicConstraint(Nissue, NValue))
 
     else:
         terrorist = DTPNegotiationAgent(negotiationID, TerroristUtilities, [], reservationValue,
@@ -60,7 +60,7 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
         while len(terrorist.ownConstraints) < numberOfConstraintsPerAgent:
             Tissue = choice(list(issues.keys()))
             TValue = choice(list(issues[Tissue]))
-            terrorist.addOwnConstraint(NoGood(Tissue, TValue))
+            terrorist.addOwnConstraint(AtomicConstraint(Tissue, TValue))
 
         negotiator = DTPNegotiationAgent(negotiationID, NegotiatorUtilities, [], reservationValue,
                                                 nonAgreementCost,
@@ -68,7 +68,7 @@ def generateNegotiation(numberOfIssuesToGenerate, issueCardinality, numberOfCons
         while len(negotiator.ownConstraints) < numberOfConstraintsPerAgent:
             Nissue = choice(list(issues.keys()))
             NValue = choice(list(issues[Nissue]))
-            negotiator.addOwnConstraint(NoGood(Nissue, NValue))
+            negotiator.addOwnConstraint(AtomicConstraint(Nissue, NValue))
 
     return negotiator,terrorist
 

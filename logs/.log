@@ -1,7 +1,7 @@
-runtime,1560181777.1140516
+runtime,1560431210.2246351
 success,1.0
 totalMessageCount,2.0
-numbOfOwnConstraints,0.0
+numbOfOwnConstraints,1.0
 numbOfDiscoveredConstraints,1.0
 strat,DTP
 opponentStrat,DTP

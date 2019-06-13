@@ -5,7 +5,7 @@ class Constraint():
     pass
 
 
-class NoGood(Constraint):
+class AtomicConstraint(Constraint):
     def __init__(self, issue, value):
         self.issue = str(issue)
         self.value = str(value)
@@ -40,4 +40,4 @@ class NoGood(Constraint):
         return hash((self.issue, self.value))
 
     def __repr__(self):
-        return "NoGood({issue},{value})".format(issue=self.issue, value=self.value)
+        return "AtomicConstraint({issue},{value})".format(issue=self.issue, value=self.value)

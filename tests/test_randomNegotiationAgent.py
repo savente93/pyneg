@@ -1,7 +1,7 @@
 import unittest as ut
 from math import pi
-from src.randomNegotiationAgent import RandomNegotiationAgent
-from src.message import Message
+from randomNegotiationAgent import RandomNegotiationAgent
+from message import Message
 from uuid import uuid4
 
 class TestRandomNegotiationAgent(ut.TestCase):

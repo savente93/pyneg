@@ -133,6 +133,12 @@ class RandomNegotiationAgent():
                 self.agentName, issues))
         self.setIssues(issues)
         self.initUniformStrategy()
+        if self.verbose >= 1:
+            print("{} Starting utilities: {}".format(
+                self.agentName, self.utilities))
+            print("{} Starting strattegy: {}".format(
+                self.agentName, self.stratDict))
+
 
     def report(self):
         if self.verbose >= 1:
@@ -260,7 +266,7 @@ class RandomNegotiationAgent():
         if not self.isOfferValid(offer):
             raise ValueError("Invalid offer received")
         problogModel = self.compileProblogModel(offer)
-        if self.verbose >= 3:
+        if self.verbose >= 4:
             print(problogModel)
         probabilityOfFacts = self.non_leaky_problog(problogModel)
             #get_evaluatable().create_from(PrologString(problogModel)).evaluate()

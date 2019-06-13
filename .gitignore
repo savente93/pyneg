@@ -2,3 +2,5 @@ __pycache__/
 *.pl
 models/
 *.pyc
+src/.coverage/
+logs/

@@ -2,7 +2,7 @@ from constraintNegotiationAgent import ConstraintNegotiationAgent
 import pandas as pd
 from time import time
 from multiprocessing import Pool
-from constraint import NoGood
+from constraint import AtomicConstraint
 from numpy.random import normal, choice, seed
 from random import randint
 from uuid import uuid4
@@ -21,12 +21,12 @@ def generateDummyIssues(AUtilities, Aconstraints, BUtilities, Bconstraints, issu
     while len(Aconstraints) < numberOfConstraintsPerAgent:
         Aissue = choice(list(issues.keys()))
         AValue = choice(list(issues[Aissue]))
-        Aconstraints.add(NoGood(Aissue, AValue))
+        Aconstraints.add(AtomicConstraint(Aissue, AValue))
 
     while len(Bconstraints) < numberOfConstraintsPerAgent:
         Bissue = choice(list(issues.keys()))
         BValue = choice(list(issues[Bissue]))
-        Bconstraints.add(NoGood(Bissue, BValue))
+        Bconstraints.add(AtomicConstraint(Bissue, BValue))
 
 
 def simulateACOPNeg(i):

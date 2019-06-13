@@ -1,12 +1,13 @@
 from randomNegotiationAgent import RandomNegotiationAgent
 from message import Message
-from constraint import Constraint, NoGood
+from constraint import Constraint, AtomicConstraint
 from pandas import Series
 from time import time
 from os.path import abspath, dirname, join
+from re import search,sub
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=10000, verbose=0, name="", reporting=False, meanUtility=0,stdUtility=0):
+    def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None,constraintThreshold= -20, maxRounds=10000, verbose=0, name="", reporting=False, meanUtility=0,stdUtility=0):
         super().__init__(uuid,utilities, kb, reservationValue,
                          nonAgreementCost, issues=issues, verbose=verbose,reporting=reporting,meanUtility=meanUtility,stdUtility=stdUtility)
         self.negotiationActive = False
@@ -18,7 +19,46 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.ownConstraints = set()
         self.opponentConstraints = set()
         self.constraintsSatisfiable = True
+        self.constraintThreshold = constraintThreshold
 
+    def addUtilities(self, newUtils):
+        for atom,util in newUtils.items():
+           self.utilities[atom] = util
+           if util <= self.constraintThreshold:
+               s = search("(.*)_(.*)", atom)
+               if not s:
+                   raise ValueError(
+                       "Coult not parse atom: {atom}".format(atom=atom))
+
+               issue, value = s.group(1, 2)
+               issue = sub("'", "", issue)
+               value = sub("'", "", value)
+               constraint = AtomicConstraint(issue,value)
+
+               if self.verbose >= 3:
+                   print("{} is adding own constraint {} because of low utility {}.".format(self.agentName,constraint,util))
+
+               self.addOwnConstraint(constraint)
+
+
+
+    def initUniformStrategy(self):
+        # if there are no constraints we can skip all of the checks
+        if not self.getAllConstraints():
+            super().initUniformStrategy()
+            return
+
+
+        for issue in self.issues.keys():
+            self.stratDict[issue] = {}
+            issueConstrainedValues = [
+                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
+            issueUnConstrainedValues = set(self.issues[issue]) - set(issueConstrainedValues)
+            for val in self.issues[issue]:
+                if val in issueUnConstrainedValues:
+                    self.stratDict[issue][val] = 1 / len(issueUnConstrainedValues)
+                else:
+                    self.stratDict[issue][val] = 0.0
 
     def addOwnConstraint(self, constraint):
         if self.verbose >= 2:
@@ -53,8 +93,9 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                 stratSum = sum(self.stratDict[issue].values())
                 self.stratDict[issue] = {
                     key: prob/stratSum for key, prob in self.stratDict[issue].items()}
-
-        self.addUtilities({"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.nonAgreementCost})
+        atom = "{issue}_{value}".format(issue=constraint.issue, value=constraint.value)
+        if not atom in self.utilities.keys():
+            self.utilities[atom] = self.nonAgreementCost
 
 
         if self.verbose >= 3:
@@ -163,9 +204,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             return terminationMessage
 
         if not self.satisfiesAllConstraints(offer):
-            if self.verbose>=3:
-                raise RuntimeError("should not be able to generate constraint violating offer: {}".format(offer))
-            raise RuntimeError("should not be able to generate constraint violating offer")
+            raise RuntimeError("should not be able to generate constraint violating offer: {}\n constraints: {}".format(offer,self.getAllConstraints()))
+            # raise RuntimeError("should not be able to generate constraint violating offer")
 
         if not self.isOfferValid(offer):
             if self.verbose>=3:
@@ -190,7 +230,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             for issue in offer.keys():
                 for value in offer[issue].keys():
                     if not constr.isSatisfiedByAssignement(issue, value):
-                        return NoGood(issue, value)
+                        return AtomicConstraint(issue, value)
 
     def calcOfferUtility(self, offer):
         if not offer:
@@ -256,6 +296,11 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             print("{} failed to setup negotiation propperly".format(self.agentName))
             return False
 
+
+    def setupNegotiation(self, issues):
+        super().setupNegotiation(issues)
+        if self.verbose >= 2:
+            print("{}: starting constraints: {}".format(self.agentName,self.ownConstraints))
 
     def negotiate(self, opponent):
         if self.constraintsSatisfiable:
