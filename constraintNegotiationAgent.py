@@ -334,4 +334,4 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
             log['meanUtility'] = self.meanUtility
             log['stdUtility'] = self.stdUtility
-            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))), header=0)
+            log.to_csv(abspath(join(dirname(__file__),"logs/{}.log".format(self.uuid))), header=0)

@@ -1,0 +1,9 @@
+[run]
+omit = 
+    /usr/*
+    */.local/*
+include = 
+    /home/sam/Documents/ProbLogNeg/*
+
+[html]
+directory = coverage_report

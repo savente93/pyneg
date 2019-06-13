@@ -166,7 +166,7 @@ class RandomNegotiationAgent():
             log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
             log['meanUtility'] = self.meanUtility
             log['stdUtility'] = self.stdUtility
-            log.to_csv(abspath(join(dirname(__file__),"../logs/{}.log".format(self.uuid))), header=0)
+            log.to_csv(abspath(join(dirname(__file__),"logs/{}.log".format(self.uuid))), header=0)
 
     def receiveMessage(self, msg):
         if self.verbose >= 1:
@@ -299,7 +299,7 @@ class RandomNegotiationAgent():
     def non_leaky_problog(self,model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface seperately to avoid this as a temp fix
-        modelPath = abspath(join(dirname(__file__), '../models/temp_model_{}.pl'.format(getpid())))
+        modelPath = abspath(join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
         with open(modelPath, "w") as temp_file:
             temp_file.write(model)
 

@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/randomNegotiationAgent.py" line="6" />
-  </component>
   <component name="ChangeListManager">
     <list default="true" id="90d0f7c8-8989-42b2-944d-c3685d09a6a2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/AOPneg_py.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/baseProbAwareAgent_py.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/constraint_py.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/coverage_html.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/jquery.ba-throttle-debounce.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/jquery.hotkeys.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/jquery.isonscreen.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/jquery.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/jquery.tablesorter.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/keybd_closed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/keybd_open.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/message_py.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/status.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/coverage_report/test_baseProbAwareAgent_py.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ACOPneg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ACOPneg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DTPACOPneg.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DTPACOPneg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DTPAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/DTPAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constraint.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/constraint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/constraintNegotiationAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/randomNegotiationAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simulateAllNegotiationTypes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulateAllNegotiationTypes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_DTPAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_DTPAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_Issue.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Issue.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_message.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_message.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ACOPneg.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AOPneg.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DTPACOPneg.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DTPAgent.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Issue.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/collectResults.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constraint.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constraintNegotiationAgent.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/message.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notify.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/randomNegotiationAgent.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simulateAllNegotiationTypes.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_negotiationStuite.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_negotiationStuite.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_noGood.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_noGood.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,105 +42,28 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/randomNegotiationAgent.py">
+        <entry file="file://$PROJECT_DIR$/randomNegotiationAgent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="246" selection-start-line="246" selection-end-line="253" />
-              <folding>
-                <element signature="e#0#25#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="247">
+              <caret line="301" column="53" selection-start-line="301" selection-start-column="53" selection-end-line="301" selection-end-column="53" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/constraintNegotiationAgent.py">
+        <entry file="file://$PROJECT_DIR$/constraintNegotiationAgent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="206" selection-start-line="206" selection-end-line="206" />
-              <folding>
-                <element signature="e#0#57#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/DTPAgent.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="83" column="91" selection-start-line="83" selection-start-column="91" selection-end-line="83" selection-end-column="91" />
-              <folding>
-                <element signature="e#0#65#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="712">
+              <caret line="336" column="55" lean-forward="true" selection-start-line="336" selection-start-column="55" selection-end-line="336" selection-end-column="55" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py">
+        <entry file="file://$PROJECT_DIR$/DTPAgent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="76" column="15" selection-start-line="76" selection-start-column="10" selection-end-line="76" selection-end-column="15" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_message.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_negotiationStuite.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/message.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="56" column="24" selection-start-line="56" selection-start-column="24" selection-end-line="56" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/simulateAllNegotiationTypes.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="117" column="103" selection-start-line="117" selection-start-column="18" selection-end-line="117" selection-end-column="103" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_DTPAgent.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="110" column="15" selection-start-line="110" selection-start-column="10" selection-end-line="110" selection-end-column="15" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="504">
+              <caret line="34" column="16" lean-forward="true" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -137,11 +71,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_randomNegotiationAgent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
+            <state relative-caret-position="306">
               <caret line="17" column="15" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="15" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/test_negotiationStuite.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="6" column="36" selection-start-column="2" selection-end-line="9" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -157,7 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>generateOfferM</find>
       <find>noU</find>
       <find>generateOfferMessage</find>
       <find>calcOfferU</find>
@@ -187,6 +129,7 @@
       <find>satisfies</find>
       <find>verbose</find>
       <find>print</find>
+      <find>with</find>
     </findStrings>
     <replaceStrings>
       <replace>../models/</replace>
@@ -206,10 +149,7 @@
         <option value="$PROJECT_DIR$/message.py" />
         <option value="$PROJECT_DIR$/test_DTPAgent.py" />
         <option value="$PROJECT_DIR$/AOPneg.py" />
-        <option value="$PROJECT_DIR$/constraintNegotiationAgent.py" />
         <option value="$PROJECT_DIR$/DTPACOPneg.py" />
-        <option value="$PROJECT_DIR$/randomNegotiationAgent.py" />
-        <option value="$PROJECT_DIR$/DTPAgent.py" />
         <option value="$PROJECT_DIR$/ACOPneg.py" />
         <option value="$PROJECT_DIR$/src/notify.py" />
         <option value="$PROJECT_DIR$/src/DTPACOPneg.py" />
@@ -220,12 +160,15 @@
         <option value="$PROJECT_DIR$/tests/test_Issue.py" />
         <option value="$PROJECT_DIR$/src/simulateAllNegotiationTypes.py" />
         <option value="$PROJECT_DIR$/src/randomNegotiationAgent.py" />
-        <option value="$PROJECT_DIR$/tests/test_negotiationStuite.py" />
         <option value="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" />
         <option value="$PROJECT_DIR$/tests/test_DTPAgent.py" />
         <option value="$PROJECT_DIR$/src/message.py" />
         <option value="$PROJECT_DIR$/src/constraintNegotiationAgent.py" />
         <option value="$PROJECT_DIR$/src/DTPAgent.py" />
+        <option value="$PROJECT_DIR$/randomNegotiationAgent.py" />
+        <option value="$PROJECT_DIR$/constraintNegotiationAgent.py" />
+        <option value="$PROJECT_DIR$/DTPAgent.py" />
+        <option value="$PROJECT_DIR$/tests/test_negotiationStuite.py" />
       </list>
     </option>
   </component>
@@ -240,6 +183,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -261,7 +205,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -510,17 +453,18 @@
       <workItem from="1560339528308" duration="719000" />
       <workItem from="1560345893769" duration="885000" />
       <workItem from="1560366516438" duration="11014000" />
+      <workItem from="1560439001390" duration="682000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="147594000" />
+    <option name="totallyTimeSpent" value="148276000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="32" width="1853" height="1048" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.327212" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.33222038" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -665,9 +609,6 @@
     <entry file="file://$PROJECT_DIR$/AOPneg.py" />
     <entry file="file://$PROJECT_DIR$/test_DTPAgent.py" />
     <entry file="file://$PROJECT_DIR$/DTPACOPneg.py" />
-    <entry file="file://$PROJECT_DIR$/randomNegotiationAgent.py" />
-    <entry file="file://$PROJECT_DIR$/constraintNegotiationAgent.py" />
-    <entry file="file://$PROJECT_DIR$/DTPAgent.py" />
     <entry file="file://$PROJECT_DIR$/ACOPneg.py" />
     <entry file="file:///usr/lib/python3.6/multiprocessing/pool.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -676,34 +617,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ACOPneg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1433">
-          <folding>
-            <element signature="e#0#65#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/AOPneg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1091">
-          <folding>
-            <element signature="e#0#57#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/notify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ACOPneg.py" />
+    <entry file="file://$PROJECT_DIR$/src/AOPneg.py" />
+    <entry file="file://$PROJECT_DIR$/src/notify.py" />
     <entry file="file:///usr/local/lib/python3.6/dist-packages/pandas/io/common.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6912">
@@ -711,13 +627,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/DTPACOPneg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DTPACOPneg.py" />
     <entry file="file://$PROJECT_DIR$/tests/test_noGood.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="18">
@@ -732,37 +642,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/constraint.py">
+    <entry file="file://$PROJECT_DIR$/src/constraint.py" />
+    <entry file="file://$PROJECT_DIR$/src/simulateAllNegotiationTypes.py" />
+    <entry file="file://$PROJECT_DIR$/src/randomNegotiationAgent.py" />
+    <entry file="file://$PROJECT_DIR$/src/message.py" />
+    <entry file="file://$PROJECT_DIR$/src/constraintNegotiationAgent.py" />
+    <entry file="file://$PROJECT_DIR$/src/DTPAgent.py" />
+    <entry file="file://$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="756">
-          <caret line="42" column="32" selection-start-line="42" selection-start-column="32" selection-end-line="42" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/simulateAllNegotiationTypes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="117" column="103" selection-start-line="117" selection-start-column="18" selection-end-line="117" selection-end-column="103" />
+        <state relative-caret-position="144">
+          <caret line="76" column="15" selection-start-line="76" selection-start-column="10" selection-end-line="76" selection-end-column="15" />
           <folding>
-            <element signature="e#0#40#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/randomNegotiationAgent.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_message.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="246" selection-start-line="246" selection-end-line="253" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_negotiationStuite.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
+        <state>
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
@@ -779,9 +677,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/randomNegotiationAgent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="301" column="53" selection-start-line="301" selection-start-column="53" selection-end-line="301" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/constraintNegotiationAgent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="712">
+          <caret line="336" column="55" lean-forward="true" selection-start-line="336" selection-start-column="55" selection-end-line="336" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DTPAgent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="34" column="16" lean-forward="true" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_randomNegotiationAgent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
+        <state relative-caret-position="306">
           <caret line="17" column="15" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="15" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
@@ -789,49 +708,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_message.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_negotiationStuite.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/message.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="56" column="24" selection-start-line="56" selection-start-column="24" selection-end-line="56" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="76" column="15" selection-start-line="76" selection-start-column="10" selection-end-line="76" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/constraintNegotiationAgent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="206" selection-start-line="206" selection-end-line="206" />
-          <folding>
-            <element signature="e#0#57#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/DTPAgent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="83" column="91" selection-start-line="83" selection-start-column="91" selection-end-line="83" selection-end-column="91" />
-          <folding>
-            <element signature="e#0#65#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="108">
+          <caret line="6" column="36" selection-start-column="2" selection-end-line="9" selection-end-column="21" />
         </state>
       </provider>
     </entry>

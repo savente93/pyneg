@@ -20,7 +20,7 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface seperately to avoid this as a temp fix
         self.totalOffersGenerated += 1
-        modelPath = abspath(join(dirname(__file__), '../models/temp_model_{}.pl'.format(getpid())))
+        modelPath = abspath(join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
         if self.verbose >= 3:
             print("{} is calculating dtp model: {}".format(self.agentName, model))
 
