@@ -96,13 +96,30 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
     def test_stratViolatingConstrIsCaught(self):
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
-        self.agent.stratDict["boolean"]["False"] = 0.5
+        # self.agent.stratDict["boolean"]["False"] = 0.5
         for constr in self.agent.ownConstraints:
-            self.assertFalse(constr.isSatisfiedByStrat(self.agent.stratDict))
+            self.assertTrue(constr.isSatisfiedByStrat(self.agent.stratDict),constr)
 
     def test_respondsToViolatingOfferWithConstraint(self):
+        self.arbitraryUtilities = {
+            "boolean_True": 100,
+            "'float_0.5'": pi
+        }
+        self.agent = ConstraintNegotiationAgent(uuid4(),
+                                                self.arbitraryUtilities, self.arbitraryKb,
+                                                self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
+                                                verbose=0)
+        self.agent.agentName = "agent"
+        self.opponent = ConstraintNegotiationAgent(uuid4(),
+                                                   self.arbitraryUtilities, self.arbitraryKb,
+                                                   self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
+                                                   verbose=0)
+        self.opponent.agentName = "opponent"
+        self.agent.setupNegotiation(self.genericIssues)
+        self.agent.opponent = self.opponent
         # set stratagy to something constant so we can predict what message it will generate
         self.agent.stratDict = self.denseNestedTestOffer.copy()
+
         self.agent.addOwnConstraint(AtomicConstraint("boolean", "False"))
         self.agent.receiveMessage(Message(self.opponent.agentName,self.agent.agentName,"offer",self.violatingOffer))
         response = self.agent.generateNextMessageFromTranscript()
@@ -123,7 +140,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.agent.satisfiesAllConstraints(
             self.denseNestedTestOffer)
         self.assertEqual(self.agent.ownConstraints,
-                        set([self.arbitraryOwnConstraint]))
+                        set([self.arbitraryOwnConstraint,AtomicConstraint("integer","2"),AtomicConstraint("float","0.1")]))
 
     def test_easyNegotiationsWithConstraintsEndsSuccessfully(self):
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
@@ -156,7 +173,22 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.assertTrue(self.constraintMessage.constraint in self.agent.opponentConstraints)
 
     def test_negotiationWithIncompatableConstraintsFails(self):
-        # just to make sure the tests don't take for ever
+        self.genericIssues = {
+            "boolean": [True, False]
+        }
+        self.agent = ConstraintNegotiationAgent(uuid4(),
+                                                self.arbitraryUtilities, self.arbitraryKb,
+                                                self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
+                                                verbose=0)
+        self.agent.agentName = "agent"
+        self.opponent = ConstraintNegotiationAgent(uuid4(),
+                                                   self.arbitraryUtilities, self.arbitraryKb,
+                                                   self.arbitraryReservationValue, self.arbitraryNonAgreementCost,
+                                                   verbose=0)
+        self.opponent.agentName = "opponent"
+        self.agent.setupNegotiation(self.genericIssues)
+        self.agent.callForNegotiation(self.opponent, self.genericIssues)
+
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
         self.opponent.addOwnConstraint(AtomicConstraint("boolean", "True"))
         self.opponent.utilities["boolean_False"] = 1000
@@ -170,14 +202,6 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.agent.generateOffer()
 
-    # def test_generatesOffersThatSatisfyConstraints(self):
-    #     trails = 50
-    #     self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
-    #     self.agent.addOpponentConstraint(self.arbitraryIntegerConstraint)
-    #     for _ in range(trails):
-    #         offer = self.agent.generateOfferMessage().offer
-    #         self.assertTrue(self.agent.satisfiesAllConstraints(offer))
-
     def test_addingRandomConstraintsAdjustsStrategyCorrectly(self):
         iters = 10
         for _ in range(iters):
@@ -190,10 +214,22 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
     def test_refusesNegotiationIfConstraintsAreIncompatable(self):
         self.agent.addOwnConstraint(self.arbitraryOwnConstraint)
-        self.agent.addOwnConstraint(self.arbitraryOpponentConstraint)
+        self.agent.addOpponentConstraint(self.arbitraryOpponentConstraint)
         self.assertFalse(self.agent.receiveNegotiationRequest(self.opponent,self.genericIssues))
 
     def test_gettingUtilityBelowThresholdCreatesConstraint(self):
         lowUtilDict = {"integer_4":-100}
         self.agent.addUtilities(lowUtilDict)
         self.assertTrue(AtomicConstraint("integer","4") in self.agent.ownConstraints)
+
+    def test_createConstraintWithGeneratedLowUtility(self):
+        issues = {"dummy0":[range(3)],"dummy1":[range(3)],"dummy2":[range(3)],"dummy3":[range(3)],"dummy4":[range(3)]}
+        self.agent = ConstraintNegotiationAgent(uuid4(),{'dummy0_0': -9.720708632311071, 'dummy0_1': -8.63928402687458, 'dummy1_0': -6.3767007099133695, 'dummy1_1': -13.27054211283465, 'dummy2_0': -8.398045297459051, 'dummy2_1': -10.849588704772344, 'dummy3_0': -7.781756350803565, 'dummy3_1': -10.777802560828997, 'dummy4_0': -5.216102446495702, 'dummy4_1': -11.210197384007735}
+,[],10,-100,issues,-11.6,name="agent",meanUtility=-7.139,stdUtility=2.460)
+        # self.agent.ownConstraints = set()
+        #
+        # self.agent.setUtilities({'dummy0_0': -9.720708632311071, 'dummy0_1': -8.63928402687458, 'dummy1_0': -6.3767007099133695, 'dummy1_1': -13.27
+        # 054211283465, 'dummy2_0': -8.398045297459051, 'dummy2_1': -10.849588704772344, 'dummy3_0': -7.781756350803565, 'dummy3_1': -10.777802560828997, 'dummy4_0': -5.216102446495702, 'dummy4_1': -11.210197384007735}
+        self.assertFalse(len(self.agent.getAllConstraints()) == 0)
+
+

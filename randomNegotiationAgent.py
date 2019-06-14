@@ -7,6 +7,7 @@ from os import remove, getcwd, getpid
 from os.path import join, abspath, dirname
 from pandas import Series
 from time import time
+from scipy.stats import norm
 
 class RandomNegotiationAgent():
     def __init__(self,uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, maxRounds=100, smart=True, name="",  verbose=0, reporting=False, meanUtility=0,stdUtility=0):
@@ -157,6 +158,7 @@ class RandomNegotiationAgent():
             log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
             log['numbOfOwnConstraints'] = 0
             log['numbOfDiscoveredConstraints'] = 0
+            log['numbOfOpponentConstraints'] = 0
             log['strat'] = self.stratName
             log['opponentStrat'] = self.opponent.stratName
             log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
@@ -164,8 +166,13 @@ class RandomNegotiationAgent():
             log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
             log['issueCount'] = len(self.issues)
             log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
-            log['meanUtility'] = self.meanUtility
-            log['stdUtility'] = self.stdUtility
+            log['mu_a'] = self.meanUtility
+            log['mu_b'] = self.opponent.meanUtility
+            log['sigma_a'] = self.stdUtility
+            log['sigma_b'] = self.opponent.stdUtility
+            log['rho_a'] = self.reservationValue
+            log['rho_b'] = self.opponent.reservationValue
+            log['difficulty'] = self.difficulty()
             log.to_csv(abspath(join(dirname(__file__),"logs/{}.log".format(self.uuid))), header=0)
 
     def receiveMessage(self, msg):
@@ -459,3 +466,7 @@ class RandomNegotiationAgent():
                     string += "{}\n".format(key)
                     break
         return string[:-1]  # remove trailing newline
+
+    def difficulty(self):
+        return 1 - (norm(0, 1).cdf((self.reservationValue - len(self.issues) * len(next(iter(self.issues))) * self.meanUtility) / (len(self.issues) * len(next(iter(self.issues))) * self.stdUtility)) * norm(0, 1).cdf(
+            (self.opponent.reservationValue - len(self.issues) * len(next(iter(self.issues))) * self.opponent.meanUtility) / (len(self.issues) * len(next(iter(self.issues))) * self.opponent.stdUtility)))

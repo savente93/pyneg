@@ -107,6 +107,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.offerMessage = Message(self.agent.agentName, self.opponent.agentName,
                                     "offer", self.denseNestedTestOffer)
 
+
     def tearDown(self):
         pass
 
@@ -269,10 +270,6 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent.smart = True
         self.assertTrue(self.agent.accepts(
             self.agent.generateOffer()))
-
-    # def test_sparseAtomDictToNestedDictValid(self):
-    #     self.assertEqual(self.validSparseNestedTestOffer, self.agent.atomDictToNestedDict(
-    #         self.validSparseAtomTestOffer))
 
     def test_validSparseNestedDictToAtomDict(self):
         self.assertEqual(self.validSparseAtomTestOffer, self.agent.nestedDictToAtomDict(

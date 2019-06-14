@@ -107,8 +107,6 @@ class TestDTPNegotiationAgent(unittest.TestCase):
 
     def test_generatingOfferRecordsItInUtilities(self):
         self.agent.generateNextMessageFromTranscript()
-        # print(self.agent.generatedOffers)
-        # print(self.agent.nestedDictToAtomDict(self.optimalOffer))
         self.assertTrue(({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0, 'integer_5': 0.0, 'integer_9': 1.0}
                          ,201.0) in self.agent.generatedOffers)
 
@@ -123,12 +121,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
             "integer_4" : -10,
             "integer_5" : -100,
          }
-        # for val in self.agent.stratDict["float"].keys():
-        #     self.agent.stratDict["float"][val] = 0
-        #
-        # self.agent.stratDict["float"]["0.1"] = 1
         response = self.agent.generateNextMessageFromTranscript()
-        # self.assertEqual(response,self.optimalOfferMessage)
         self.assertTrue(self.agent.isOfferValid(response.offer))
 
 
@@ -143,12 +136,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
             "integer_5" : -100,
          }
         self.agent.addOwnConstraint(AtomicConstraint("boolean", "True"))
-        # for val in self.agent.stratDict["float"].keys():
-        #     self.agent.stratDict["float"][val] = 0
-        #
-        # self.agent.stratDict["float"]["0.1"] = 1
         response = self.agent.generateNextMessageFromTranscript()
-        # self.assertEqual(response,self.optimalOfferMessage)
         self.assertTrue(self.agent.isOfferValid(response.offer))
 
     def test_endsNegotiationIfOffersGeneratedAreNotAcceptable(self):
