@@ -13,7 +13,7 @@ class RandomNegotiationAgent:
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=100,
                  smart=True, name="", verbose=0, reporting=False, mean_utility=0, std_utility=0,
                  utility_function="problog"):
-        if utility_function not in ['problog', 'numpy']:
+        if utility_function not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
         self.utility_function = utility_function
         self.verbose = verbose
@@ -290,20 +290,21 @@ class RandomNegotiationAgent:
             # self.utilityCache[frozenOffer] = score
             return score
 
-        elif self.utility_function == "numpy":
+        elif self.utility_function == "python":
             return self.calc_lookup_utility(offer)
 
     def calc_lookup_utility(self, offer):
         score = 0
-        for issue in offer.items():
-            for value in offer[issue].items():
-                if isclose(offer[issue][value], 1):
-                    if "." in str(value) or "." in str(issue):
-                        atom = "'{issue}_{val}'".format(issue=issue, val=value)
-                    else:
-                        atom = "'{issue}_{val}'".format(issue=issue, val=value)
-                    if atom in self.utilities.keys():
-                        score += self.utilities[atom]
+        for issue in offer.keys():
+            for value in offer[issue].keys():
+                if "." in str(value) or "." in str(issue):
+                    atom = "'{issue}_{val}'".format(issue=issue, val=value)
+                else:
+                    atom = "{issue}_{val}".format(issue=issue, val=value)
+                if atom in self.utilities.keys():
+                    if self.verbose >= 4:
+                        print("Adding utility: {} for atom {}".format(self.utilities[atom], atom))
+                    score += self.utilities[atom] * offer[issue][value]
 
         return score
 

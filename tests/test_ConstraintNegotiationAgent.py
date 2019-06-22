@@ -127,14 +127,16 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
                                                 self.arbitrary_kb,
                                                 self.arbitrary_reservation_value,
                                                 self.arbitrary_non_agreement_cost,
-                                                verbose=0)
+                                                verbose=0,
+                                                utility_function="python")
         self.agent.agent_name = "agent"
         self.opponent = ConstraintNegotiationAgent(uuid4(),
                                                    self.arbitrary_utilities,
                                                    self.arbitrary_kb,
                                                    self.arbitrary_reservation_value,
                                                    self.arbitrary_non_agreement_cost,
-                                                   verbose=0)
+                                                   verbose=0,
+                                                   utility_function="python")
         self.opponent.agent_name = "opponent"
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.opponent = self.opponent

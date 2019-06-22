@@ -1,10 +1,8 @@
 import unittest as ut
-from uuid import uuid4
-
 from math import pi
-
-from message import Message
 from randomNegotiationAgent import RandomNegotiationAgent
+from message import Message
+from uuid import uuid4
 
 
 class TestRandomNegotiationAgent(ut.TestCase):
@@ -92,14 +90,16 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                             self.arbitrary_utilities, self.arbitrary_kb,
                                             self.arbitrary_reservation_value,
                                             self.arbitrary_non_agreement_cost,
-                                            verbose=0)
+                                            verbose=0,
+                                            utility_function="python")
         self.agent.agent_name = "agent"
         self.opponent = RandomNegotiationAgent(uuid4(),
                                                self.arbitrary_utilities,
                                                self.arbitrary_kb,
                                                self.arbitrary_reservation_value,
                                                self.arbitrary_non_agreement_cost,
-                                               verbose=0)
+                                               verbose=0,
+                                               utility_function="python")
         self.opponent.agent_name = "opponent"
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.opponent = self.opponent
@@ -157,6 +157,37 @@ class TestRandomNegotiationAgent(ut.TestCase):
         expected_uniform_strat_util = 50 - 100 - 3.2 / 10 + pi / 10
         self.assertAlmostEqual(self.agent.calc_strat_utility(
             self.agent.strat_dict), expected_uniform_strat_util)
+
+    def test_calc_offer_utility_python(self):
+        python_agent = RandomNegotiationAgent(uuid4(),
+                                              self.arbitrary_utilities, self.arbitrary_kb,
+                                              self.arbitrary_reservation_value,
+                                              self.arbitrary_non_agreement_cost,
+                                              verbose=0,
+                                              utility_function="python")
+        python_agent.agent_name = "agent"
+        python_agent.set_utilities(self.arbitrary_utilities)
+        python_agent.setup_negotiation(self.generic_issues)
+        python_agent.init_uniform_strategy()
+        expected_offer_utility = -900 + pi
+        self.assertAlmostEqual(python_agent.calc_offer_utility(
+            self.nested_test_offer), expected_offer_utility)
+
+    def test_calc_strat_utility_python(self):
+        python_agent = RandomNegotiationAgent(uuid4(),
+                                              self.arbitrary_utilities, self.arbitrary_kb,
+                                              self.arbitrary_reservation_value,
+                                              self.arbitrary_non_agreement_cost,
+                                              verbose=0,
+                                              utility_function="python")
+        python_agent.agent_name = "agent"
+        python_agent.set_utilities(self.arbitrary_utilities)
+        python_agent.setup_negotiation(self.generic_issues)
+        python_agent.init_uniform_strategy()
+        expected_uniform_strat_util = 50 - 100 - 3.2 / 10 + pi / 10
+        self.assertAlmostEqual(python_agent.calc_strat_utility(
+            python_agent.strat_dict), expected_uniform_strat_util)
+
 
     def test_accept(self):
         self.assertFalse(self.agent.accepts(
