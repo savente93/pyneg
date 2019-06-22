@@ -31,7 +31,7 @@ def simulateAOPNeg(i):
         TerroristUtilities, [], 50, -1000, name="negotiator",reporting=True)
     AgentN = RandomNegotiationAgent( uuid4(),
         NegeotiatorUtilities, [], 50, -1000, name="terrorist",reporting=True)
-    AgentN.setIssues(issues)
+    AgentN.set_issues(issues)
     # AgentN.verbose = 3
     # AgentT.verbose = 3
     result = {}
@@ -39,13 +39,13 @@ def simulateAOPNeg(i):
     AgentN.negotiate(AgentT)
     result['runTime'] = float(time()-t_start)
     result['success'] = AgentN.successful
-    result['messageCount'] = AgentN.messageCount
-    result['TStrat'] = AgentT.stratName
-    result['Nstrat'] = AgentN.stratName
-    result['Nutil'] = AgentN.calcOfferUtility(AgentN.transcript[-1].offer)
-    result['Tutil'] = AgentT.calcOfferUtility(AgentT.transcript[-1].offer)
-    result['totalGeneratedOffers'] = int(AgentT.totalOffersGenerated +
-                                         AgentN.totalOffersGenerated)
+    result['messageCount'] = AgentN.message_count
+    result['TStrat'] = AgentT.strat_name
+    result['Nstrat'] = AgentN.strat_name
+    result['Nutil'] = AgentN.calc_offer_utility(AgentN.transcript[-1].offer)
+    result['Tutil'] = AgentT.calc_offer_utility(AgentT.transcript[-1].offer)
+    result['totalGeneratedOffers'] = int(AgentT.total_offers_generated +
+                                         AgentN.total_offers_generated)
     print("simulation {i} finished!".format(i=sim))
     return result
 

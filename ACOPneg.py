@@ -49,7 +49,7 @@ def simulateACOPNeg(i):
     # AgentN.verbose = 3
     # AgentT.verbose = '''2
 
-    AgentN.setIssues(issues)
+    AgentN.set_issues(issues)
     for constr in NegotiatorConstraints:
         AgentN.addOwnConstraint(constr)
 
@@ -73,8 +73,8 @@ def simulateACOPNeg(i):
     result['TStrat'] = AgentT.stratName
     result['Nstrat'] = AgentN.stratName
     result['numbOfConstraints'] = numbOfConstraints
-    result['totalGeneratedOffers'] = int(AgentT.totalOffersGenerated +
-                                         AgentN.totalOffersGenerated)
+    result['totalGeneratedOffers'] = int(AgentT.total_offers_generated +
+                                         AgentN.total_offers_generated)
     print("Simulation {} finished! it contained {} constraints and finished in {} rounds".format(sim, numbOfConstraints,AgentN.messageCount))
     return result
 

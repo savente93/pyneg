@@ -1,7 +1,7 @@
 from numpy import isclose
 
 
-class Constraint():
+class Constraint:
     pass
 
 
@@ -22,16 +22,16 @@ class AtomicConstraint(Constraint):
 
         return True
 
-    def isSatisfiedByAssignement(self, issue, value):
+    def is_satisfied_by_assignment(self, issue, value):
         return not (issue == self.issue and value == self.value)
 
-    def isSatisfiedByStrat(self, strat):
+    def is_satisfied_by_strat(self, strat):
         for issue in strat.keys():
             for value in strat[issue]:
                 if isclose(strat[issue][value], 0):
                     continue
 
-                if not self.isSatisfiedByAssignement(issue, value):
+                if not self.is_satisfied_by_assignment(issue, value):
                     return False
 
         return True

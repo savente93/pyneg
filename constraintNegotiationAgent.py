@@ -8,37 +8,34 @@ from re import search, sub
 
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservationValue, nonAgreementCost, issues=None, constraintThreshold=None,
-                 maxRounds=10000, verbose=0, name="", reporting=False, meanUtility=0, stdUtility=1):
-        self.ownConstraints = set()
-        self.opponentConstraints = set()
-        self.constraintThreshold = meanUtility - stdUtility
-        super().__init__(uuid, utilities, kb, reservationValue,
-                         nonAgreementCost, issues=issues, verbose=verbose, reporting=reporting, meanUtility=meanUtility,
-                         stdUtility=stdUtility)
+    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None,
+                 constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
+                 mean_utility=0, std_utility=1):
+        self.own_constraints = set()
+        self.opponent_constraints = set()
+        self.constraint_threshold = mean_utility - std_utility
+        super().__init__(uuid, utilities, kb, reservation_value,
+                         non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
+                         mean_utility=mean_utility, std_utility=std_utility)
         self.utilities = {}
-        self.addUtilities(utilities)
-        self.negotiationActive = False
-        self.agentName = name
+        self.add_utilities(utilities)
+        self.negotiation_active = False
+        self.agent_name = name
         self.successful = False
-        self.stratName = "Constrained"
-        self.messageCount = 0
-        self.maxRounds = maxRounds
+        self.strat_name = "Constrained"
+        self.message_count = 0
+        self.max_rounds = max_rounds
+        self.constraint_threshold = constraint_threshold
+        self.constraints_satisfiable = True
 
-        self.constraintsSatisfiable = True
-        # if constraintThreshold:
-        #     self.constraintThreshold = constraintThreshold
-        # else:
-
-
-    def addUtilities(self, newUtils):
-        for atom, util in newUtils.items():
+    def add_utilities(self, new_utils):
+        for atom, util in new_utils.items():
             self.utilities[atom] = util
-            if util <= self.constraintThreshold:
+            if util <= self.constraint_threshold:
                 s = search("(.*)_(.*)", atom)
                 if not s:
                     raise ValueError(
-                        "Coult not parse atom: {atom}".format(atom=atom))
+                        "Could not parse atom: {atom}".format(atom=atom))
 
                 issue, value = s.group(1, 2)
                 issue = sub("'", "", issue)
@@ -46,270 +43,274 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                 constraint = AtomicConstraint(issue, value)
 
                 if self.verbose >= 3:
-                    print("{} is adding own constraint {} because of low utility {}.".format(self.agentName, constraint,
+                    print("{} is adding own constraint {} because of low utility {}.".format(self.agent_name,
+                                                                                             constraint,
                                                                                              util))
 
-                self.addOwnConstraint(constraint)
+                self.add_own_constraint(constraint)
 
-    def initUniformStrategy(self):
+    def init_uniform_strategy(self):
         # if there are no constraints we can skip all of the checks
-        if not self.getAllConstraints():
-            super().initUniformStrategy()
+        if not self.get_all_constraints():
+            super().init_uniform_strategy()
             return
 
         for issue in self.issues.keys():
-            self.stratDict[issue] = {}
-            issueConstrainedValues = [
-                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
-            issueUnConstrainedValues = set(self.issues[issue]) - set(issueConstrainedValues)
+            self.strat_dict[issue] = {}
+            issue_constrained_values = [
+                constr.value for constr in self.get_all_constraints() if constr.issue == issue]
+            issue_un_constrained_values = set(self.issues[issue]) - set(issue_constrained_values)
             for val in self.issues[issue]:
-                if val in issueUnConstrainedValues:
-                    self.stratDict[issue][val] = 1 / len(issueUnConstrainedValues)
+                if val in issue_un_constrained_values:
+                    self.strat_dict[issue][val] = 1 / len(issue_un_constrained_values)
                 else:
-                    self.stratDict[issue][val] = 0.0
+                    self.strat_dict[issue][val] = 0.0
 
-    def addOwnConstraint(self, constraint):
+    def add_own_constraint(self, constraint):
         if self.verbose >= 2:
             print("{} is adding own constraint: {}".format(
-                self.agentName, constraint))
+                self.agent_name, constraint))
 
             if self.verbose >= 3:
-                print("stratagy before adding constraint: {}".format(self.stratDict))
-        self.ownConstraints.add(constraint)
-        for issue in self.stratDict.keys():
-            issueConstrainedValues = [
-                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
-            issueUnConstrainedValues = set(
-                self.stratDict[issue].keys()) - set(issueConstrainedValues)
-            if len(issueUnConstrainedValues) == 0:
+                print("stratagy before adding constraint: {}".format(self.strat_dict))
+        self.own_constraints.add(constraint)
+        for issue in self.strat_dict.keys():
+            issue_constrained_values = [
+                constr.value for constr in self.get_all_constraints() if constr.issue == issue]
+            issue_unconstrained_values = set(
+                self.strat_dict[issue].keys()) - set(issue_constrained_values)
+            if len(issue_unconstrained_values) == 0:
                 if self.verbose >= 2:
                     print("Found incompatible constraint: {}".format(constraint))
-                self.constraintsSatisfiable = False
-                # Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
+                self.constraints_satisfiable = False
+                # Unfalsifiable constraint so we're terminating on the next message so we won't need to update the strat
                 return
 
-            for value in self.stratDict[issue].keys():
-                if not constraint.isSatisfiedByAssignement(issue, value):
-                    self.stratDict[issue][value] = 0
+            for value in self.strat_dict[issue].keys():
+                if not constraint.is_satisfied_by_assignment(issue, value):
+                    self.strat_dict[issue][value] = 0
 
-            # it's possible we just made the last value in the stratagy 0 so we have to figure out which value is still unconstrained
+            # it's possible we just made the last value in the strategy 0
+            # so we have to figure out which value is still unconstrained
             # and set that one to 1
-            if sum(self.stratDict[issue].values()) == 0:
-                self.stratDict[issue][next(iter(issueUnConstrainedValues))] = 1
+            if sum(self.strat_dict[issue].values()) == 0:
+                self.strat_dict[issue][next(iter(issue_unconstrained_values))] = 1
             else:
-                stratSum = sum(self.stratDict[issue].values())
-                self.stratDict[issue] = {
-                    key: prob / stratSum for key, prob in self.stratDict[issue].items()}
+                strat_sum = sum(self.strat_dict[issue].values())
+                self.strat_dict[issue] = {
+                    key: prob / strat_sum for key, prob in self.strat_dict[issue].items()}
         atom = "{issue}_{value}".format(issue=constraint.issue, value=constraint.value)
         if "." in atom:
-           atom = "'{}'".format(atom)
-        if not atom in self.utilities.keys():
-            self.utilities[atom] = self.nonAgreementCost
+            atom = "'{}'".format(atom)
+        if atom not in self.utilities.keys():
+            self.utilities[atom] = self.non_agreement_cost
 
         if self.verbose >= 3:
-            print("stratagy after adding constraint: {}".format(self.stratDict))
+            print("strategy after adding constraint: {}".format(self.strat_dict))
 
-    def addOpponentConstraint(self, constraint):
+    def add_opponent_constraint(self, constraint):
         if self.verbose >= 2:
             print("{} is adding opponent constraint: {}".format(
-                self.agentName, constraint))
+                self.agent_name, constraint))
         if self.verbose >= 3:
-            print("stratagy before adding constraint: {}".format(self.stratDict))
-        self.opponentConstraints.add(constraint)
-        for issue in self.stratDict.keys():
-            issueConstrainedValues = [
-                constr.value for constr in self.getAllConstraints() if constr.issue == issue]
-            issueUnConstrainedValues = set(
-                self.stratDict[issue].keys()) - set(issueConstrainedValues)
+            print("strategy before adding constraint: {}".format(self.strat_dict))
+        self.opponent_constraints.add(constraint)
+        for issue in self.strat_dict.keys():
+            issue_constrained_values = [
+                constr.value for constr in self.get_all_constraints() if constr.issue == issue]
+            issue_unconstrained_values = set(
+                self.strat_dict[issue].keys()) - set(issue_constrained_values)
 
-            if len(issueUnConstrainedValues) == 0:
+            if len(issue_unconstrained_values) == 0:
                 if self.verbose >= 2:
                     print("Found incompatible constraint: {}".format(constraint))
 
-                self.constraintsSatisfiable = False
-                # Unsatisfyable constraint so we're terminating on the next message so we won't need to update the strat
+                self.constraints_satisfiable = False
+                # Unsatisfiable constraint so we're terminating on the next message so we won't need to update the strat
                 return
 
-            for value in self.stratDict[issue].keys():
-                if not constraint.isSatisfiedByAssignement(issue, value):
-                    self.stratDict[issue][value] = 0
+            for value in self.strat_dict[issue].keys():
+                if not constraint.is_satisfied_by_assignment(issue, value):
+                    self.strat_dict[issue][value] = 0
 
-            # it's possible we just made the last value in the stratagy 0 so we have to figure out which value is still unconstrained
+            # it's possible we just made the last value in the strategy 0 so
+            # we have to figure out which value is still unconstrained
             # and set that one to 1
-            if sum(self.stratDict[issue].values()) == 0:
-                self.stratDict[issue][next(iter(issueUnConstrainedValues))] = 1
+            if sum(self.strat_dict[issue].values()) == 0:
+                self.strat_dict[issue][next(iter(issue_unconstrained_values))] = 1
             else:
-                stratSum = sum(self.stratDict[issue].values())
-                self.stratDict[issue] = {
-                    key: prob / stratSum for key, prob in self.stratDict[issue].items()}
+                strat_sum = sum(self.strat_dict[issue].values())
+                self.strat_dict[issue] = {
+                    key: prob / strat_sum for key, prob in self.strat_dict[issue].items()}
 
-        self.addUtilities(
-            {"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.nonAgreementCost})
+        self.add_utilities(
+            {"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.non_agreement_cost})
 
         if self.verbose >= 3:
-            print("stratagy after adding constraint: {}".format(self.stratDict))
+            print("strategy after adding constraint: {}".format(self.strat_dict))
 
-    def satisfiesAllConstraints(self, offer):
-        allConstraints = self.getAllConstraints()
-        for constr in allConstraints:
-            if not constr.isSatisfiedByStrat(offer):
+    def satisfies_all_constraints(self, offer):
+        all_constraints = self.get_all_constraints()
+        for constr in all_constraints:
+            if not constr.is_satisfied_by_strat(offer):
                 return False
         return True
 
-    def generateNextMessageFromTranscript(self):
+    def generate_next_message_from_transcript(self):
         try:
-            lastMessage = self.transcript[-1]
+            last_message = self.transcript[-1]
         except IndexError:
             # if our transcript is empty, we should make the initial offer
-            return self.generateOfferMessage()
+            return self.generate_offer_message()
 
         if self.verbose >= 3:
-            print("{} is using {} to generate next offer.".format(self.agentName, lastMessage))
+            print("{} is using {} to generate next offer.".format(self.agent_name, last_message))
 
-        if lastMessage.constraint:
+        if last_message.constraint:
             if self.verbose >= 2:
-                print("{} is adding opponent constraint {}".format(self.agentName, lastMessage.constraint))
-            self.addOpponentConstraint(lastMessage.constraint)
+                print("{} is adding opponent constraint {}".format(self.agent_name, last_message.constraint))
+            self.add_opponent_constraint(last_message.constraint)
 
-        if lastMessage.isAcceptance():
-            self.negotiationActive = False
+        if last_message.is_acceptance():
+            self.negotiation_active = False
             self.successful = True
             self.report()
             return None
 
-        if lastMessage.isTermination():
-            self.negotiationActive = False
+        if last_message.is_termination():
+            self.negotiation_active = False
             self.successful = False
             self.report()
             return None
 
-        if self.shouldTerminate(lastMessage):
-            self.negotiationActive = False
+        if self.should_terminate(last_message):
+            self.negotiation_active = False
             self.successful = False
             self.report()
-            return Message(self.agentName, self.opponent.agentName, "terminate", None)
+            return Message(self.agent_name, self.opponent.agent_name, "terminate", None)
 
-        if self.accepts(lastMessage.offer):
-            self.negotiationActive = False
+        if self.accepts(last_message.offer):
+            self.negotiation_active = False
             self.successful = True
             self.report()
-            return Message(self.agentName, self.opponent.agentName, "accept", lastMessage.offer)
+            return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
-        violatedConstraint = self.generateViolatedConstraint(lastMessage.offer)
-        return self.generateOfferMessage(violatedConstraint)
+        violated_constraint = self.generate_violated_constraint(last_message.offer)
+        return self.generate_offer_message(violated_constraint)
 
-    def generateOfferMessage(self, constr=None):
-        offer = self.generateOffer()
+    def generate_offer_message(self, constr=None):
+        offer = self.generate_offer()
         if not offer:
-            self.negotiationActive = False
+            self.negotiation_active = False
             self.successful = False
-            terminationMessage = Message(self.agentName, self.opponent.agentName, "terminate", None)
-            self.recordMessage(terminationMessage)
+            termination_message = Message(self.agent_name, self.opponent.agent_name, "terminate", None)
+            self.record_message(termination_message)
             self.report()
-            return terminationMessage
+            return termination_message
 
-        if not self.satisfiesAllConstraints(offer):
+        if not self.satisfies_all_constraints(offer):
             raise RuntimeError(
-                "should not be able to generate constraint violating offer: {}\n constraints: {}".format(offer,
-                                                                                                         self.getAllConstraints()))
+                "should not be able to generate constraint violating offer: " + \
+                "{}\n constraints: {}".format(offer, self.get_all_constraints()))
             # raise RuntimeError("should not be able to generate constraint violating offer")
 
-        if not self.isOfferValid(offer):
+        if not self.is_offer_valid(offer):
             if self.verbose >= 3:
-                raise RuntimeError("{} generated invalid offer: {}".format(self.agentName, offer))
-            raise RuntimeError("{} generated invalid offer".format(self.agentName))
-        # generate Offer can return a termination message if no acceptable offer can be found so we whould check for that
+                raise RuntimeError("{} generated invalid offer: {}".format(self.agent_name, offer))
+            raise RuntimeError("{} generated invalid offer".format(self.agent_name))
+        # generate offer can return a termination message if no acceptable offer can be found
+        # so we should check for that
         if type(offer) == dict:
-            return Message(self.agentName, self.opponent.agentName, kind="offer", offer=offer, constraint=constr)
+            return Message(self.agent_name, self.opponent.agent_name, kind="offer", offer=offer, constraint=constr)
         elif type(offer) == Message:
             offer.constraint = constr
             return offer
 
-    def generateOffer(self):
-        if self.constraintsSatisfiable:
-            return super().generateOffer()
+    def generate_offer(self):
+        if self.constraints_satisfiable:
+            return super().generate_offer()
         else:
             raise RuntimeError(
-                "Cannot generate offer with incompatable constraints: {}".format(self.getAllConstraints()))
+                "Cannot generate offer with incompatable constraints: {}".format(self.get_all_constraints()))
 
-    def generateViolatedConstraint(self, offer):
+    def generate_violated_constraint(self, offer):
 
-        for constr in self.ownConstraints:
+        for constr in self.own_constraints:
             for issue in offer.keys():
                 for value in offer[issue].keys():
-                    if not constr.isSatisfiedByAssignement(issue, value):
+                    if not constr.is_satisfied_by_assignment(issue, value):
                         return AtomicConstraint(issue, value)
 
-    def calcOfferUtility(self, offer):
+    def calc_offer_utility(self, offer):
         if not offer:
-            return self.nonAgreementCost
-        if not self.isOfferValid(offer):
-            raise ValueError("Invalid offer received: {}".format((offer)))
-        if not self.satisfiesAllConstraints(offer):
-            return self.nonAgreementCost
+            return self.non_agreement_cost
+        if not self.is_offer_valid(offer):
+            raise ValueError("Invalid offer received: {}".format(offer))
+        if not self.satisfies_all_constraints(offer):
+            return self.non_agreement_cost
 
-        return super().calcOfferUtility(offer)
+        return super().calc_offer_utility(offer)
 
-    def shouldTerminate(self, msg):
-        return self.messageCount >= self.maxRounds or not self.constraintsSatisfiable
+    def should_terminate(self, msg):
+        return self.message_count >= self.max_rounds or not self.constraints_satisfiable
 
-    def receiveMessage(self, msg):
+    def receive_message(self, msg):
         if self.verbose >= 1:
-            print("{}: received message: {}".format(self.agentName, msg))
-        self.recordMessage(msg)
+            print("{}: received message: {}".format(self.agent_name, msg))
+        self.record_message(msg)
         if msg.constraint:
-            self.addOpponentConstraint(msg.constraint)
+            self.add_opponent_constraint(msg.constraint)
             if self.verbose >= 3:
-                print("constraints still consistant: {}".format(self.constraintsSatisfiable))
+                print("constraints still consistant: {}".format(self.constraints_satisfiable))
 
-    def getAllConstraints(self):
-        return self.ownConstraints.copy().union(self.opponentConstraints)
+    def get_all_constraints(self):
+        return self.own_constraints.copy().union(self.opponent_constraints)
 
     def accepts(self, offer):
         if self.verbose >= 2:
             print("{}: considering \n{}".format(
-                self.agentName, self.formatOffer(offer)))
+                self.agent_name, self.format_offer(offer)))
 
         if not offer:
             return False
 
-        if not self.satisfiesAllConstraints(offer):
+        if not self.satisfies_all_constraints(offer):
             return False
 
         if type(offer) == Message:
-            util = self.calcOfferUtility(offer.offer)
+            util = self.calc_offer_utility(offer.offer)
         else:
-            util = self.calcOfferUtility(offer)
+            util = self.calc_offer_utility(offer)
 
         if self.verbose >= 2:
-            if util >= self.reservationValue:
-                print("{}: offer is acceptable\n".format(self.agentName))
+            if util >= self.reservation_value:
+                print("{}: offer is acceptable\n".format(self.agent_name))
             else:
-                print("{}: offer is not acceptable\n".format(self.agentName))
-        return util >= self.reservationValue
+                print("{}: offer is not acceptable\n".format(self.agent_name))
+        return util >= self.reservation_value
 
-    def receiveNegotiationRequest(self, opponent, issues):
+    def receive_negotiation_request(self, opponent, issues):
         # allows others to initiate negotiations with us
-        # we allways accept calls for negotiation if we can init propperly and don't have incompatable constraints
+        # we always accept calls for negotiation if we can init properly and don't have incompatible constraints
         try:
-            if self.constraintsSatisfiable:
-                self.setupNegotiation(issues)
+            if self.constraints_satisfiable:
+                self.setup_negotiation(issues)
                 self.opponent = opponent
                 return True
             else:
                 return False
         except:
             # something went wrong setting up so reject request
-            print("{} failed to setup negotiation propperly".format(self.agentName))
+            print("{} failed to setup negotiation properly".format(self.agent_name))
             return False
 
-    def setupNegotiation(self, issues):
-        super().setupNegotiation(issues)
+    def setup_negotiation(self, issues):
+        super().setup_negotiation(issues)
         if self.verbose >= 2:
-            print("{}: starting constraints: {}".format(self.agentName, self.ownConstraints))
+            print("{}: starting constraints: {}".format(self.agent_name, self.own_constraints))
 
     def negotiate(self, opponent):
-        if self.constraintsSatisfiable:
+        if self.constraints_satisfiable:
             return super().negotiate(opponent)
         else:
             return False
@@ -318,33 +319,31 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         if self.verbose >= 1:
             if self.successful:
                 print("Negotiation suceeded after {} rounds!".format(
-                    self.messageCount))
+                    self.message_count))
             else:
                 print("Negotiation failed after {} rounds!".format(
-                    self.messageCount))
+                    self.message_count))
         if self.reporting:
             log = Series()
             log.rename(self.uuid)
-            log['runtime'] =  time() - self.startTime
+            log['runtime'] = time() - self.start_time
             log['success'] = self.successful
-            log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
-            log['numbOfDiscoveredConstraints'] = len(self.opponentConstraints)
-            log['totalMessageCount'] = self.messageCount + self.opponent.messageCount
-            log['numbOfOwnConstraints'] = len(self.ownConstraints)
-            log['numbOfDiscoveredConstraints'] = len(self.opponentConstraints)
-            log['strat'] = self.stratName
-            log['opponentStrat'] = self.opponent.stratName
-            log['utility'] = self.calcOfferUtility(self.transcript[-1].offer)
-            log['opponentUtility'] = self.opponent.calcOfferUtility(self.transcript[-1].offer)
-            log['totalGeneratedOffers'] = self.totalOffersGenerated + self.opponent.totalOffersGenerated
+            log['totalMessageCount'] = self.message_count + self.opponent.message_count
+            log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
+            log['totalMessageCount'] = self.message_count + self.opponent.message_count
+            log['numbOfOwnConstraints'] = len(self.own_constraints)
+            log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
+            log['strat'] = self.strat_name
+            log['opponentStrat'] = self.opponent.strat_name
+            log['utility'] = self.calc_offer_utility(self.transcript[-1].offer)
+            log['opponentUtility'] = self.opponent.calc_offer_utility(self.transcript[-1].offer)
+            log['totalGeneratedOffers'] = self.total_offers_generated + self.opponent.total_offers_generated
             log['issueCount'] = len(self.issues)
-            log['issueCardinality'] = len(next(iter(self.issues))) # issue cardinality is uniform
-            log['mu_a'] = self.meanUtility
-            log['mu_b'] = self.opponent.meanUtility
-            log['sigma_a'] = self.stdUtility
-            log['sigma_b'] = self.opponent.stdUtility
-            log['rho_a'] = self.reservationValue
-            log['rho_b'] = self.opponent.reservationValue
-            log['difficulty'] = self.difficulty()
-            log.to_csv(abspath(join(dirname(__file__),"logs/{}.log".format(self.uuid))), header=0)
-
+            log['issueCardinality'] = len(next(iter(self.issues)))  # issue cardinality is uniform
+            log['mu_a'] = self.mean_utility
+            log['mu_b'] = self.opponent.mean_utility
+            log['sigma_a'] = self.std_utility
+            log['sigma_b'] = self.opponent.std_utility
+            log['rho_a'] = self.reservation_value
+            log['rho_b'] = self.opponent.reservation_value
+            log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)

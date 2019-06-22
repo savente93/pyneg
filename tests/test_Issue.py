@@ -1,4 +1,5 @@
 import unittest
+
 from Issue import BooleanIssue, NumericIssue
 
 
@@ -13,30 +14,30 @@ class TestIssue(unittest.TestCase):
         pass
 
     def setUp(self):
-        self.booleanIssue = BooleanIssue("BooleanIssue")
-        self.numericIssue = NumericIssue(
-            "NumericIssue", [1, 5, 100, 2**31, -1, -3.1412341234], False)
+        self.boolean_issue = BooleanIssue("boolean_issue")
+        self.numeric_issue = NumericIssue(
+            "numeric_issue", [1, 5, 100, 2 ** 31, -1, -3.1412341234], False)
 
     def tearDown(self):
         pass
 
     def test_repr(self):
-        self.assertEqual("BooleanIssue", repr(self.booleanIssue))
+        self.assertEqual("boolean_issue", repr(self.boolean_issue))
 
-    def test_BooleanIssueIsNotOrdinal(self):
-        self.assertFalse(self.booleanIssue.isOrdinal)
+    def test_boolean_issue_is_not_ordinal(self):
+        self.assertFalse(self.boolean_issue.is_ordinal)
 
-    def test_BooleanIssueIsNotNumeric(self):
-        self.assertFalse(self.booleanIssue.isNumeric)
+    def test_boolean_issue_is_not_numeric(self):
+        self.assertFalse(self.boolean_issue.is_numeric)
 
-    def test_BooleanIssueName(self):
-        self.assertEqual(self.booleanIssue.name, "BooleanIssue")
+    def test_boolean_issue_name(self):
+        self.assertEqual(self.boolean_issue.name, "boolean_issue")
 
-    def test_NumericIssueIsOrdinal(self):
-        self.assertTrue(self.numericIssue.isOrdinal)
+    def test_numeric_issue_is_ordinal(self):
+        self.assertTrue(self.numeric_issue.is_ordinal)
 
-    def test_NumericIssueIsNumeric(self):
-        self.assertFalse(self.booleanIssue.isNumeric)
+    def test_numeric_issue_is_numeric(self):
+        self.assertFalse(self.boolean_issue.is_numeric)
 
-    def test_NumericIssueName(self):
-        self.assertEqual(self.numericIssue.name, "NumericIssue")
+    def test_numeric_issue_name(self):
+        self.assertEqual(self.numeric_issue.name, "numeric_issue")

@@ -1,6 +1,7 @@
 import unittest
+
+from constraint import AtomicConstraint
 from message import Message
-from constraint import AtomicConstraint, Constraint
 
 
 class TestMessage(unittest.TestCase):
@@ -14,152 +15,145 @@ class TestMessage(unittest.TestCase):
         pass
 
     def setUp(self):
-        self.genericOffer = {"first": {"True": 1}, "second": {
+        self.generic_offer = {"first": {"True": 1}, "second": {
             "False": 1}, "third": {"-3": 1}, "forth": {"1.8": 1}}
-        self.emptyMessage = Message("A", "B", "empty", None)
-        self.acceptMessage = Message("A", "B", "accept", self.genericOffer)
-        self.terminationMessage = Message(
-            "A", "B", "terminate", self.genericOffer)
-        self.constraintMessage = Message(
-            "A", "B", "offer", self.genericOffer, AtomicConstraint("dummy1", "True"))
-        self.offerMessage = Message("A", "B",
-                                    "offer", self.genericOffer)
-
-        self.offerString = "    first: True\n    second: False\n    third: -3\n    forth: 1.8"
-        self.offerMessageString = "Message(A, B, offer, \n{offer}\n)".format(
-            offer=self.offerString)
-        self.emptyMessageString = "Message(A, B, empty)".format(
-            offer=self.offerString)
-        self.acceptMessageString = "Message(A, B, accept, \n{}\n)".format(
-            self.offerString)
-        self.constraintMessageString = "Message(A, B, offer, \n{offer}, \n{constraint}\n)".format(
-            offer=self.offerString, constraint=AtomicConstraint("dummy1", "True"))
-        self.terminationMessageString = "Message(A, B, terminate, \n{}\n)".format(
-            self.offerString)
+        self.empty_message = Message("A", "B", "empty", None)
+        self.accept_message = Message("A", "B", "accept", self.generic_offer)
+        self.termination_message = Message("A", "B", "terminate", self.generic_offer)
+        self.constraint_message = Message("A", "B", "offer", self.generic_offer, AtomicConstraint("dummy1", "True"))
+        self.offer_message = Message("A", "B", "offer", self.generic_offer)
+        self.offer_string = "    first: True\n    second: False\n    third: -3\n    forth: 1.8"
+        self.offer_message_string = "Message(A, B, offer, \n{offer}\n)".format(offer=self.offer_string)
+        self.empty_message_string = "Message(A, B, empty)".format(offer=self.offer_string)
+        self.accept_message_string = "Message(A, B, accept, \n{}\n)".format(self.offer_string)
+        self.constraint_message_string = "Message(A, B, offer, \n{offer}, \n{constraint}\n)".format(
+            offer=self.offer_string,
+            constraint=AtomicConstraint("dummy1", "True"))
+        self.termination_message_string = "Message(A, B, terminate, \n{}\n)".format(self.offer_string)
 
     def tearDown(self):
         pass
 
-    def test_emptyMessageCantHaveContent(self):
+    def test_empty_message_cant_have_content(self):
         with self.assertRaises(ValueError):
             Message("A", "B", "empty", "content")
 
-    def test_invalidMessageKindRaisesValueError(self):
+    def test_invalid_message_kind_raises_value_error(self):
         with self.assertRaises(ValueError):
             Message("A", "B", "Unknown type", "random content")
 
-    def test_constraintMessageWithWrongDataTypeRaisesValueError(self):
+    def test_constraint_message_with_wrong_data_type_raises_value_error(self):
         with self.assertRaises(ValueError):
             Message("A", "B", "constraint", "wrong data type")
 
-    def test_getConstraintFromNonConstraintMessageRaisesError(self):
+    def test_get_constraint_from_non_constraint_message_raises_error(self):
         with self.assertRaises(ValueError):
-            self.emptyMessage.getConstraint()
+            self.empty_message.get_constraint()
 
-    def test_getOffer(self):
-        self.assertEqual(self.offerMessage.offer, self.genericOffer)
+    def test_get_offer(self):
+        self.assertEqual(self.offer_message.offer, self.generic_offer)
 
-    def test_getConstraint(self):
-        self.assertEqual(self.constraintMessage.getConstraint(),
+    def test_get_constraint(self):
+        self.assertEqual(self.constraint_message.get_constraint(),
                          AtomicConstraint("dummy1", "True"))
 
-    def test_emptyMessageIsEmpty(self):
-        self.assertTrue(self.emptyMessage.isEmpty())
+    def test_empty_message_is_empty(self):
+        self.assertTrue(self.empty_message.is_empty())
 
-    def test_emptyMessageIsNotTermination(self):
-        self.assertFalse(self.emptyMessage.isTermination())
+    def test_empty_message_is_not_termination(self):
+        self.assertFalse(self.empty_message.is_termination())
 
-    def test_emptyMessageIsNotOffer(self):
-        self.assertFalse(self.emptyMessage.isOffer())
+    def test_empty_message_is_not_offer(self):
+        self.assertFalse(self.empty_message.is_offer())
 
-    def test_emptyMessageHasNotConstraint(self):
-        self.assertFalse(self.emptyMessage.hasConstraint())
+    def test_empty_message_has_not_constraint(self):
+        self.assertFalse(self.empty_message.has_constraint())
 
-    def test_emptyMessageIsNotAcceptation(self):
-        self.assertFalse(self.emptyMessage.isAcceptance())
+    def test_empty_message_is_not_acceptation(self):
+        self.assertFalse(self.empty_message.is_acceptance())
 
-    def test_acceptationMessageIsNotEmtpy(self):
-        self.assertFalse(self.acceptMessage.isEmpty())
+    def test_acceptation_message_is_not_emtpy(self):
+        self.assertFalse(self.accept_message.is_empty())
 
-    def test_acceptationMessageIsNotTermination(self):
-        self.assertFalse(self.acceptMessage.isTermination())
+    def test_acceptation_message_is_not_termination(self):
+        self.assertFalse(self.accept_message.is_termination())
 
-    def test_acceptationMessageIsNotOffer(self):
-        self.assertFalse(self.acceptMessage.isOffer())
+    def test_acceptation_message_is_not_offer(self):
+        self.assertFalse(self.accept_message.is_offer())
 
-    def test_acceptationMessageIsAcceptation(self):
-        self.assertTrue(self.acceptMessage.isAcceptance())
+    def test_acceptation_message_is_acceptation(self):
+        self.assertTrue(self.accept_message.is_acceptance())
 
-    def test_terminationMessageIsNotEmtpy(self):
-        self.assertFalse(self.terminationMessage.isEmpty())
+    def test_termination_message_is_not_emtpy(self):
+        self.assertFalse(self.termination_message.is_empty())
 
-    def test_terminationMessageIsTermination(self):
-        self.assertTrue(self.terminationMessage.isTermination())
+    def test_termination_message_is_termination(self):
+        self.assertTrue(self.termination_message.is_termination())
 
-    def test_terminationMessageIsNotOffer(self):
-        self.assertFalse(self.terminationMessage.isOffer())
+    def test_termination_message_is_not_offer(self):
+        self.assertFalse(self.termination_message.is_offer())
 
-    def test_terminationMessageIsNotAcceptation(self):
-        self.assertFalse(self.terminationMessage.isAcceptance())
+    def test_termination_message_is_not_acceptation(self):
+        self.assertFalse(self.termination_message.is_acceptance())
 
-    def test_constraintMessageIsNotEmtpy(self):
-        self.assertFalse(self.constraintMessage.isEmpty())
+    def test_constraint_message_is_not_emtpy(self):
+        self.assertFalse(self.constraint_message.is_empty())
 
-    def test_constraintMessageIsNotTermination(self):
-        self.assertFalse(self.constraintMessage.isTermination())
+    def test_constraint_message_is_not_termination(self):
+        self.assertFalse(self.constraint_message.is_termination())
 
-    def test_constraintMessageHasConstraint(self):
-        self.assertTrue(self.constraintMessage.hasConstraint())
+    def test_constraint_message_has_constraint(self):
+        self.assertTrue(self.constraint_message.has_constraint())
 
-    def test_constraintMessageIsNotAcceptation(self):
-        self.assertFalse(self.constraintMessage.isAcceptance())
+    def test_constraint_message_is_not_acceptation(self):
+        self.assertFalse(self.constraint_message.is_acceptance())
 
-    def test_offerMessageIsNotEmtpy(self):
-        self.assertFalse(self.offerMessage.isEmpty())
+    def test_offer_message_is_not_emtpy(self):
+        self.assertFalse(self.offer_message.is_empty())
 
-    def test_offerMessageIsNotTermination(self):
-        self.assertFalse(self.offerMessage.isTermination())
+    def test_offer_message_is_not_termination(self):
+        self.assertFalse(self.offer_message.is_termination())
 
-    def test_offerMessageIsOffer(self):
-        self.assertTrue(self.offerMessage.isOffer())
+    def test_offer_message_is_offer(self):
+        self.assertTrue(self.offer_message.is_offer())
 
-    def test_offerMessageIsNotAcceptation(self):
-        self.assertFalse(self.offerMessage.isAcceptance())
+    def test_offer_message_is_not_acceptation(self):
+        self.assertFalse(self.offer_message.is_acceptance())
 
-    def test_eqIsReflextive(self):
-        self.assertTrue(self.offerMessage == self.offerMessage)
+    def test_eq_is_reflexive(self):
+        self.assertTrue(self.offer_message == self.offer_message)
 
-    def test_eqIsSymmetrical(self):
-        a = self.offerMessage
-        b = self.offerMessage
+    def test_eq_is_symmetrical(self):
+        a = self.offer_message
+        b = self.offer_message
         self.assertTrue(a == b and b == a)
 
-    def test_offerMessageFormating(self):
-        self.assertEqual(self.offerMessageString, str(self.offerMessage))
+    def test_offer_message_formatting(self):
+        self.assertEqual(self.offer_message_string, str(self.offer_message))
 
-    def test_emptyMessageFormating(self):
-        self.assertEqual(self.emptyMessageString, str(self.emptyMessage))
+    def test_empty_message_formating(self):
+        self.assertEqual(self.empty_message_string, str(self.empty_message))
 
-    def test_acceptMessageFormating(self):
-        self.assertEqual(self.acceptMessageString,
-                         str(self.acceptMessage))
+    def test_accept_message_formating(self):
+        self.assertEqual(self.accept_message_string,
+                         str(self.accept_message))
 
-    def test_terminationMessageFormating(self):
+    def test_termination_message_formatting(self):
         self.assertEqual(
-            self.terminationMessageString, str(self.terminationMessage))
+            self.termination_message_string, str(self.termination_message))
 
-    def test_formatEmptyOffer(self):
-        self.assertEqual("", self.acceptMessage.formatOffer({}))
+    def test_format_empty_offer(self):
+        self.assertEqual("", self.accept_message.format_offer({}))
 
-    def test_constraintMessageFormating(self):
+    def test_constraint_message_formatting(self):
         self.assertEqual(
-            self.constraintMessageString, str(self.constraintMessage))
+            self.constraint_message_string, str(self.constraint_message))
 
-    def test_nonDictOfferRaisesError(self):
+    def test_non_dict_offer_raises_error(self):
         with self.assertRaises(ValueError):
             Message("A", "B", "offer", Message(
                 "A", "B", "offer", {"dummy1": {"True": 1}}))
 
-    def test_nonEmptyMessageWithoutOfferRaisesError(self):
+    def test_non_empty_message_without_offer_raises_error(self):
         with self.assertRaises(ValueError):
             Message("A", "B", "offer", None)

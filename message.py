@@ -26,30 +26,30 @@ class Message():
 
         raise ValueError("Unknown message type {}".format(kind))
 
-    def isEmpty(self):
+    def is_empty(self):
         return self.kind == "empty"
 
-    def isAcceptance(self):
+    def is_acceptance(self):
         return self.kind == "accept"
 
-    def isTermination(self):
+    def is_termination(self):
         return self.kind == "terminate"
 
-    def hasConstraint(self):
-        return not self.constraint is None
+    def has_constraint(self):
+        return self.constraint is not None
 
-    def isOffer(self):
+    def is_offer(self):
         return self.kind == "offer"
 
-    def getConstraint(self):
-        if not self.hasConstraint():
+    def get_constraint(self):
+        if not self.has_constraint():
             raise ValueError(
                 "Message does not contain constraint")
 
         return self.constraint
 
     def __hash__(self):
-        return hash(self.sender, self.recipient, self.kind, self.offer, self.constraint)
+        return hash([self.sender, self.recipient, self.kind, self.offer, self.constraint])
 
     def __eq__(self, other):
         if other.__class__ != self.__class__:
@@ -72,12 +72,13 @@ class Message():
 
         return True
 
-    def formatOffer(self, offer, indentLevel=1):
+    @staticmethod
+    def format_offer(offer, indent_level=1):
         string = ""
         if not offer:
             return string
         for issue in offer.keys():
-            string += " " * indentLevel * 4 + '{}: '.format(issue)
+            string += " " * indent_level * 4 + '{}: '.format(issue)
             for key in offer[issue].keys():
                 if offer[issue][key] == 1:
                     string += "{}\n".format(key)
@@ -85,13 +86,18 @@ class Message():
         return string[:-1]  # remove trailing newline
 
     def __repr__(self):
-        # if self.kind == "empty":
-        #     return "Message({sender}, {recip}, empty)".format(sender=self.sender, recip=self.recipient)
 
         if not self.offer:
             return "Message({sender}, {recip}, {kind})".format(sender=self.sender, recip=self.recipient, kind=self.kind)
 
         if self.constraint:
-            return "Message({sender}, {recip}, {kind}, \n{offer}, \n{constraint}\n)".format(sender=self.sender, recip=self.recipient, kind=self.kind, offer=self.formatOffer(self.offer), constraint=self.constraint)
+            return "Message({sender}, {recip}, {kind}, \n{offer}, \n{constraint}\n)".format(sender=self.sender,
+                                                                                            recip=self.recipient,
+                                                                                            kind=self.kind,
+                                                                                            offer=self.format_offer(self.offer),
+                                                                                            constraint=self.constraint)
         else:
-            return "Message({sender}, {recip}, {kind}, \n{offer}\n)".format(sender=self.sender, recip=self.recipient, kind=self.kind, offer=self.formatOffer(self.offer))
+            return "Message({sender}, {recip}, {kind}, \n{offer}\n)".format(sender=self.sender,
+                                                                            recip=self.recipient,
+                                                                            kind=self.kind,
+                                                                            offer=self.format_offer(self.offer))
