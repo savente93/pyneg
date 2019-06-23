@@ -2,10 +2,11 @@ import re
 import subprocess as sp
 from os import remove, getpid
 from os.path import join, abspath, dirname
-
+from problog.tasks.dtproblog import dtproblog
+from problog.program import PrologString
 from numpy import isclose
 from numpy.random import choice
-
+import gc
 from constraintNegotiationAgent import ConstraintNegotiationAgent
 
 
@@ -18,7 +19,7 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
         self.strat_name = "DTP"
         self.generated_offers = []
 
-    def non_leaky_dtproblog(self, model):
+    def file_based_dtproblog(self, model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface separately to avoid this as a temp fix
         self.total_offers_generated += 1
@@ -88,7 +89,12 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
         return return_string
 
     def generate_offer(self):
-        query_output, score = self.non_leaky_dtproblog(self.compile_dtproblog_model())
+        # query_output, score = self.file_based_dtproblog(self.compile_dtproblog_model())
+
+        program = PrologString(self.compile_dtproblog_model())
+        query_output, score, _ = dtproblog(program)
+        query_output = {str(atom): float(prob) for atom, prob in query_output.items()}
+        gc.collect()
         if self.verbose >= 3:
             print("{} generated offer: {}".format(self.agent_name, self.nested_dict_from_atom_dict(query_output)))
 

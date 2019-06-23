@@ -94,7 +94,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
                     utility(umbrella,-2).
                     utility(dry,60).'''
 
-        offer, score = self.agent.non_leaky_dtproblog(model)
+        offer, score = self.agent.file_based_dtproblog(model)
 
         self.assertEqual({"raincoat": 0.0, "umbrella": 1.0}, offer)
         self.assertAlmostEqual(score, 43)
@@ -116,7 +116,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
 
     def test_generatingOfferRecordsItInUtilities(self):
         self.agent.generate_next_message_from_transcript()
-        self.assertTrue(({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
+        self.assertTrue(({"'float_0.1'": 1.0, 'boolean_True': 1.0,'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
                           'integer_5': 0.0, 'integer_9': 1.0}, 201.0) in self.agent.generated_offers)
 
     def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
@@ -187,14 +187,22 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
         self.opponent.receive_message(self.agent.generate_next_message_from_transcript())
         opponent_response = self.opponent.generate_next_message_from_transcript()
-        self.assertEqual(opponent_response.constraint, AtomicConstraint("boolean", "True"))
+        # one of the constraints was added manually and the integer ones are added because of their utilities
+        # but we can't control which is sent so we check for all of them
+        self.assertTrue(opponent_response.constraint == AtomicConstraint("integer", "4") or
+                        opponent_response.constraint == AtomicConstraint("integer", "5") or
+                        opponent_response.constraint == AtomicConstraint("boolean", "True"))
 
     def test_recordsConstraintIfReceived(self):
         self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
         self.opponent.receive_message(self.agent.generate_next_message_from_transcript())
         self.agent.receive_response(self.opponent)
         self.agent.generate_next_message_from_transcript()
-        self.assertTrue(AtomicConstraint("boolean", "True") in self.agent.opponent_constraints)
+        # one of the constraints was added manually and the integer ones are added because of their utilities
+        # but we can't control which is sent so we check for all of them
+        self.assertTrue(AtomicConstraint("integer", "4") in self.agent.opponent_constraints or
+                        AtomicConstraint("integer", "5") in self.agent.opponent_constraints or
+                        AtomicConstraint("boolean", "True") in self.agent.opponent_constraints)
 
     def test_ownOfferDoesNotViolateConstraint(self):
         self.agent.add_own_constraint(AtomicConstraint("boolean", "True"))

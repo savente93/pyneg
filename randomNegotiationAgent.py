@@ -7,6 +7,9 @@ from os import remove, getpid
 from os.path import join, abspath, dirname
 from pandas import Series
 from time import time
+from problog.program import PrologString
+from problog import get_evaluatable
+import gc
 
 
 class RandomNegotiationAgent:
@@ -280,14 +283,16 @@ class RandomNegotiationAgent:
             problog_model = self.compile_problog_model(offer)
             if self.verbose >= 4:
                 print(problog_model)
-            probability_of_facts = self.non_leaky_problog(problog_model)
-
+            # probability_of_facts = self.file_based_problog(problog_model)
+            probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
+            probability_of_facts = {str(atom):prob for atom,prob in probability_of_facts.items()}
             for fact, reward in self.utilities.items():
                 if fact in probability_of_facts.keys():
                     score += reward * probability_of_facts[fact]
             if self.verbose >= 2:
                 print("{}: offer is worth {}".format(self.agent_name, score))
             # self.utilityCache[frozenOffer] = score
+            gc.collect()
             return score
 
         elif self.utility_function == "python":
@@ -312,16 +317,19 @@ class RandomNegotiationAgent:
         if not self.is_strat_valid(strat):
             raise ValueError("Invalid strat detected: {}".format(strat))
         problog_model = self.compile_problog_model(strat)
-        fact_probabilities = self.non_leaky_problog(problog_model)
+        # fact_probabilities = self.file_based_problog(problog_model)
+
+        probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
+        probability_of_facts = {str(atom): prob for atom, prob in probability_of_facts.items()}
 
         score = 0
         for fact, reward in self.utilities.items():
-            score += reward * fact_probabilities[fact]
+            score += reward * probability_of_facts[fact]
 
         return score
 
     @staticmethod
-    def non_leaky_problog(model):
+    def file_based_problog(model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface separately to avoid this as a temp fix
         model_path = abspath(join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
