@@ -29,10 +29,8 @@ class TestRandomNegotiationAgent(ut.TestCase):
             "'float_0.5'": pi
             # TODO still need to look at compound and negative atoms
         }
-        self.arbitrary_kb = [
-            "boolean_True :- integer_2, 'float_0.1'."
-        ]
-        self.arbitrary_reservation_value = 75
+        self.arbitrary_kb = []
+        self.arbitrary_reservation_value = 75/3
         self.arbitrary_non_agreement_cost = -1000
 
         self.sparse_nested_offer = {
@@ -89,15 +87,13 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent = RandomNegotiationAgent(uuid4(),
                                             self.arbitrary_utilities, self.arbitrary_kb,
                                             self.arbitrary_reservation_value,
-                                            self.arbitrary_non_agreement_cost,
-                                            verbose=0)
+                                            self.arbitrary_non_agreement_cost)
         self.agent.agent_name = "agent"
         self.opponent = RandomNegotiationAgent(uuid4(),
                                                self.arbitrary_utilities,
                                                self.arbitrary_kb,
                                                self.arbitrary_reservation_value,
-                                               self.arbitrary_non_agreement_cost,
-                                               verbose=0)
+                                               self.arbitrary_non_agreement_cost)
         self.opponent.agent_name = "opponent"
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.opponent = self.opponent
@@ -145,44 +141,46 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.assertEqual(expected_strat, self.agent.strat_dict)
 
     def test_calc_offer_utility(self):
-        expected_offer_utility = -900 + pi
-
-        self.assertAlmostEqual(self.agent.calc_offer_utility(
-            self.nested_test_offer), expected_offer_utility)
+        # self.agent.verbose = 4
+        expected_offer_utility = 100/3-1000/3 + pi/3
+        self.assertAlmostEqual(self.agent.calc_offer_utility(self.nested_test_offer), expected_offer_utility)
 
     def test_calc_strat_utility(self):
         self.agent.init_uniform_strategy()
-        expected_uniform_strat_util = 50 - 100 - 3.2 / 10 + pi / 10
-        self.assertAlmostEqual(self.agent.calc_strat_utility(
-            self.agent.strat_dict), expected_uniform_strat_util)
+        expected_uniform_strat_util = (100/2)/3 + (-1000/10)/3 + (-3.2/10)/3 + (pi/10)/3
+        self.assertAlmostEqual(self.agent.calc_strat_utility(self.agent.strat_dict), expected_uniform_strat_util)
 
     def test_calc_offer_utility_python(self):
         python_agent = RandomNegotiationAgent(uuid4(),
                                               self.arbitrary_utilities, self.arbitrary_kb,
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
-                                              verbose=0,
-                                              utility_function="python")
+                                              utility_computation_method="python")
+        python_agent.verbose = 4
+        print(self.agent.linear_additive_utility)
+        print(self.agent.utility_computation_method)
         python_agent.agent_name = "agent"
         python_agent.set_utilities(self.arbitrary_utilities)
         python_agent.setup_negotiation(self.generic_issues)
         python_agent.init_uniform_strategy()
-        expected_offer_utility = -900 + pi
-        self.assertAlmostEqual(python_agent.calc_offer_utility(
-            self.nested_test_offer), expected_offer_utility)
+
+        print(python_agent.issue_weights)
+        print(python_agent.linear_additive_utility)
+        expected_offer_utility = 100/3-1000/3 + pi/3
+
+        self.assertAlmostEqual(python_agent.calc_offer_utility(self.nested_test_offer), expected_offer_utility)
 
     def test_calc_strat_utility_python(self):
         python_agent = RandomNegotiationAgent(uuid4(),
                                               self.arbitrary_utilities, self.arbitrary_kb,
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
-                                              verbose=0,
-                                              utility_function="python")
+                                              utility_computation_method="python")
         python_agent.agent_name = "agent"
         python_agent.set_utilities(self.arbitrary_utilities)
         python_agent.setup_negotiation(self.generic_issues)
         python_agent.init_uniform_strategy()
-        expected_uniform_strat_util = 50 - 100 - 3.2 / 10 + pi / 10
+        expected_uniform_strat_util = (50 - 100)/3 - 3.2 / 30 + pi / 30
         self.assertAlmostEqual(python_agent.calc_strat_utility(
             python_agent.strat_dict), expected_uniform_strat_util)
 
@@ -193,7 +191,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
 
     def test_umbrella_calc(self):
         umbrella_utils = {
-            "broken_umbrella": -40,
+            "brokenUmbrella": -40,
             "raincoat_True": -20,
             "umbrella_True": -2,
             "dry": 60
@@ -207,9 +205,9 @@ class TestRandomNegotiationAgent(ut.TestCase):
         umbrella_kb = [
             "0.3::rain.",
             "0.5::wind.",
-            "broken_umbrella:- umbrella_True, rain, wind.",
+            "brokenUmbrella:- umbrella_True, rain, wind.",
             "dry:- rain, raincoat_True.",
-            "dry:- rain, umbrella_True, not broken_umbrella.",
+            "dry:- rain, umbrella_True, not brokenUmbrella.",
             "dry:- not(rain)."
         ]
 
@@ -224,11 +222,12 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                                 0,
                                                 0,
                                                 umbrella_issues,
-                                                smart=False)
+                                                smart=False,
+                                                linear_additive_utility=False,
+                                                utility_computation_method="problog")
         umbrella_answer = 43
 
-        self.assertAlmostEqual(umbrella_agent.calc_offer_utility(
-            umbrella_offer), umbrella_answer)
+        self.assertAlmostEqual(umbrella_agent.calc_offer_utility(umbrella_offer), umbrella_answer)
 
     def test_format_problog_strat(self):
         self.agent.init_uniform_strategy()

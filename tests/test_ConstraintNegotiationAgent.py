@@ -92,6 +92,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
                                      self.opponent.agent_name,
                                      "offer",
                                      self.nested_test_offer)
+        
         # print("In method: {}".format( self._testMethodName))
 
     def tearDown(self):

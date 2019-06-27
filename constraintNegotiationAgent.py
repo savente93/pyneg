@@ -10,13 +10,14 @@ from re import search, sub
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None,
                  constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
-                 mean_utility=0, std_utility=1,utility_function="problog"):
+                 mean_utility=0, std_utility=1, utility_computation_method="problog"):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.constraint_threshold = mean_utility - std_utility
         super().__init__(uuid, utilities, kb, reservation_value,
                          non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
-                         mean_utility=mean_utility, std_utility=std_utility,utility_function=utility_function)
+                         mean_utility=mean_utility, std_utility=std_utility,
+                         utility_computation_method=utility_computation_method)
         self.utilities = {}
         self.add_utilities(utilities)
         self.negotiation_active = False

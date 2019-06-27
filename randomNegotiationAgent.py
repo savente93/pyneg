@@ -15,10 +15,13 @@ import gc
 class RandomNegotiationAgent:
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=100,
                  smart=True, name="", verbose=0, reporting=False, mean_utility=0, std_utility=0,
-                 utility_function="problog"):
-        if utility_function not in ['problog', 'python']:
+                 utility_computation_method="python", issue_weights=None, linear_additive_utility=True):
+
+        if utility_computation_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
-        self.utility_function = utility_function
+        if (not linear_additive_utility and issue_weights) or (not linear_additive_utility and utility_computation_method == 'python'):
+            raise ValueError("Cannot use issue weights or python computation for non-linear-additive utility")
+        self.utility_computation_method = utility_computation_method
         self.verbose = verbose
         self.uuid = uuid
         self.reporting = reporting
@@ -33,23 +36,37 @@ class RandomNegotiationAgent:
         self.reservation_value = reservation_value
         self.strat_dict = {}
         self.transcript = []
+        self.kb = []
         self.utilities = {}
         self.issues = None
         self.decision_facts = []
         self.next_message_to_send = None
         self.opponent = None
         self.start_time = 0
+        self.issue_weights = None
         self.mean_utility = mean_utility  # for results collection only not used internally
         self.std_utility = std_utility  # for results collection only not used internally
+        if self.utility_computation_method == "python":
+            self.linear_additive_utility = True
+        else:
+            self.linear_additive_utility = linear_additive_utility
         # self.utilityCache = {}
         if issues:
-            self.set_issues(issues)
+            self.set_issues(issues, issue_weights)
 
         self.max_generation_tries = 500
 
         self.set_utilities(utilities)
-        self.KB = kb
+        self.set_kb(kb)
         self.smart = smart
+
+    def set_kb(self, new_kb):
+        if len(new_kb) > 0:
+            self.linear_additive_utility = False
+            self.utility_computation_method = "problog"
+            self.issue_weights = {}
+
+        self.kb = new_kb
 
     def receive_negotiation_request(self, opponent, issues):
         # allows others to initiate negotiations with us
@@ -186,7 +203,7 @@ class RandomNegotiationAgent:
             print("{}: received message: {}".format(self.agent_name, msg))
         self.record_message(msg)
 
-    def set_issues(self, issues):
+    def set_issues(self, issues, weights=None):
         self.decision_facts = []
         self.strat_dict = {}
         for issue, lst in issues.items():
@@ -199,9 +216,18 @@ class RandomNegotiationAgent:
         self.issues = {key: list(map(str, issues[key]))
                        for key in issues.keys()}
         self.generate_decision_facts()
+        if not weights:
+            self.issue_weights = {issue: 1/len(self.issues) for issue in self.issues.keys()}
+        else:
+            if not self.is_dist(weights) and len(weights) != len(self.issues.keys()):
+                raise ValueError("{} Tried to set non dist weights: {}".format(self.agent_name, weights))
+            issue_iter = iter(self.issues.keys())
+            for i in range(len(weights)):
+                self.issue_weights[next(issue_iter)] = weights[i]
+
         self.init_uniform_strategy()
         # TODO must find a way to avoid having to clear the KB every time a new issue is raised
-        self.KB = []
+        self.set_kb([])
 
     def is_strat_valid(self, strat):
         # strat should have something on all issues
@@ -268,8 +294,41 @@ class RandomNegotiationAgent:
     def compile_problog_model(self, offer):
         decision_facts_string = self.format_problog_strat(offer)
         query_string = self.format_query_string()
-        kb_string = "\n".join(self.KB) + "\n"
+        kb_string = "\n".join(self.kb) + "\n"
         return decision_facts_string + kb_string + query_string
+
+    @staticmethod
+    def issue_value_tuple_from_atom(atom):
+        s = search("(.*)_(.*)", atom)
+        if not s:
+            raise ValueError(
+                "Could not parse atom: {atom}".format(atom=atom))
+
+        issue, value = s.group(1, 2)
+        # atoms containing floats have an extra ' which we need to remove
+        issue = sub("'", "", issue)
+        value = sub("'", "", value)
+        return issue, value
+
+    @staticmethod
+    def atom_from_issue_value(issue, value):
+        if "." in str(value):
+            return "'{issue}_{val}'".format(issue=issue, val=value)
+        else:
+            return"{issue}_{val}".format(issue=issue, val=value)
+
+    @staticmethod
+    def is_dist(weights):
+        if not isclose(sum(weights), 1):
+            return False
+        if not all(map(lambda x: 0 <= x <= 1, weights)):
+            return False
+
+        return True
+
+    @staticmethod
+    def snake_case_to_camel_case(string):
+        return ''.join(x.capitalize() or '_' for x in string.split('_'))
 
     def calc_offer_utility(self, offer):
         if not offer:
@@ -279,37 +338,52 @@ class RandomNegotiationAgent:
 
         score = 0
 
-        if self.utility_function == "problog":
+        if self.utility_computation_method == "problog":
             problog_model = self.compile_problog_model(offer)
-            if self.verbose >= 4:
-                print(problog_model)
+            if self.verbose >= 4 and self.linear_additive_utility:
+                print("calculating offer with problog and issue weights")
+            elif self.verbose >= 4 and not self.linear_additive_utility:
+                print("calculating offer with problog and no issue weights")
             # probability_of_facts = self.file_based_problog(problog_model)
             probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
-            probability_of_facts = {str(atom):prob for atom,prob in probability_of_facts.items()}
+            probability_of_facts = {str(atom): prob for atom, prob in probability_of_facts.items()}
             for fact, reward in self.utilities.items():
                 if fact in probability_of_facts.keys():
-                    score += reward * probability_of_facts[fact]
+                    if self.linear_additive_utility:
+                        issue, _ = self.issue_value_tuple_from_atom(fact)
+                        score += reward * probability_of_facts[fact] * self.issue_weights[issue]
+                        if self.verbose >= 4:
+                            print("{} is worth {} with weight {} contributing a total of {}.".format(fact,reward * probability_of_facts[fact],self.issue_weights[issue],reward * probability_of_facts[fact]*self.issue_weights[issue]))
+                    else:
+                        score += reward * probability_of_facts[fact]
+                        if self.verbose >= 4:
+                            print("{} is contributing {} to the score of this offer.".format(fact,reward * probability_of_facts[fact]))
             if self.verbose >= 2:
                 print("{}: offer is worth {}".format(self.agent_name, score))
             # self.utilityCache[frozenOffer] = score
             gc.collect()
             return score
 
-        elif self.utility_function == "python":
+        elif self.utility_computation_method == "python":
+            if self.verbose >= 4:
+                print("calculating offer with python")
             return self.calc_lookup_utility(offer)
 
     def calc_lookup_utility(self, offer):
         score = 0
         for issue in offer.keys():
             for value in offer[issue].keys():
-                if "." in str(value) or "." in str(issue):
-                    atom = "'{issue}_{val}'".format(issue=issue, val=value)
-                else:
-                    atom = "{issue}_{val}".format(issue=issue, val=value)
+                atom = self.atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
                     if self.verbose >= 4:
                         print("Adding utility: {} for atom {}".format(self.utilities[atom], atom))
-                    score += self.utilities[atom] * offer[issue][value]
+                        if self.verbose >= 4:
+                            print("{} is worth {} with weight {} contributing a total of {}.".format(atom,
+                                                                                                     self.utilities[atom] * offer[issue][value],
+                                                                                                     self.issue_weights[issue],
+                                                                                                     self.utilities[atom] * offer[issue][value] * self.issue_weights[issue]))
+
+                    score += self.utilities[atom] * offer[issue][value] * self.issue_weights[issue]
 
         return score
 
@@ -324,7 +398,8 @@ class RandomNegotiationAgent:
 
         score = 0
         for fact, reward in self.utilities.items():
-            score += reward * probability_of_facts[fact]
+            issue, _ = self.issue_value_tuple_from_atom(fact)
+            score += reward * probability_of_facts[fact] * self.issue_weights[issue]
 
         return score
 
@@ -376,12 +451,8 @@ class RandomNegotiationAgent:
         for issue in strat_dict.keys():
             atom_list = []
             for value in strat_dict[issue].keys():
-                if "." in str(value):
-                    atom_list.append("{prob}::'{issue}_{val}'".format(
-                        issue=issue, val=value, prob=strat_dict[issue][value]))
-                else:
-                    atom_list.append("{prob}::{issue}_{val}".format(
-                        issue=issue, val=value, prob=strat_dict[issue][value]))
+                atom = RandomNegotiationAgent.atom_from_issue_value(issue, value)
+                atom_list.append("{prob}::{atom}".format(prob=strat_dict[issue][value], atom=atom))
 
             return_string += ";".join(atom_list) + ".\n"
 
@@ -399,7 +470,7 @@ class RandomNegotiationAgent:
         for utilFact in self.utilities.keys():
             # we shouldn't ask problog for facts that we currently have no rules for
             # like we might not have after new issues are set so we'll skip those
-            if any([utilFact in rule for rule in self.KB]) or any(
+            if any([utilFact in rule for rule in self.kb]) or any(
                     [utilFact in atom for atom in self.atom_dict_from_nested_dict(self.strat_dict).keys()]):
                 query_string += "query({utilFact}).\n".format(utilFact=utilFact)
 
@@ -441,15 +512,7 @@ class RandomNegotiationAgent:
         nested_dict = {}
         for atom in atom_dict.keys():
             # following pater is guaranteed to work since no _ in the names are allowed
-            s = search("(.*)_(.*)", atom)
-            if not s:
-                raise ValueError(
-                    "Could not parse atom: {atom}".format(atom=atom))
-
-            issue, value = s.group(1, 2)
-            # atoms containing floats have an extra ' which we need to remove
-            issue = sub("'", "", issue)
-            value = sub("'", "", value)
+            issue, value = self.issue_value_tuple_from_atom(atom)
             if issue not in nested_dict.keys():
                 nested_dict[issue] = {}
 
@@ -467,12 +530,8 @@ class RandomNegotiationAgent:
         atom_dict = {}
         for issue in nested_dict.keys():
             for value in nested_dict[issue].keys():
-                if "." in str(value):
-                    atom_dict["'{issue}_{val}'".format(
-                        issue=issue, val=value)] = nested_dict[issue][value]
-                else:
-                    atom_dict["{issue}_{val}".format(
-                        issue=issue, val=value)] = nested_dict[issue][value]
+                atom = RandomNegotiationAgent.atom_from_issue_value(issue,value)
+                atom_dict[atom] = nested_dict[issue][value]
 
         return atom_dict
 
