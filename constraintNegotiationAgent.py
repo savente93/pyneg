@@ -10,10 +10,10 @@ from re import search, sub
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None,
                  constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
-                 mean_utility=0, std_utility=1, utility_computation_method="problog"):
+                 mean_utility=0, std_utility=1, utility_computation_method="problog",
+                 automatic_constraint_generation=False):
         self.own_constraints = set()
         self.opponent_constraints = set()
-        self.constraint_threshold = mean_utility - std_utility
         super().__init__(uuid, utilities, kb, reservation_value,
                          non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
                          mean_utility=mean_utility, std_utility=std_utility,
@@ -28,19 +28,13 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.max_rounds = max_rounds
         self.constraint_threshold = constraint_threshold
         self.constraints_satisfiable = True
+        self.automatic_constraint_generation = automatic_constraint_generation
 
     def add_utilities(self, new_utils):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
-            if util <= self.constraint_threshold:
-                s = search("(.*)_(.*)", atom)
-                if not s:
-                    raise ValueError(
-                        "Could not parse atom: {atom}".format(atom=atom))
-
-                issue, value = s.group(1, 2)
-                issue = sub("'", "", issue)
-                value = sub("'", "", value)
+            if util <= self.constraint_threshold and self.automatic_constraint_generation:
+                issue, value = super().issue_value_tuple_from_atom(atom)
                 constraint = AtomicConstraint(issue, value)
 
                 if self.verbose >= 3:
@@ -49,6 +43,32 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                                                                                              util))
 
                 self.add_own_constraint(constraint)
+
+    def set_issues(self, issues, weights=None):
+        self.decision_facts = []
+        self.strat_dict = {}
+        for issue, lst in issues.items():
+            if "_" in str(issue) or "'" in str(issue):
+                raise ValueError("Issue names should not contain _")
+            for val in lst:
+                if "_" in str(val) or "'" in str(val):
+                    raise ValueError("Issue names should not contain _")
+
+        self.issues = {key: list(map(str, issues[key]))
+                       for key in issues.keys()}
+        self.generate_decision_facts()
+        if not weights:
+            self.issue_weights = {issue: 1/len(self.issues) for issue in self.issues.keys()}
+        else:
+            if not self.is_dist(weights) and len(weights) != len(self.issues.keys()):
+                raise ValueError("{} Tried to set non dist weights: {}".format(self.agent_name, weights))
+            issue_iter = iter(self.issues.keys())
+            for i in range(len(weights)):
+                self.issue_weights[next(issue_iter)] = weights[i]
+
+        self.init_uniform_strategy()
+        # TODO must find a way to avoid having to clear the KB every time a new issue is raised
+        self.set_kb([])
 
     def init_uniform_strategy(self):
         # if there are no constraints we can skip all of the checks

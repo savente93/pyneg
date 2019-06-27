@@ -36,13 +36,12 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
             "'float_0.5'": pi
             # TODO still need to look at compound and negative atoms
         }
-        self.arbitrary_kb = [
-            "boolean_True :- integer_2, 'float_0.1'."
-        ]
+
+        self.arbitrary_kb = []
         self.arbitrary_reservation_value = 0
         self.arbitrary_non_agreement_cost = -1000
 
-        # should have a utility of 100
+        # should have a utility of 100 if no weights are used
         self.nested_test_offer = {
             "boolean": {"True": 1, "False": 0},
             "integer": {str(i): 0 for i in range(10)},
