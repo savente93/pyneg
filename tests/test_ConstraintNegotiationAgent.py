@@ -275,3 +275,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
                                                 [], 10, -100, issues, -11.6, name="agent", mean_utility=-7.139,
                                                 std_utility=2.460)
         self.assertFalse(len(self.agent.get_all_constraints()) == 0)
+
+
+
+

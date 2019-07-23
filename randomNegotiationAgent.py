@@ -10,11 +10,18 @@ from time import time
 from problog.program import PrologString
 from problog import get_evaluatable
 import gc
+from enum import IntEnum
+
+class Verbosity(IntEnum):
+    none = 0
+    messages = 1
+    reasoning = 2
+    debug = 3
 
 
 class RandomNegotiationAgent:
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=100,
-                 smart=True, name="", verbose=0, reporting=False, mean_utility=0, std_utility=0,
+                 smart=True, name="", verbose=Verbosity.none, reporting=False, mean_utility=0, std_utility=0,
                  utility_computation_method="python", issue_weights=None, linear_additive_utility=True):
 
         if utility_computation_method not in ['problog', 'python']:
@@ -92,7 +99,7 @@ class RandomNegotiationAgent:
 
     def send_message(self, opponent, msg):
         self.message_count += 1
-        if self.verbose >= 2:
+        if self.verbose >= Verbosity.messages:
             print("{} is sending {}".format(self.agent_name, msg))
         opponent.receive_message(msg)
 
@@ -155,19 +162,19 @@ class RandomNegotiationAgent:
         return self.generate_offer_message()
 
     def setup_negotiation(self, issues):
-        if self.verbose >= 1:
+        if self.verbose >= Verbosity.reasoning:
             print("{} is setting up the negotiation issues: {}".format(
                 self.agent_name, issues))
         self.set_issues(issues)
         self.init_uniform_strategy()
-        if self.verbose >= 1:
+        if self.verbose >= Verbosity.reasoning:
             print("{} Starting utilities: {}".format(
                 self.agent_name, self.utilities))
             print("{} Starting strategy: {}".format(
                 self.agent_name, self.strat_dict))
 
     def report(self):
-        if self.verbose >= 1:
+        if self.verbose >= Verbosity.messages:
             if self.successful:
                 print("Negotiation succeeded after {} rounds!".format(
                     self.message_count))
@@ -199,7 +206,7 @@ class RandomNegotiationAgent:
             log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
 
     def receive_message(self, msg):
-        if self.verbose >= 1:
+        if self.verbose >= Verbosity.messages:
             print("{}: received message: {}".format(self.agent_name, msg))
         self.record_message(msg)
 
@@ -245,16 +252,16 @@ class RandomNegotiationAgent:
     def is_offer_valid(self, offer):
         for issue in offer.keys():
             if not isclose(sum(offer[issue].values()), 1):
-                if self.verbose >= 3:
+                if self.verbose >= Verbosity.debug:
                     print("Failed sum in issue {}!".format(issue))
                 return False
             for value, prob in offer[issue].items():
                 if not (isclose(prob, 1) or isclose(prob, 0)):
-                    if self.verbose >= 3:
+                    if self.verbose >= Verbosity.debug:
                         print("Failed value in issue {}!".format(issue))
                     return False
                 if value not in self.issues[issue]:
-                    if self.verbose >= 3:
+                    if self.verbose >= Verbosity.debug:
                         print("Failed, unkown fact in issue {}!".format(issue))
                     return False
         return True
@@ -268,7 +275,7 @@ class RandomNegotiationAgent:
 
     def set_utilities(self, utilities):
         self.utilities = utilities
-        if self.verbose >= 3:
+        if self.verbose >= Verbosity.debug:
             print("{}'s utilities: {}".format(self.agent_name, self.utilities))
 
     def generate_decision_facts(self):
@@ -340,9 +347,9 @@ class RandomNegotiationAgent:
 
         if self.utility_computation_method == "problog":
             problog_model = self.compile_problog_model(offer)
-            if self.verbose >= 4 and self.linear_additive_utility:
+            if self.verbose >= Verbosity.debug and self.linear_additive_utility:
                 print("calculating offer with problog and issue weights")
-            elif self.verbose >= 4 and not self.linear_additive_utility:
+            elif self.verbose >= Verbosity.debug and not self.linear_additive_utility:
                 print("calculating offer with problog and no issue weights")
             # probability_of_facts = self.file_based_problog(problog_model)
             probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
@@ -352,20 +359,20 @@ class RandomNegotiationAgent:
                     if self.linear_additive_utility:
                         issue, _ = self.issue_value_tuple_from_atom(fact)
                         score += reward * probability_of_facts[fact] * self.issue_weights[issue]
-                        if self.verbose >= 4:
+                        if self.verbose >= Verbosity.debug:
                             print("{} is worth {} with weight {} contributing a total of {}.".format(fact,reward * probability_of_facts[fact],self.issue_weights[issue],reward * probability_of_facts[fact]*self.issue_weights[issue]))
                     else:
                         score += reward * probability_of_facts[fact]
-                        if self.verbose >= 4:
+                        if self.verbose >= Verbosity.debug:
                             print("{} is contributing {} to the score of this offer.".format(fact,reward * probability_of_facts[fact]))
-            if self.verbose >= 2:
+            if self.verbose >= Verbosity.reasoning:
                 print("{}: offer is worth {}".format(self.agent_name, score))
             # self.utilityCache[frozenOffer] = score
             gc.collect()
             return score
 
         elif self.utility_computation_method == "python":
-            if self.verbose >= 4:
+            if self.verbose >= Verbosity.debug:
                 print("calculating offer with python")
             return self.calc_lookup_utility(offer)
 
@@ -375,9 +382,9 @@ class RandomNegotiationAgent:
             for value in offer[issue].keys():
                 atom = self.atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
-                    if self.verbose >= 4:
+                    if self.verbose >= Verbosity.debug:
                         print("Adding utility: {} for atom {}".format(self.utilities[atom], atom))
-                        if self.verbose >= 4:
+                        if self.verbose >= Verbosity.debug:
                             print("{} is worth {} with weight {} contributing a total of {}.".format(atom,
                                                                                                      self.utilities[atom] * offer[issue][value],
                                                                                                      self.issue_weights[issue],
@@ -426,7 +433,7 @@ class RandomNegotiationAgent:
         return ans
 
     def accepts(self, offer):
-        if self.verbose >= 2:
+        if self.verbose >= Verbosity.reasoning:
             print("{}: considering \n{}".format(
                 self.agent_name, self.format_offer(offer)))
 
@@ -438,7 +445,7 @@ class RandomNegotiationAgent:
         else:
             util = self.calc_offer_utility(offer)
 
-        if self.verbose >= 2:
+        if self.verbose >= Verbosity.reasoning:
             if util >= self.reservation_value:
                 print("{}: offer is acceptable\n".format(self.agent_name))
             else:

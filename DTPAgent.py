@@ -8,6 +8,7 @@ from numpy import isclose
 from numpy.random import choice
 import gc
 from constraintNegotiationAgent import ConstraintNegotiationAgent
+from randomNegotiationAgent import Verbosity
 
 
 class DTPNegotiationAgent(ConstraintNegotiationAgent):
@@ -24,7 +25,7 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
         # so we use the commandline interface separately to avoid this as a temp fix
         self.total_offers_generated += 1
         model_path = abspath(join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
-        if self.verbose >= 3:
+        if self.verbose >= Verbosity.debug:
             print("{} is calculating dtp model: {}".format(self.agent_name, model))
 
         with open(model_path, "w") as temp_file:
@@ -95,7 +96,7 @@ class DTPNegotiationAgent(ConstraintNegotiationAgent):
         query_output, score, _ = dtproblog(program)
         query_output = {str(atom): float(prob) for atom, prob in query_output.items()}
         gc.collect()
-        if self.verbose >= 3:
+        if self.verbose >= Verbosity.debug:
             print("{} generated offer: {}".format(self.agent_name, self.nested_dict_from_atom_dict(query_output)))
 
         # if there are no acceptable offers left we should terminate
