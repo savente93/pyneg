@@ -24,10 +24,10 @@ def generate_utility_dicts(u_a, u_b, n, m, tau_a, tau_b=None):
     return u_a, u_b
 
 
-def generate_utility_matrices(u_a, u_b, tau_a, tau_b=None, kind="binary"):
+def generate_utility_matrices(shape, tau_a, tau_b=None, kind="binary"):
     if kind == "binary":
-        u_a = np.zeros(u_a.shape)
-        u_b = np.zeros(u_b.shape)
+        u_a = np.zeros(shape)
+        u_b = np.zeros(shape)
         if not tau_b:
             tau_b = tau_a
 
@@ -37,7 +37,7 @@ def generate_utility_matrices(u_a, u_b, tau_a, tau_b=None, kind="binary"):
 
     elif kind == "gradient":
 
-        n, m = u_a.shape
+        n, m = shape
         if not tau_b:
             tau_b = tau_a
 
