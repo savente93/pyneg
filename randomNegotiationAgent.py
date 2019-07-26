@@ -21,8 +21,8 @@ class Verbosity(IntEnum):
 
 class RandomNegotiationAgent:
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=100,
-                 smart=True, name="", verbose=Verbosity.none, reporting=False, mean_utility=0, std_utility=0,
-                 utility_computation_method="python", issue_weights=None, linear_additive_utility=True):
+                 smart=True, name="", verbose=Verbosity.none, reporting=False, utility_computation_method="python",
+                 issue_weights=None, linear_additive_utility=True):
 
         if utility_computation_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
@@ -34,13 +34,14 @@ class RandomNegotiationAgent:
         self.reporting = reporting
         self.max_rounds = max_rounds
         self.non_agreement_cost = non_agreement_cost
+        self.relative_reservation_value = reservation_value
+        self.absolute_reservation_value = None
         self.successful = False
         self.negotiation_active = False
         self.total_offers_generated = 0
         self.message_count = 0
         self.strat_name = "Random"
         self.agent_name = name
-        self.reservation_value = reservation_value
         self.strat_dict = {}
         self.transcript = []
         self.kb = []
@@ -51,19 +52,20 @@ class RandomNegotiationAgent:
         self.opponent = None
         self.start_time = 0
         self.issue_weights = None
-        self.mean_utility = mean_utility  # for results collection only not used internally
-        self.std_utility = std_utility  # for results collection only not used internally
+        self.max_utility_by_issue = {}
         if self.utility_computation_method == "python":
             self.linear_additive_utility = True
         else:
             self.linear_additive_utility = linear_additive_utility
         # self.utilityCache = {}
+
         if issues:
             self.set_issues(issues, issue_weights)
+        if utilities:
+            self.set_utilities(utilities, reservation_value)
 
         self.max_generation_tries = 500
 
-        self.set_utilities(utilities)
         self.set_kb(kb)
         self.smart = smart
 
@@ -167,6 +169,7 @@ class RandomNegotiationAgent:
                 self.agent_name, issues))
         self.set_issues(issues)
         self.init_uniform_strategy()
+        self.index_max_utilities()
         if self.verbose >= Verbosity.reasoning:
             print("{} Starting utilities: {}".format(
                 self.agent_name, self.utilities))
@@ -197,12 +200,8 @@ class RandomNegotiationAgent:
             log['total_generated_offers'] = self.total_offers_generated + self.opponent.total_offers_generated
             log['issue_count'] = len(self.issues)
             log['issue_cardinality'] = len(next(iter(self.issues)))  # issue cardinality is uniform
-            log['mu_a'] = self.mean_utility
-            log['mu_b'] = self.opponent.mean_utility
-            log['sigma_a'] = self.std_utility
-            log['sigma_b'] = self.opponent.std_utility
-            log['rho_a'] = self.reservation_value
-            log['rho_b'] = self.opponent.reservation_value
+            log['rho_a'] = self.relative_reservation_value
+            log['rho_b'] = self.opponent.relative_reservation_value
             log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
 
     def receive_message(self, msg):
@@ -273,10 +272,15 @@ class RandomNegotiationAgent:
 
         self.strat_dict = strat
 
-    def set_utilities(self, utilities):
+    def set_utilities(self, utilities, relative_reservation_value=None):
         self.utilities = utilities
         if self.verbose >= Verbosity.debug:
             print("{}'s utilities: {}".format(self.agent_name, self.utilities))
+
+        if relative_reservation_value and self.issues:
+            self.index_max_utilities()
+            self.relative_reservation_value = relative_reservation_value
+            self.absolute_reservation_value = relative_reservation_value * self.get_max_utility()
 
     def generate_decision_facts(self):
         self.decision_facts = []
@@ -410,6 +414,38 @@ class RandomNegotiationAgent:
 
         return score
 
+    def index_max_utilities(self):
+
+        if self.verbose >= Verbosity.debug:
+            print("{} is indexing max utilities".format(self.agent_name))
+
+        self.max_utility_by_issue = {}
+        for issue in self.issues.keys():
+            max_issue_util = -(2**31)
+            for value in self.issues[issue]:
+                atom = self.atom_from_issue_value(issue, value)
+                if atom in self.utilities.keys():
+                    util = self.utilities[atom] * self.issue_weights[issue]
+                else:
+                    util = 0
+
+                if util > max_issue_util:
+                    max_issue_util = util
+                    self.max_utility_by_issue[issue] = max_issue_util
+
+                if not issue in self.max_utility_by_issue.keys():
+                    self.max_utility_by_issue[issue] = 0
+
+        self.absolute_reservation_value = self.relative_reservation_value * self.get_max_utility()
+
+
+
+    def get_max_utility(self):
+        if self.max_utility_by_issue:
+            return(sum(self.max_utility_by_issue.values()))
+        else:
+            return 0
+
     @staticmethod
     def file_based_problog(model):
         # using the python implementation of problog causes memory leaks
@@ -446,11 +482,13 @@ class RandomNegotiationAgent:
             util = self.calc_offer_utility(offer)
 
         if self.verbose >= Verbosity.reasoning:
-            if util >= self.reservation_value:
+            if self.verbose >= Verbosity.debug:
+                print("absolute reservation value: {}\n offer utility: {}".format(self.absolute_reservation_value,util))
+            if util >= self.absolute_reservation_value:
                 print("{}: offer is acceptable\n".format(self.agent_name))
             else:
                 print("{}: offer is not acceptable\n".format(self.agent_name))
-        return util >= self.reservation_value
+        return util >= self.absolute_reservation_value
 
     @staticmethod
     def format_problog_strat(strat_dict):

@@ -1,6 +1,6 @@
 import unittest as ut
 from math import pi
-from randomNegotiationAgent import RandomNegotiationAgent
+from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
 from message import Message
 from uuid import uuid4
 
@@ -30,7 +30,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
             # TODO still need to look at compound and negative atoms
         }
         self.arbitrary_kb = []
-        self.arbitrary_reservation_value = 75/3
+        self.arbitrary_reservation_value = 0.75
         self.arbitrary_non_agreement_cost = -1000
 
         self.sparse_nested_offer = {
@@ -85,7 +85,8 @@ class TestRandomNegotiationAgent(ut.TestCase):
         }
 
         self.agent = RandomNegotiationAgent(uuid4(),
-                                            self.arbitrary_utilities, self.arbitrary_kb,
+                                            self.arbitrary_utilities,
+                                            self.arbitrary_kb,
                                             self.arbitrary_reservation_value,
                                             self.arbitrary_non_agreement_cost)
         self.agent.agent_name = "agent"
@@ -156,16 +157,10 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
                                               utility_computation_method="python")
-        python_agent.verbose = 4
-        print(self.agent.linear_additive_utility)
-        print(self.agent.utility_computation_method)
         python_agent.agent_name = "agent"
         python_agent.set_utilities(self.arbitrary_utilities)
         python_agent.setup_negotiation(self.generic_issues)
         python_agent.init_uniform_strategy()
-
-        print(python_agent.issue_weights)
-        print(python_agent.linear_additive_utility)
         expected_offer_utility = 100/3-1000/3 + pi/3
 
         self.assertAlmostEqual(python_agent.calc_offer_utility(self.nested_test_offer), expected_offer_utility)
@@ -259,10 +254,9 @@ class TestRandomNegotiationAgent(ut.TestCase):
     def test_generate_offer(self):
         self.agent.strat_dict = self.nested_test_offer
         # set reservation value so search doesn't exit
-        self.agent.reservation_value = -1000
+        self.agent.set_utilities(self.arbitrary_utilities,-100)
         offer = self.agent.generate_offer()
-        self.assertEqual(offer,
-                         self.nested_test_offer)
+        self.assertEqual(offer, self.nested_test_offer)
 
     def test_generate_offer_exits_if_unable_to_find_solution(self):
         self.agent.max_generation_tries = 10
@@ -442,7 +436,19 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent.generate_next_message_from_transcript()
         self.assertFalse(self.agent.negotiation_active)
 
-    def test_receive_termination_message_negotiation_was_nnsuccessful(self):
+    def test_receive_termination_message_negotiation_was_unsuccessful(self):
         self.agent.receive_message(self.termination_message)
         self.agent.generate_next_message_from_transcript()
         self.assertFalse(self.agent.successful)
+
+    def test_get_max_utility(self):
+        max_util = 100/3+pi/3
+        self.assertAlmostEqual(max_util, self.agent.get_max_utility())
+
+    def test_absolute_reservation_value(self):
+        self.assertAlmostEqual(self.agent.absolute_reservation_value, 0.75*(100/3+pi/3))
+
+    def test_index_max_utilities(self):
+        self.assertAlmostEqual(self.agent.max_utility_by_issue["boolean"], 100 / 3)
+        self.assertAlmostEqual(self.agent.max_utility_by_issue['float'], pi / 3)
+        self.assertAlmostEqual(self.agent.max_utility_by_issue['integer'], 0)

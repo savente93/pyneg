@@ -50,9 +50,9 @@ def record_results(q, file):
         results = results.append(Series(m), ignore_index=True)
 
         if counter % chunksize == 0:
-            results.to_csv(file)
+            results.to_csv(file, index=False)
 
-    results.to_csv(file)
+    results.to_csv(file,index=False)
 
 
 class ParallelSimulator:
@@ -90,7 +90,7 @@ class ParallelSimulator:
 
 n = 3
 m = 3
-result_file = "parallel_results.txt"
+result_file = "test_results.txt"
 tau_a_range = range(0, n)
 tau_b_range = range(0, n)
 rho_a_range = np.linspace(0, 1, 10)
@@ -100,11 +100,23 @@ param_space = product(*[[n], [m], tau_a_range, tau_b_range, rho_a_range, rho_b_r
 simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
 simulator.start_work()
 simulator.shutdown()
-
-results = pd.read_csv(result_file)
-results[(results.loc[:, 'p_a'] > 0) & (results.loc[:, 'p_a'] < 1)].loc[:, "p_a"].hist(bins=100)
-plt.title("Number of configurations found by p_a")
-plt.ylabel("Number of configs")
-plt.xlabel("P_a")
-plt.show()
 send_message("generation is done")
+
+numb_of_bins = 20
+numb_of_samples = 3
+results = pd.read_csv(result_file,index_col=False)
+bin_index =  pd.IntervalIndex(pd.cut(results['p_a'], bins=numb_of_bins)).sort_values().unique()
+results['bin_a'] = pd.cut(results['p_a'], bins=bin_index)
+results['asym_difficulty'] = results['p_a'] - results['p_b']
+admissible_configs = results[(np.abs(results['asym_difficulty']) < 0.5) & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)].groupby("bin_a").head(numb_of_samples)
+admissible_configs.to_csv("admissible_test_configs.csv", index=False)
+# admissible_configs['p_a'].hist(bins=bin_index.left.append(pd.Index([1.0])))
+# admissible_configs.to_csv("admissible_configs.csv", index=False)
+# plt.title("Number of configurations found by p_a")
+# plt.ylabel("Number of configs")
+# plt.xlabel("P_a")
+# plt.show()
+
+
+
+#
