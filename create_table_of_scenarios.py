@@ -88,8 +88,8 @@ class ParallelSimulator:
         self.work_pool.starmap(do_work, [(x, self.output_queue) for x in self.parameter_space])
 
 
-n = 3
-m = 3
+n = 5
+m = 7
 result_file = "test_results.txt"
 tau_a_range = range(0, n)
 tau_b_range = range(0, n)
@@ -108,7 +108,7 @@ results = pd.read_csv(result_file,index_col=False)
 bin_index =  pd.IntervalIndex(pd.cut(results['p_a'], bins=numb_of_bins)).sort_values().unique()
 results['bin_a'] = pd.cut(results['p_a'], bins=bin_index)
 results['asym_difficulty'] = results['p_a'] - results['p_b']
-admissible_configs = results[(np.abs(results['asym_difficulty']) < 0.5) & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)].groupby("bin_a").head(numb_of_samples)
+admissible_configs = results[(np.abs(results['asym_difficulty']) < 0.5)] # & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)]
 admissible_configs.to_csv("admissible_test_configs.csv", index=False)
 # admissible_configs['p_a'].hist(bins=bin_index.left.append(pd.Index([1.0])))
 # admissible_configs.to_csv("admissible_configs.csv", index=False)

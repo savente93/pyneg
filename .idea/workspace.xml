@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="90d0f7c8-8989-42b2-944d-c3685d09a6a2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/simulate_from_configs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admissible_configs.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/admissible_test_configs.csv" beforeDir="false" afterPath="$PROJECT_DIR$/admissible_test_configs.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/create_table_of_scenarios.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_table_of_scenarios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/randomNegotiationAgent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parallel_results.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulate_from_configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulate_from_configs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -60,7 +62,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test base agent">
+  <component name="RunManager" selected="Python.simulate_from_configs">
     <configuration name="DTPACOP negotiation" type="PythonConfigurationType" factoryName="Python">
       <module name="ProbLogNeg" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -237,6 +239,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="simulate_from_configs" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ProbLogNeg" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/simulate_from_configs.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="test base agent" type="PythonConfigurationType" factoryName="Python">
       <module name="ProbLogNeg" />
       <option name="INTERPRETER_OPTIONS" value="-m unittest" />
@@ -338,9 +362,11 @@
       <item itemvalue="Python.create_table_of_scenarios" />
       <item itemvalue="Python.producer_consumer_test" />
       <item itemvalue="Python.parallelsimulator" />
+      <item itemvalue="Python.simulate_from_configs" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.simulate_from_configs" />
         <item itemvalue="Python.create_table_of_scenarios" />
         <item itemvalue="Python.parallelsimulator" />
         <item itemvalue="Python.producer_consumer_test" />
@@ -394,7 +420,7 @@
       <workItem from="1563893202761" duration="4720000" />
       <workItem from="1563903871586" duration="10345000" />
       <workItem from="1564047745798" duration="6107000" />
-      <workItem from="1564081167615" duration="13558000" />
+      <workItem from="1564081167615" duration="20423000" />
     </task>
     <servers />
   </component>
@@ -431,8 +457,9 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ProbLogNeg$simulate_from_configs.coverage" NAME="simulate_from_configs Coverage Results" MODIFIED="1564162008362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$Random_AOP_negotiation.coverage" NAME="Random AOP negotiation Coverage Results" MODIFIED="1560090246879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ProbLogNeg$create_table_of_scenarios.coverage" NAME="create_table_of_scenarios Coverage Results" MODIFIED="1563967142216" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ProbLogNeg$create_table_of_scenarios.coverage" NAME="create_table_of_scenarios Coverage Results" MODIFIED="1564161862885" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$run_all_tests.coverage" NAME="run all tests Coverage Results" MODIFIED="1561211659116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$test_config_generation.coverage" NAME="test config generation Coverage Results" MODIFIED="1563883598716" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$collect_Results_for_exploration.coverage" NAME="collect Results for exploration Coverage Results" MODIFIED="1560345965761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />

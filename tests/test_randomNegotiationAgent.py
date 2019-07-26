@@ -262,10 +262,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent.max_generation_tries = 10
         self.agent.strat_dict = self.nested_test_offer
         self.assertEqual(self.agent.generate_offer_message(),
-                         Message(self.agent.agent_name,
-                                 self.opponent.agent_name,
-                                 "terminate",
-                                 None))
+                         Message(self.agent.agent_name, self.opponent.agent_name, "terminate",  None))
 
     def test_valid_offer_is_accepted(self):
         self.assertTrue(self.agent.is_offer_valid(

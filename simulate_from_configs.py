@@ -4,12 +4,14 @@ import urllib
 from os import remove
 from os.path import exists
 from uuid import uuid4
-
+from threading import Lock
 import pandas as pd
 
 from generateScenario import *
 from randomNegotiationAgent import RandomNegotiationAgent
 
+
+iolock = Lock()
 
 def send_message(message):
     conn = http.client.HTTPSConnection("api.pushover.net:443")
@@ -34,13 +36,18 @@ def neg_scenario_from_util_matrices(u_a, u_b):
             if u_a[i, j] != 0:
                 utils_a["issue{i}_{j}".format(i=i, j=j)] = u_a[i, j]
             if u_b[i, j] != 0:
-                utils_b["issue{i}_{j}".format(i=i, j=j)] = u_a[i, j]
+                utils_b["issue{i}_{j}".format(i=i, j=j)] = u_b[i, j]
 
     return issues, utils_a, utils_b
 
 
-def simulate_negotiation(row, q):
-    n, m, tau_a, tau_b, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b = row
+def simulate_negotiation(row_and_index, q):
+    index, row = row_and_index
+    n, m, tau_a, tau_b, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, bin_a, asym_difficulty = row.values
+    n = int(n)
+    m = int(m)
+    tau_a = int(tau_a)
+    tau_b = int(tau_b)
     u_a, u_b = generate_utility_matrices((n, m), tau_a, tau_b)
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
     negotiation_id = uuid4()
@@ -50,6 +57,7 @@ def simulate_negotiation(row, q):
     agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
                                      issues, name="agent_b")
 
+    agent_a.setup_negotiation(issues)
     agent_a.negotiate(agent_b)
 
     q.put({"n": n,
@@ -58,11 +66,13 @@ def simulate_negotiation(row, q):
            "tau_b": tau_b,
            "rho_a": rho_a,
            "rho_b": rho_b,
-           "a_accepts": a,
-           "b_accepts": b,
+           "a_accepts": a_accepts,
+           "b_accepts": b_accepts,
            "both_accept": both_accept,
            "p_a": p_a,
            "p_b": p_b,
+           'bin_a': bin_a,
+           "asym_difficulty": asym_difficulty,
            'success': agent_a.successful,
            'total_message_count': agent_a.message_count + agent_b.opponent.message_count,
            'numb_of_own_constraints': 0,
@@ -74,6 +84,17 @@ def simulate_negotiation(row, q):
            'opponent_utility': agent_b.opponent.calc_offer_utility(agent_b.transcript[-1].offer),
            'total_generated_offers': agent_a.total_offers_generated + agent_b.opponent.total_offers_generated
            })
+
+    # if both_accept == 0:
+    #     with iolock:
+    #         print("transcript of impossible negotiation:")
+    #         print("A's transcript: {}".format(agent_a.transcript))
+    #         print("B's transcript: {}".format(agent_b.transcript))
+    #         print(agent_a.absolute_reservation_value)
+    #         print(agent_a.utilities)
+    #         print(agent_b.absolute_reservation_value)
+    #         print(agent_b.utilities)
+    #         print()
 
 
 def record_results(q, file):
@@ -128,7 +149,7 @@ class ParallelSimulator:
         self.work_pool.starmap(simulate_negotiation, [(x, self.output_queue) for x in self.parameter_space])
 
 
-result_file = "test_simulation_results.txt"
+result_file = "test_simulation_results.csv"
 config_file = "admissible_test_configs.csv"
 configs = pd.read_csv(config_file, index_col=False)
 
