@@ -3,12 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="90d0f7c8-8989-42b2-944d-c3685d09a6a2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admissible_configs.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/admissible_test_configs.csv" beforeDir="false" afterPath="$PROJECT_DIR$/admissible_test_configs.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/create_table_of_scenarios.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_table_of_scenarios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parallel_results.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/simulate_from_configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulate_from_configs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_randomNegotiationAgent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -421,6 +417,7 @@
       <workItem from="1563903871586" duration="10345000" />
       <workItem from="1564047745798" duration="6107000" />
       <workItem from="1564081167615" duration="20423000" />
+      <workItem from="1564214197820" duration="294000" />
     </task>
     <servers />
   </component>
@@ -457,7 +454,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ProbLogNeg$simulate_from_configs.coverage" NAME="simulate_from_configs Coverage Results" MODIFIED="1564162008362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ProbLogNeg$simulate_from_configs.coverage" NAME="simulate_from_configs Coverage Results" MODIFIED="1564214304472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$Random_AOP_negotiation.coverage" NAME="Random AOP negotiation Coverage Results" MODIFIED="1560090246879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$create_table_of_scenarios.coverage" NAME="create_table_of_scenarios Coverage Results" MODIFIED="1564161862885" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$run_all_tests.coverage" NAME="run all tests Coverage Results" MODIFIED="1561211659116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />

@@ -1,22 +1,9 @@
 import multiprocessing as mp
 from os import remove
 from os.path import exists
-import matplotlib.pyplot as plt
 import pandas as pd
 from generateScenario import *
-import http.client
-import urllib
-
-
-def send_message(message):
-    conn = http.client.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-    urllib.parse.urlencode({
-     "token": "a6k31wnqq7vg9qriuxukwaf5ebjasd",
-     "user": "uUNPbABuEqPWvR5Y9agZeB59ZiMkqo",
-     "message": message,
-    }), { "Content-type": "application/x-www-form-urlencoded" })
-    conn.getresponse()
+from notify import try_except_notify
 
 
 def do_work(args, q):
@@ -87,36 +74,25 @@ class ParallelSimulator:
         print("Starting workers")
         self.work_pool.starmap(do_work, [(x, self.output_queue) for x in self.parameter_space])
 
+@try_except_notify
+def main():
+    n = 5
+    m = 7
+    result_file = "results.txt"
+    tau_a_range = range(0, n)
+    tau_b_range = range(0, n)
+    rho_a_range = np.linspace(0, 1, 10)
+    rho_b_range = np.linspace(0, 1, 10)
 
-n = 5
-m = 7
-result_file = "test_results.txt"
-tau_a_range = range(0, n)
-tau_b_range = range(0, n)
-rho_a_range = np.linspace(0, 1, 10)
-rho_b_range = np.linspace(0, 1, 10)
+    param_space = product(*[[n], [m], tau_a_range, tau_b_range, rho_a_range, rho_b_range])
+    simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
+    simulator.start_work()
+    simulator.shutdown()
 
-param_space = product(*[[n], [m], tau_a_range, tau_b_range, rho_a_range, rho_b_range])
-simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
-simulator.start_work()
-simulator.shutdown()
-send_message("generation is done")
-
-numb_of_bins = 20
-numb_of_samples = 3
-results = pd.read_csv(result_file,index_col=False)
-bin_index =  pd.IntervalIndex(pd.cut(results['p_a'], bins=numb_of_bins)).sort_values().unique()
-results['bin_a'] = pd.cut(results['p_a'], bins=bin_index)
-results['asym_difficulty'] = results['p_a'] - results['p_b']
-admissible_configs = results[(np.abs(results['asym_difficulty']) < 0.5)] # & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)]
-admissible_configs.to_csv("admissible_test_configs.csv", index=False)
-# admissible_configs['p_a'].hist(bins=bin_index.left.append(pd.Index([1.0])))
-# admissible_configs.to_csv("admissible_configs.csv", index=False)
-# plt.title("Number of configurations found by p_a")
-# plt.ylabel("Number of configs")
-# plt.xlabel("P_a")
-# plt.show()
-
-
-
-#
+    numb_of_bins = 20
+    results = pd.read_csv(result_file,index_col=False)
+    bin_index =  pd.IntervalIndex(pd.cut(results['p_a'], bins=numb_of_bins)).sort_values().unique()
+    results['bin_a'] = pd.cut(results['p_a'], bins=bin_index)
+    results['asym_difficulty'] = results['p_a'] - results['p_b']
+    admissible_configs = results #[(np.abs(results['asym_difficulty']) < 0.5)] # & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)]
+    admissible_configs.to_csv("admissible_configs.csv", index=False)

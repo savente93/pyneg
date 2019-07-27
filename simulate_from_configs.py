@@ -6,7 +6,7 @@ from os.path import exists
 from uuid import uuid4
 from threading import Lock
 import pandas as pd
-
+from notify import try_except_notify
 from generateScenario import *
 from randomNegotiationAgent import RandomNegotiationAgent
 
@@ -148,13 +148,15 @@ class ParallelSimulator:
         print("Starting workers")
         self.work_pool.starmap(simulate_negotiation, [(x, self.output_queue) for x in self.parameter_space])
 
+@try_except_notify
+def main():
+    result_file = "simulation_results.csv"
+    config_file = "admissible_configs.csv"
+    configs = pd.read_csv(config_file, index_col=False)
 
-result_file = "test_simulation_results.csv"
-config_file = "admissible_test_configs.csv"
-configs = pd.read_csv(config_file, index_col=False)
+    param_space = configs.iterrows()
+    simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
+    simulator.start_work()
+    simulator.shutdown()
 
-param_space = configs.iterrows()
-simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
-simulator.start_work()
-simulator.shutdown()
-send_message("generation is done")
+main(1)
