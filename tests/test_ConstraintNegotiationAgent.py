@@ -5,7 +5,7 @@ from math import pi
 from numpy.random import choice
 
 from constraint import AtomicConstraint
-from constraintNegotiationAgent import ConstraintNegotiationAgent
+from constraintNegotiationAgent import ConstraintNegotiationAgent, Verbosity
 from message import Message
 
 
@@ -38,7 +38,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         }
 
         self.arbitrary_kb = []
-        self.arbitrary_reservation_value = 0
+        self.arbitrary_reservation_value = 0.5
         self.arbitrary_non_agreement_cost = -1000
 
         # should have a utility of 100 if no weights are used
@@ -172,9 +172,7 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.agent.satisfies_all_constraints(
             self.nested_test_offer)
         self.assertEqual(self.agent.own_constraints,
-                         {self.arbitrary_own_constraint,
-                          AtomicConstraint("integer", "2"),
-                          AtomicConstraint("float", "0.1")})
+                         {self.arbitrary_own_constraint})
 
     def test_easy_negotiations_with_constraints_ends_successfully(self):
         self.agent.add_own_constraint(self.arbitrary_own_constraint)
@@ -256,25 +254,34 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.assertFalse(self.agent.receive_negotiation_request(self.opponent, self.generic_issues))
 
     def test_getting_utility_below_threshold_creates_constraint(self):
-        low_util_dict = {"integer_4": -100}
+        self.agent.automatic_constraint_generation = True
+        low_util_dict = {"integer_4": -1000}
         self.agent.add_utilities(low_util_dict)
         self.assertTrue(AtomicConstraint("integer", "4") in self.agent.own_constraints)
 
-    def test_create_constraint_with_generated_low_utility(self):
-        issues = {"dummy0": [range(3)], "dummy1": [range(3)], "dummy2": [range(3)], "dummy3": [range(3)],
-                  "dummy4": [range(3)]}
-        self.agent = ConstraintNegotiationAgent(uuid4(), {'dummy0_0': -9.720708632311071, 'dummy0_1': -8.63928402687458,
-                                                          'dummy1_0': -6.3767007099133695,
-                                                          'dummy1_1': -13.27054211283465,
-                                                          'dummy2_0': -8.398045297459051,
-                                                          'dummy2_1': -10.849588704772344,
-                                                          'dummy3_0': -7.781756350803565,
-                                                          'dummy3_1': -10.777802560828997,
-                                                          'dummy4_0': -5.216102446495702,
-                                                          'dummy4_1': -11.210197384007735},
-                                                [], 10, -100, issues, -11.6, name="agent", mean_utility=-7.139,
-                                                std_utility=2.460)
-        self.assertFalse(len(self.agent.get_all_constraints()) == 0)
+    def test_all_values_can_get_constrained(self):
+        self.agent.automatic_constraint_generation = True
+        low_util_dict = {"integer_{i}".format(i=i): -1000 for i in range(len(self.agent.issues['integer']))}
+        self.agent.add_utilities(low_util_dict)
+        self.assertEqual(len(self.agent.get_unconstrained_values_by_issue("integer")), 0)
+
+    def test_all_values_get_constrained_terminates_negotiation(self):
+        self.agent.automatic_constraint_generation = True
+        low_util_dict = {"integer_{i}".format(i=i): -1000 for i in range(len(self.agent.issues['integer']))}
+        self.agent.add_utilities(low_util_dict)
+        self.assertTrue(self.agent.generate_next_message_from_transcript().is_termination())
+
+    def test_multiple_issues_can_get_constrained(self):
+        self.agent.automatic_constraint_generation = True
+        low_util_dict = {"integer_4": -1000,"'float_0.9'": -1000}
+        self.agent.add_utilities(low_util_dict)
+        self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint("float", "0.9")}.issubset(self.agent.own_constraints))
+
+    def test_constrainted_assignement_is_not_indexed(self):
+        constr = AtomicConstraint("boolean", "True")
+        self.agent.add_opponent_constraint(constr)
+        self.assertEqual(self.agent.max_utility_by_issue["boolean"], 0)
+
 
 
 

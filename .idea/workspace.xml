@@ -3,8 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="90d0f7c8-8989-42b2-944d-c3685d09a6a2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/constraintNegotiationAgent.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/create_table_of_scenarios.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_table_of_scenarios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulate_from_configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulate_from_configs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generateScenario.py" beforeDir="false" afterPath="$PROJECT_DIR$/generateScenario.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/randomNegotiationAgent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,7 +38,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -58,7 +61,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.simulate_from_configs">
+  <component name="RunManager" selected="Python.test constraint agent">
     <configuration name="DTPACOP negotiation" type="PythonConfigurationType" factoryName="Python">
       <module name="ProbLogNeg" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -117,6 +120,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/collectResults.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="constraintNegotiationAgent" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ProbLogNeg" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/constraintNegotiationAgent.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -359,9 +384,11 @@
       <item itemvalue="Python.producer_consumer_test" />
       <item itemvalue="Python.parallelsimulator" />
       <item itemvalue="Python.simulate_from_configs" />
+      <item itemvalue="Python.constraintNegotiationAgent" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.constraintNegotiationAgent" />
         <item itemvalue="Python.simulate_from_configs" />
         <item itemvalue="Python.create_table_of_scenarios" />
         <item itemvalue="Python.parallelsimulator" />
@@ -417,7 +444,9 @@
       <workItem from="1563903871586" duration="10345000" />
       <workItem from="1564047745798" duration="6107000" />
       <workItem from="1564081167615" duration="20423000" />
-      <workItem from="1564214197820" duration="294000" />
+      <workItem from="1564214197820" duration="2801000" />
+      <workItem from="1564406212807" duration="5000" />
+      <workItem from="1564474829553" duration="10291000" />
     </task>
     <servers />
   </component>
@@ -463,10 +492,11 @@
     <SUITE FILE_PATH="coverage/ProbLogNeg$test_dtp_agent.coverage" NAME="test dtp agent Coverage Results" MODIFIED="1561281973880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$producer_consumer_test.coverage" NAME="producer_consumer_test Coverage Results" MODIFIED="1563904576002" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$DTPACOP_negotiation.coverage" NAME="DTPACOP negotiation Coverage Results" MODIFIED="1560122732551" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ProbLogNeg$test_constraint_agent.coverage" NAME="test constraint agent Coverage Results" MODIFIED="1562959313279" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/ProbLogNeg$test_constraint_agent.coverage" NAME="test constraint agent Coverage Results" MODIFIED="1564491698255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$test_base_agent.coverage" NAME="test base agent Coverage Results" MODIFIED="1564155491884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$ACOP_negotiation.coverage" NAME="ACOP negotiation Coverage Results" MODIFIED="1560092124833" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$collectResults.coverage" NAME="collectResults Coverage Results" MODIFIED="1560181859729" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/ProbLogNeg$constraintNegotiationAgent.coverage" NAME="constraintNegotiationAgent Coverage Results" MODIFIED="1564485445033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$simulate_All_Negotiation_types.coverage" NAME="simulate All Negotiation types Coverage Results" MODIFIED="1560534609101" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ProbLogNeg$parallelsimulator.coverage" NAME="parallelsimulator Coverage Results" MODIFIED="1563964487626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

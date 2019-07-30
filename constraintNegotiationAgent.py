@@ -14,9 +14,9 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                  automatic_constraint_generation=False):
         self.own_constraints = set()
         self.opponent_constraints = set()
+        self.automatic_constraint_generation = automatic_constraint_generation
         super().__init__(uuid, utilities, kb, reservation_value,
                          non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
-                         mean_utility=mean_utility, std_utility=std_utility,
                          utility_computation_method=utility_computation_method)
         self.utilities = {}
         self.add_utilities(utilities)
@@ -28,21 +28,71 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.max_rounds = max_rounds
         self.constraint_threshold = constraint_threshold
         self.constraints_satisfiable = True
-        self.automatic_constraint_generation = automatic_constraint_generation
+
+
+    def index_max_utilities(self):
+        if self.verbose >= Verbosity.debug:
+            print("{} is indexing max utilities".format(self.agent_name))
+
+        self.max_utility_by_issue = {}
+        for issue in self.issues.keys():
+            max_issue_util = -(2**31)
+            for value in self.issues[issue]:
+                atom = self.atom_from_issue_value(issue, value)
+                if atom in self.utilities.keys():
+                    if not all([constr.is_satisfied_by_assignment(issue, value) for constr in self.get_all_constraints()]):
+                        continue
+                    util = self.utilities[atom] * self.issue_weights[issue]
+                else:
+                    util = 0
+
+                if util > max_issue_util:
+                    max_issue_util = util
+                    self.max_utility_by_issue[issue] = max_issue_util
+
+                if not issue in self.max_utility_by_issue.keys():
+                    self.max_utility_by_issue[issue] = 0
+
+        self.absolute_reservation_value = self.relative_reservation_value * self.get_max_utility()
 
     def add_utilities(self, new_utils):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
             if self.automatic_constraint_generation:
-                issue, value = super().issue_value_tuple_from_atom(atom)
-                constraint = AtomicConstraint(issue, value)
+                new_constraints = self.generate_new_constraints()
+                for new_constr in new_constraints:
+                    self.add_own_constraint(new_constr)
 
-                if self.verbose >= Verbosity.reasoning:
-                    print("{} is adding own constraint {} because of low utility {}.".format(self.agent_name,
-                                                                                             constraint,
-                                                                                             util))
+    def generate_new_constraints(self):
+        if self.verbose >= Verbosity.debug:
+            print("{} is checking for new constraints".format(self.agent_name))
 
-                self.add_own_constraint(constraint)
+        new_constraints = set()
+        for issue in self.issues.keys():
+            best_case = sum([bc for i, bc in self.max_utility_by_issue.items() if i != issue])
+            # if best case is good enough on it's own we don't have to
+            # check any of the values because no constraint will be added
+            # if best_case >= self.absolute_reservation_value:
+            #     if self.verbose >= Verbosity.debug:
+            #         print("best case on issue {} is good enough, with util of {} against reservation value of {}. skipping issue....".format(issue,best_case,self.absolute_reservation_value))
+            #     continue
+
+            for value in self.issues[issue]:
+                atom = super().atom_from_issue_value(issue, value)
+                if atom in self.utilities.keys():
+                    value_util = self.utilities[atom]
+                else:
+                    value_util = 0
+
+                if best_case+value_util < self.absolute_reservation_value:
+                    if self.verbose >= Verbosity.reasoning:
+                        print("{} is adding new constraint {} because best_case util of {} is too low".format(
+                            self.agent_name,
+                            AtomicConstraint(issue, value),
+                            best_case+value_util))
+                    new_constraints.add(AtomicConstraint(issue, value))
+
+        return new_constraints
 
     def set_issues(self, issues, weights=None):
         self.decision_facts = []
@@ -78,14 +128,20 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
 
         for issue in self.issues.keys():
             self.strat_dict[issue] = {}
-            issue_constrained_values = [
-                constr.value for constr in self.get_all_constraints() if constr.issue == issue]
-            issue_un_constrained_values = set(self.issues[issue]) - set(issue_constrained_values)
+            # issue_constrained_values = [
+            #     constr.value for constr in self.get_all_constraints() if constr.issue == issue]
+            issue_un_constrained_values = self.get_unconstrained_values_by_issue(issue)
             for val in self.issues[issue]:
                 if val in issue_un_constrained_values:
                     self.strat_dict[issue][val] = 1 / len(issue_un_constrained_values)
                 else:
                     self.strat_dict[issue][val] = 0.0
+
+    def get_unconstrained_values_by_issue(self, issue):
+        issue_constrained_values = [
+            constr.value for constr in self.get_all_constraints() if constr.issue == issue]
+        issue_un_constrained_values = set(self.issues[issue]) - set(issue_constrained_values)
+        return issue_un_constrained_values
 
     def add_own_constraint(self, constraint):
         if self.verbose >= Verbosity.reasoning:
@@ -95,37 +151,11 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             if self.verbose >= Verbosity.debug:
                 print("stratagy before adding constraint: {}".format(self.strat_dict))
         self.own_constraints.add(constraint)
-        for issue in self.strat_dict.keys():
-            issue_constrained_values = [
-                constr.value for constr in self.get_all_constraints() if constr.issue == issue]
-            issue_unconstrained_values = set(
-                self.strat_dict[issue].keys()) - set(issue_constrained_values)
-            if len(issue_unconstrained_values) == 0:
-                if self.verbose >= Verbosity.reasoning:
-                    print("Found incompatible constraint: {}".format(constraint))
-                self.constraints_satisfiable = False
-                # Unfalsifiable constraint so we're terminating on the next message so we won't need to update the strat
-                return
+        self.make_strat_constraint_compliant(constraint)
 
-            for value in self.strat_dict[issue].keys():
-                if not constraint.is_satisfied_by_assignment(issue, value):
-                    self.strat_dict[issue][value] = 0
-
-            # it's possible we just made the last value in the strategy 0
-            # so we have to figure out which value is still unconstrained
-            # and set that one to 1
-            if sum(self.strat_dict[issue].values()) == 0:
-                self.strat_dict[issue][next(iter(issue_unconstrained_values))] = 1
-            else:
-                strat_sum = sum(self.strat_dict[issue].values())
-                self.strat_dict[issue] = {
-                    key: prob / strat_sum for key, prob in self.strat_dict[issue].items()}
-        atom = "{issue}_{value}".format(issue=constraint.issue, value=constraint.value)
-        if "." in atom:
-            atom = "'{}'".format(atom)
-        if atom not in self.utilities.keys():
-            self.utilities[atom] = self.non_agreement_cost
-
+        if not self.atom_from_issue_value(constraint.issue, constraint.value) in self.utilities.keys():
+            self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
+        self.index_max_utilities()
         if self.verbose >= Verbosity.debug:
             print("strategy after adding constraint: {}".format(self.strat_dict))
 
@@ -136,6 +166,16 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         if self.verbose >= Verbosity.debug:
             print("strategy before adding constraint: {}".format(self.strat_dict))
         self.opponent_constraints.add(constraint)
+        self.make_strat_constraint_compliant(constraint)
+        if not self.atom_from_issue_value(constraint.issue, constraint.value) in self.utilities.keys():
+            self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
+        self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
+        self.index_max_utilities()
+
+        if self.verbose >= Verbosity.debug:
+            print("strategy after adding constraint: {}".format(self.strat_dict))
+
+    def make_strat_constraint_compliant(self,constraint):
         for issue in self.strat_dict.keys():
             issue_constrained_values = [
                 constr.value for constr in self.get_all_constraints() if constr.issue == issue]
@@ -163,12 +203,6 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                 strat_sum = sum(self.strat_dict[issue].values())
                 self.strat_dict[issue] = {
                     key: prob / strat_sum for key, prob in self.strat_dict[issue].items()}
-
-        self.add_utilities(
-            {"{issue}_{value}".format(issue=constraint.issue, value=constraint.value): self.non_agreement_cost})
-
-        if self.verbose >= Verbosity.debug:
-            print("strategy after adding constraint: {}".format(self.strat_dict))
 
     def satisfies_all_constraints(self, offer):
         all_constraints = self.get_all_constraints()
@@ -220,7 +254,13 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         return self.generate_offer_message(violated_constraint)
 
     def generate_offer_message(self, constr=None):
-        offer = self.generate_offer()
+        try:
+            offer = self.generate_offer()
+        except RuntimeError:
+            if self.verbose >= Verbosity.reasoning:
+                print("{} is terminating because they were unable to generate an offer".format(self.agent_name))
+            offer = None
+
         if not offer:
             self.negotiation_active = False
             self.successful = False
@@ -231,7 +271,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
 
         if not self.satisfies_all_constraints(offer):
             raise RuntimeError(
-                "should not be able to generate constraint violating offer: " + \
+                "should not be able to generate constraint violating offer: " +
                 "{}\n constraints: {}".format(offer, self.get_all_constraints()))
             # raise RuntimeError("should not be able to generate constraint violating offer")
 
@@ -304,11 +344,11 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             util = self.calc_offer_utility(offer)
 
         if self.verbose >= Verbosity.reasoning:
-            if util >= self.reservation_value:
+            if util >= self.absolute_reservation_value:
                 print("{}: offer is acceptable\n".format(self.agent_name))
             else:
                 print("{}: offer is not acceptable\n".format(self.agent_name))
-        return util >= self.reservation_value
+        return util >= self.absolute_reservation_value
 
     def receive_negotiation_request(self, opponent, issues):
         # allows others to initiate negotiations with us
@@ -361,10 +401,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             log['totalGeneratedOffers'] = self.total_offers_generated + self.opponent.total_offers_generated
             log['issueCount'] = len(self.issues)
             log['issueCardinality'] = len(next(iter(self.issues)))  # issue cardinality is uniform
-            log['mu_a'] = self.mean_utility
-            log['mu_b'] = self.opponent.mean_utility
-            log['sigma_a'] = self.std_utility
-            log['sigma_b'] = self.opponent.std_utility
-            log['rho_a'] = self.reservation_value
             log['rho_b'] = self.opponent.reservation_value
             log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
+
+

@@ -39,7 +39,7 @@ def record_results(q, file):
         if counter % chunksize == 0:
             results.to_csv(file, index=False)
 
-    results.to_csv(file,index=False)
+    results.to_csv(file, index=False)
 
 
 class ParallelSimulator:

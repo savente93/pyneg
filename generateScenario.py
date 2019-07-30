@@ -70,19 +70,6 @@ def pretty_print_matrix(mat):
 
 
 def count_acceptable_offers(u_a, u_b, rho_a_percentile, rho_b_percentile, w_a=None, w_b=None):
-    # offers = product(*[range(u_a.shape[1]) for _ in range(u_a.shape[0])])
-    # assignment_utils_a = np.zeros((0, u_a.shape[0]))
-    # if not weights_a:
-    #     weights_a = np.ones(u_a.shape[0]) / u_a.shape[0]
-    # if not weights_b:
-    #     weights_b = np.ones(u_b.shape[0]) / u_b.shape[0]
-    # assignment_utils_b = np.zeros((0, u_b.shape[0]))
-    # for offer in offers:
-    #     assignment_utils_a = np.append(assignment_utils_a,[[u_a[j, offer[j]] for j in range(u_a.shape[0])]], axis=0)
-    #     assignment_utils_b = np.append(assignment_utils_b, [[u_b[j, offer[j]] for j in range(u_a.shape[0])]], axis=0)
-    #
-    # a_accepts = np.dot(assignment_utils_a, weights_a) >= rho_a / u_a.shape[0]
-    # b_accepts = np.dot(assignment_utils_b, weights_b) >= rho_b / u_b.shape[0]
     n, m = u_a.shape
     if not w_a:
         w_a = 1 / n * np.ones((1, n))

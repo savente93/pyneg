@@ -337,9 +337,9 @@ class RandomNegotiationAgent:
 
         return True
 
-    @staticmethod
-    def snake_case_to_camel_case(string):
-        return ''.join(x.capitalize() or '_' for x in string.split('_'))
+    # @staticmethod
+    # def snake_case_to_camel_case(string):
+    #     return ''.join(x.capitalize() or '_' for x in string.split('_'))
 
     def calc_offer_utility(self, offer):
         if not offer:
@@ -437,8 +437,6 @@ class RandomNegotiationAgent:
                     self.max_utility_by_issue[issue] = 0
 
         self.absolute_reservation_value = self.relative_reservation_value * self.get_max_utility()
-
-
 
     def get_max_utility(self):
         if self.max_utility_by_issue:
