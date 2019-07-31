@@ -100,7 +100,7 @@ class RandomNegotiationAgent:
         return self.message_count > self.max_rounds
 
     def send_message(self, opponent, msg):
-        self.message_count += 1
+        self.record_message(msg)
         if self.verbose >= Verbosity.messages:
             print("{} is sending {}".format(self.agent_name, msg))
         opponent.receive_message(msg)
@@ -116,13 +116,14 @@ class RandomNegotiationAgent:
         while self.negotiation_active:
             self.next_message_to_send = self.generate_next_message_from_transcript()
             if self.next_message_to_send:
-                opponent.receive_message(self.next_message_to_send)
+                self.send_message(opponent,self.next_message_to_send)
+                # opponent.receive_message(self.next_message_to_send)
                 self.receive_response(opponent)
 
         return self.successful
 
     def receive_response(self, sender):
-        response = sender.generate_next_message_from_transcript()
+        response = sender.send_message(self,sender.generate_next_message_from_transcript())
         self.record_message(response)
 
     def record_message(self, msg):
