@@ -12,6 +12,7 @@ from problog import get_evaluatable
 import gc
 from enum import IntEnum
 
+standard_max_rounds = 100
 
 class Verbosity(IntEnum):
     none = 0
@@ -21,7 +22,7 @@ class Verbosity(IntEnum):
 
 
 class RandomNegotiationAgent:
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=100,
+    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
                  smart=True, name="", verbose=Verbosity.none, reporting=False, utility_computation_method="python",
                  issue_weights=None, linear_additive_utility=True):
 
@@ -34,7 +35,11 @@ class RandomNegotiationAgent:
         self.verbose = verbose
         self.uuid = uuid
         self.reporting = reporting
-        self.max_rounds = max_rounds
+        if not max_rounds:
+            self.max_rounds = standard_max_rounds
+        else:
+            self.max_rounds = max_rounds
+        
         self.non_agreement_cost = non_agreement_cost
         self.relative_reservation_value = reservation_value
         self.absolute_reservation_value = None

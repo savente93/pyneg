@@ -11,14 +11,14 @@ from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues,
-                 constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
+                 constraint_threshold=20, max_rounds=None, verbose=0, name="", reporting=False,
                  utility_computation_method="python", automatic_constraint_generation=True):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.automatic_constraint_generation = automatic_constraint_generation
         super().__init__(uuid, utilities, kb, reservation_value,
                          non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
-                         utility_computation_method=utility_computation_method)
+                         utility_computation_method=utility_computation_method, max_rounds=max_rounds)
         self.utilities = {}
         self.add_utilities(utilities)
         self.negotiation_active = False
@@ -26,7 +26,6 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.successful = False
         self.strat_name = "Constrained"
         self.message_count = 0
-        self.max_rounds = max_rounds
         self.constraint_threshold = constraint_threshold
         self.constraints_satisfiable = True
 
@@ -262,8 +261,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             self.report()
             return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
-        violated_constraint = self.generate_violated_constraint(
-            last_message.offer)
+        violated_constraint = self.generate_violated_constraint(last_message.offer)
         return self.generate_offer_message(violated_constraint)
 
     def generate_offer_message(self, constr=None):

@@ -12,7 +12,7 @@ from randomNegotiationAgent import Verbosity
 
 
 class DTPNegotiationAgent(ConstraintNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=200,
+    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=None,
                  verbose=0, name="", reporting=True, automatic_constraint_generation=True):
         super().__init__(uuid, utilities, kb, reservation_value, non_agreement_cost, issues=issues,
                          max_rounds=max_rounds, verbose=verbose, name=name, reporting=reporting, automatic_constraint_generation=True)
