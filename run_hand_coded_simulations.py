@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
-from ConstraintNegotiationAgent import ConstraintNegotiationAgent
+from constraintNegotiationAgent import ConstraintNegotiationAgent
 from generateScenario import *
 from uuid import uuid4
 
@@ -24,15 +24,22 @@ def neg_scenario_from_util_matrices(u_a, u_b):
     return issues, utils_a, utils_b
 
 
-n = 5
-m = 4
-tau_a = tau_b = 3
+
+n = 6
+m = 6
+tau_a = 4
+tau_b = 4
 rho_a = 0.5
 rho_b = 0.5
 constr_val = -1000
 negotiation_id = uuid4()
 non_agreement_cost = -(2 ** 24)
 base_case_a, base_case_b = generate_utility_matrices((n, m), tau_a, tau_b)
+a,b,both = count_acceptable_offers(base_case_a, base_case_b, rho_a, rho_b)
+p_a = both/a if a!=0 else 0
+print("a: {}, b:{}, both: {}, p_a:{}".format(a,b,both,p_a))
+if p_a<0.001 or p_a > 0.6:
+    exit()
 results = pd.DataFrame(
     columns=['scenario', 'strat', 'success', 'total_message_count'])
 
@@ -52,16 +59,17 @@ results = results.append({'scenario': "base",
 
 issues, utils_a, utils_b = neg_scenario_from_util_matrices(
     base_case_a, base_case_b)
-agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                 issues, name="agent_a")
-agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                 issues, name="agent_b")
+agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                 issues,  max_rounds=500, name="agent_a")
+agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                 issues,  max_rounds=500, name="agent_b")
 agent_a.setup_negotiation(issues)
 agent_a.negotiate(agent_b)
 results = results.append({'scenario': "base",
                           'strat': "constraint",
                           'success': agent_a.successful,
-                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+                          'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+print(agent_a.transcript)
 print("base case done")
 
 

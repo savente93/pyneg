@@ -5,7 +5,7 @@ from math import pi
 from numpy.random import choice
 
 from constraint import AtomicConstraint
-from ConstraintNegotiationAgent import ConstraintNegotiationAgent, Verbosity
+from constraintNegotiationAgent import ConstraintNegotiationAgent, Verbosity
 from message import Message
 
 
@@ -205,13 +205,6 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
                                  self.opponent.agent_name, "terminate", None), agent_response)
 
     def test_receiving_constraint_on_binary_constraint_doesnt_result_in_zero_strategy(self):
-        # temp_utils = {
-        #     "boolean_True": 100,
-        #     "boolean_False": 100
-        # }
-        # self.generic_issues = {
-        #     "boolean": [True, False]
-        # }
         self.agent = ConstraintNegotiationAgent(uuid4(),
                                                 self.arbitrary_utilities,
                                                 self.arbitrary_kb,
@@ -319,8 +312,45 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint(
             "float", "0.9")}.issubset(self.agent.own_constraints))
 
-    # def test_constrainted_assignement_is_not_indexed(self):
-    #     self.agent.verbose = Verbosity.debug
-    #     constr = AtomicConstraint("boolean", "True")
-    #     self.agent.add_opponent_constraint(constr)
-    #     self.assertEqual(self.agent.max_utility_by_issue["boolean"], 0)
+    def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
+        temp_issues = {
+            "boolean1" : [True, False],
+            "boolean2" : [True, False]
+        }
+        temp_utils = { 
+            "boolean1_True" : -1000,
+            "boolean1_False": 0,
+            "boolean2_True" : 1000,
+            "boolean2_False" : 1000
+
+        }
+        self.agent = ConstraintNegotiationAgent(uuid4(),
+            temp_utils, [], 0.1, -(2**31), temp_issues)
+        self.agent.add_utilities(temp_utils)
+        self.assertEqual(len(self.agent.own_constraints), 1 )
+
+    def test_constraint_doesnt_trigger_if_offer_doesnt_assign_it(self):
+        temp_issues = {
+            "integer1" : range(3),
+            "integer2" : range(3)
+        }
+        temp_utils = { 
+            "integer1_0" : -10000,
+            "integer1_1" : 10,
+            "integer1_2" : 0,
+            "integer2_0" : 0,
+            "integer2_1" : 10,
+            "integer2_2" : 10
+        }
+        self.agent = ConstraintNegotiationAgent(uuid4(),
+            temp_utils, [], 0.1, -(2**31), temp_issues,name="agent")
+        self.agent.add_utilities(temp_utils)
+        self.agent.opponent = self.opponent
+        offer = {
+            "integer1" : {"0": 0, "1" : 0, "2": 1},
+            "integer2" : {"0": 1, "1" : 0, "2": 0}
+        }
+        offer_msg = Message(self.opponent.agent_name, self.agent.agent_name,"offer", offer)
+        self.agent.receive_message(offer_msg)
+        response = self.agent.generate_next_message_from_transcript()
+        self.assertFalse(response.constraint)

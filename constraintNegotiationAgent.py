@@ -3,7 +3,7 @@ from re import search, sub
 from time import time
 
 from pandas import Series
-
+from numpy import isclose
 from constraint import AtomicConstraint
 from message import Message
 from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
@@ -58,7 +58,9 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def add_utilities(self, new_utils):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
-            if self.automatic_constraint_generation and self.issues:
+        
+        if self.automatic_constraint_generation and self.issues:
+            for atom, util in new_utils.items():
                 new_constraints = self.generate_new_constraints()
                 for new_constr in new_constraints:
                     self.add_own_constraint(new_constr)
@@ -314,7 +316,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         for constr in self.own_constraints:
             for issue in offer.keys():
                 for value in offer[issue].keys():
-                    if not constr.is_satisfied_by_assignment(issue, value):
+                    if not constr.is_satisfied_by_assignment(issue, value) and not isclose(offer[issue][value],0):
                         return AtomicConstraint(issue, value)
 
     def calc_offer_utility(self, offer):
