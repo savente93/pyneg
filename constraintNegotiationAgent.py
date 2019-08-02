@@ -12,8 +12,7 @@ from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues,
                  constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
-                 mean_utility=0, std_utility=1, utility_computation_method="python",
-                 automatic_constraint_generation=True):
+                 utility_computation_method="python", automatic_constraint_generation=True):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.automatic_constraint_generation = automatic_constraint_generation
@@ -332,6 +331,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         return self.message_count >= self.max_rounds or not self.constraints_satisfiable
 
     def receive_message(self, msg):
+        if not msg:
+            return
         if self.verbose >= Verbosity.messages:
             print("{}: received message: {}".format(self.agent_name, msg))
         self.record_message(msg)

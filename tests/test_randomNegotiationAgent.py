@@ -183,7 +183,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
         python_agent.set_utilities(self.arbitrary_utilities)
         python_agent.setup_negotiation(self.generic_issues)
         python_agent.init_uniform_strategy()
-        expected_uniform_strat_util = (50 - 100)/3 - 3.2 / 30 + pi / 30
+        expected_uniform_strat_util = (50 - 100)/3 - 3.2 / 3 + pi / 3
         self.assertAlmostEqual(python_agent.calc_strat_utility(
             python_agent.strat_dict), expected_uniform_strat_util)
 
@@ -329,6 +329,10 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent.smart = True
         self.assertTrue(self.agent.accepts(
             self.agent.generate_offer()))
+
+    def test_after_negotiation_both_agents_have_same_transcript(self):
+        self.agent.negotiate(self.opponent)
+        self.assertEqual(self.agent.transcript, self.opponent.transcript)
 
     def test_valid_sparse_nested_dict_to_atom_dict(self):
         self.assertEqual(self.sparse_atom_test_offer, self.agent.atom_dict_from_nested_dict(

@@ -119,13 +119,14 @@ class RandomNegotiationAgent:
         while self.negotiation_active:
             self.next_message_to_send = self.generate_next_message_from_transcript()
             if self.next_message_to_send:
-                opponent.receive_message(self.next_message_to_send)
+                self.send_message(opponent,self.next_message_to_send)
+                # opponent.receive_message(self.next_message_to_send)
                 self.receive_response(opponent)
 
         return self.successful
 
     def receive_response(self, sender):
-        response = sender.generate_next_message_from_transcript()
+        response = sender.send_message(self,sender.generate_next_message_from_transcript())
         self.record_message(response)
 
     def record_message(self, msg):
