@@ -1,17 +1,19 @@
-from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
-from message import Message
-from constraint import AtomicConstraint
-from pandas import Series
-from time import time
 from os.path import abspath, dirname, join
 from re import search, sub
+from time import time
+
+from pandas import Series
+
+from constraint import AtomicConstraint
+from message import Message
+from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
 
 
 class ConstraintNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None,
+    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues,
                  constraint_threshold=20, max_rounds=10000, verbose=0, name="", reporting=False,
-                 mean_utility=0, std_utility=1, utility_computation_method="problog",
-                 automatic_constraint_generation=False):
+                 mean_utility=0, std_utility=1, utility_computation_method="python",
+                 automatic_constraint_generation=True):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.automatic_constraint_generation = automatic_constraint_generation
@@ -28,7 +30,6 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.max_rounds = max_rounds
         self.constraint_threshold = constraint_threshold
         self.constraints_satisfiable = True
-
 
     def index_max_utilities(self):
         if self.verbose >= Verbosity.debug:
@@ -58,7 +59,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def add_utilities(self, new_utils):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
-            if self.automatic_constraint_generation:
+            if self.automatic_constraint_generation and self.issues:
                 new_constraints = self.generate_new_constraints()
                 for new_constr in new_constraints:
                     self.add_own_constraint(new_constr)
@@ -69,13 +70,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
 
         new_constraints = set()
         for issue in self.issues.keys():
-            best_case = sum([bc for i, bc in self.max_utility_by_issue.items() if i != issue])
-            # if best case is good enough on it's own we don't have to
-            # check any of the values because no constraint will be added
-            # if best_case >= self.absolute_reservation_value:
-            #     if self.verbose >= Verbosity.debug:
-            #         print("best case on issue {} is good enough, with util of {} against reservation value of {}. skipping issue....".format(issue,best_case,self.absolute_reservation_value))
-            #     continue
+            best_case = sum(
+                [bc for i, bc in self.max_utility_by_issue.items() if i != issue])
 
             for value in self.issues[issue]:
                 atom = super().atom_from_issue_value(issue, value)
@@ -108,15 +104,18 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
                        for key in issues.keys()}
         self.generate_decision_facts()
         if not weights:
-            self.issue_weights = {issue: 1/len(self.issues) for issue in self.issues.keys()}
+            self.issue_weights = {
+                issue: 1/len(self.issues) for issue in self.issues.keys()}
         else:
             if not self.is_dist(weights) and len(weights) != len(self.issues.keys()):
-                raise ValueError("{} Tried to set non dist weights: {}".format(self.agent_name, weights))
+                raise ValueError("{} Tried to set non dist weights: {}".format(
+                    self.agent_name, weights))
             issue_iter = iter(self.issues.keys())
             for i in range(len(weights)):
                 self.issue_weights[next(issue_iter)] = weights[i]
 
         self.init_uniform_strategy()
+        self.index_max_utilities()
         # TODO must find a way to avoid having to clear the KB every time a new issue is raised
         self.set_kb([])
 
@@ -130,17 +129,20 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             self.strat_dict[issue] = {}
             # issue_constrained_values = [
             #     constr.value for constr in self.get_all_constraints() if constr.issue == issue]
-            issue_un_constrained_values = self.get_unconstrained_values_by_issue(issue)
+            issue_un_constrained_values = self.get_unconstrained_values_by_issue(
+                issue)
             for val in self.issues[issue]:
                 if val in issue_un_constrained_values:
-                    self.strat_dict[issue][val] = 1 / len(issue_un_constrained_values)
+                    self.strat_dict[issue][val] = 1 / \
+                        len(issue_un_constrained_values)
                 else:
                     self.strat_dict[issue][val] = 0.0
 
     def get_unconstrained_values_by_issue(self, issue):
         issue_constrained_values = [
             constr.value for constr in self.get_all_constraints() if constr.issue == issue]
-        issue_un_constrained_values = set(self.issues[issue]) - set(issue_constrained_values)
+        issue_un_constrained_values = set(
+            self.issues[issue]) - set(issue_constrained_values)
         return issue_un_constrained_values
 
     def add_own_constraint(self, constraint):
@@ -154,7 +156,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.make_strat_constraint_compliant(constraint)
 
         if not self.atom_from_issue_value(constraint.issue, constraint.value) in self.utilities.keys():
-            self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
+            self.add_utilities({self.atom_from_issue_value(
+                constraint.issue, constraint.value): self.non_agreement_cost})
         self.index_max_utilities()
         if self.verbose >= Verbosity.debug:
             print("strategy after adding constraint: {}".format(self.strat_dict))
@@ -167,15 +170,20 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             print("strategy before adding constraint: {}".format(self.strat_dict))
         self.opponent_constraints.add(constraint)
         self.make_strat_constraint_compliant(constraint)
+        if not self.constraints_satisfiable:
+            return
+
         if not self.atom_from_issue_value(constraint.issue, constraint.value) in self.utilities.keys():
-            self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
-        self.add_utilities({self.atom_from_issue_value(constraint.issue, constraint.value): self.non_agreement_cost})
+            self.add_utilities({self.atom_from_issue_value(
+                constraint.issue, constraint.value): self.non_agreement_cost})
+        self.add_utilities({self.atom_from_issue_value(
+            constraint.issue, constraint.value): self.non_agreement_cost})
         self.index_max_utilities()
 
         if self.verbose >= Verbosity.debug:
             print("strategy after adding constraint: {}".format(self.strat_dict))
 
-    def make_strat_constraint_compliant(self,constraint):
+    def make_strat_constraint_compliant(self, constraint):
         for issue in self.strat_dict.keys():
             issue_constrained_values = [
                 constr.value for constr in self.get_all_constraints() if constr.issue == issue]
@@ -198,7 +206,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             # we have to figure out which value is still unconstrained
             # and set that one to 1
             if sum(self.strat_dict[issue].values()) == 0:
-                self.strat_dict[issue][next(iter(issue_unconstrained_values))] = 1
+                self.strat_dict[issue][next(
+                    iter(issue_unconstrained_values))] = 1
             else:
                 strat_sum = sum(self.strat_dict[issue].values())
                 self.strat_dict[issue] = {
@@ -219,11 +228,13 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             return self.generate_offer_message()
 
         if self.verbose >= Verbosity.reasoning:
-            print("{} is using {} to generate next offer.".format(self.agent_name, last_message))
+            print("{} is using {} to generate next offer.".format(
+                self.agent_name, last_message))
 
         if last_message.constraint:
             if self.verbose >= Verbosity.reasoning:
-                print("{} is adding opponent constraint {}".format(self.agent_name, last_message.constraint))
+                print("{} is adding opponent constraint {}".format(
+                    self.agent_name, last_message.constraint))
             self.add_opponent_constraint(last_message.constraint)
 
         if last_message.is_acceptance():
@@ -250,7 +261,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             self.report()
             return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
-        violated_constraint = self.generate_violated_constraint(last_message.offer)
+        violated_constraint = self.generate_violated_constraint(
+            last_message.offer)
         return self.generate_offer_message(violated_constraint)
 
     def generate_offer_message(self, constr=None):
@@ -258,13 +270,15 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             offer = self.generate_offer()
         except RuntimeError:
             if self.verbose >= Verbosity.reasoning:
-                print("{} is terminating because they were unable to generate an offer".format(self.agent_name))
+                print("{} is terminating because they were unable to generate an offer".format(
+                    self.agent_name))
             offer = None
 
         if not offer:
             self.negotiation_active = False
             self.successful = False
-            termination_message = Message(self.agent_name, self.opponent.agent_name, "terminate", None)
+            termination_message = Message(
+                self.agent_name, self.opponent.agent_name, "terminate", None)
             self.record_message(termination_message)
             self.report()
             return termination_message
@@ -277,8 +291,10 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
 
         if not self.is_offer_valid(offer):
             if self.verbose >= Verbosity.debug:
-                raise RuntimeError("{} generated invalid offer: {}".format(self.agent_name, offer))
-            raise RuntimeError("{} generated invalid offer".format(self.agent_name))
+                raise RuntimeError(
+                    "{} generated invalid offer: {}".format(self.agent_name, offer))
+            raise RuntimeError(
+                "{} generated invalid offer".format(self.agent_name))
         # generate offer can return a termination message if no acceptable offer can be found
         # so we should check for that
         if type(offer) == dict:
@@ -322,7 +338,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         if msg.constraint:
             self.add_opponent_constraint(msg.constraint)
             if self.verbose >= Verbosity.debug:
-                print("constraints still consistant: {}".format(self.constraints_satisfiable))
+                print("constraints still consistant: {}".format(
+                    self.constraints_satisfiable))
 
     def get_all_constraints(self):
         return self.own_constraints.copy().union(self.opponent_constraints)
@@ -368,7 +385,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def setup_negotiation(self, issues):
         super().setup_negotiation(issues)
         if self.verbose >= Verbosity.reasoning:
-            print("{}: starting constraints: {}".format(self.agent_name, self.own_constraints))
+            print("{}: starting constraints: {}".format(
+                self.agent_name, self.own_constraints))
 
     def negotiate(self, opponent):
         if self.constraints_satisfiable:
@@ -389,19 +407,23 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             log.rename(self.uuid)
             log['runtime'] = time() - self.start_time
             log['success'] = self.successful
-            log['totalMessageCount'] = self.message_count + self.opponent.message_count
+            log['totalMessageCount'] = self.message_count + \
+                self.opponent.message_count
             log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
-            log['totalMessageCount'] = self.message_count + self.opponent.message_count
+            log['totalMessageCount'] = self.message_count + \
+                self.opponent.message_count
             log['numbOfOwnConstraints'] = len(self.own_constraints)
             log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
             log['strat'] = self.strat_name
             log['opponentStrat'] = self.opponent.strat_name
             log['utility'] = self.calc_offer_utility(self.transcript[-1].offer)
-            log['opponentUtility'] = self.opponent.calc_offer_utility(self.transcript[-1].offer)
-            log['totalGeneratedOffers'] = self.total_offers_generated + self.opponent.total_offers_generated
+            log['opponentUtility'] = self.opponent.calc_offer_utility(
+                self.transcript[-1].offer)
+            log['totalGeneratedOffers'] = self.total_offers_generated + \
+                self.opponent.total_offers_generated
             log['issueCount'] = len(self.issues)
-            log['issueCardinality'] = len(next(iter(self.issues)))  # issue cardinality is uniform
-            log['rho_b'] = self.opponent.reservation_value
-            log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
-
-
+            # issue cardinality is uniform
+            log['issueCardinality'] = len(next(iter(self.issues)))
+            log['rho_b'] = self.opponent.relative_reservation_value
+            log.to_csv(
+                abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)

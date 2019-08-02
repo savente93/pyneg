@@ -88,13 +88,15 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                             self.arbitrary_utilities,
                                             self.arbitrary_kb,
                                             self.arbitrary_reservation_value,
-                                            self.arbitrary_non_agreement_cost)
+                                            self.arbitrary_non_agreement_cost,
+                                            self.generic_issues)
         self.agent.agent_name = "agent"
         self.opponent = RandomNegotiationAgent(uuid4(),
                                                self.arbitrary_utilities,
                                                self.arbitrary_kb,
                                                self.arbitrary_reservation_value,
-                                               self.arbitrary_non_agreement_cost)
+                                               self.arbitrary_non_agreement_cost,
+                                               self.generic_issues)
         self.opponent.agent_name = "opponent"
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.opponent = self.opponent
@@ -144,18 +146,22 @@ class TestRandomNegotiationAgent(ut.TestCase):
     def test_calc_offer_utility(self):
         # self.agent.verbose = 4
         expected_offer_utility = 100/3-1000/3 + pi/3
-        self.assertAlmostEqual(self.agent.calc_offer_utility(self.nested_test_offer), expected_offer_utility)
+        self.assertAlmostEqual(self.agent.calc_offer_utility(
+            self.nested_test_offer), expected_offer_utility)
 
     def test_calc_strat_utility(self):
         self.agent.init_uniform_strategy()
-        expected_uniform_strat_util = (100/2)/3 + (-1000/10)/3 + (-3.2/10)/3 + (pi/10)/3
-        self.assertAlmostEqual(self.agent.calc_strat_utility(self.agent.strat_dict), expected_uniform_strat_util)
+        expected_uniform_strat_util = (
+            100/2)/3 + (-1000/10)/3 + (-3.2/10)/3 + (pi/10)/3
+        self.assertAlmostEqual(self.agent.calc_strat_utility(
+            self.agent.strat_dict), expected_uniform_strat_util)
 
     def test_calc_offer_utility_python(self):
         python_agent = RandomNegotiationAgent(uuid4(),
                                               self.arbitrary_utilities, self.arbitrary_kb,
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
+                                              self.generic_issues,
                                               utility_computation_method="python")
         python_agent.agent_name = "agent"
         python_agent.set_utilities(self.arbitrary_utilities)
@@ -163,13 +169,15 @@ class TestRandomNegotiationAgent(ut.TestCase):
         python_agent.init_uniform_strategy()
         expected_offer_utility = 100/3-1000/3 + pi/3
 
-        self.assertAlmostEqual(python_agent.calc_offer_utility(self.nested_test_offer), expected_offer_utility)
+        self.assertAlmostEqual(python_agent.calc_offer_utility(
+            self.nested_test_offer), expected_offer_utility)
 
     def test_calc_strat_utility_python(self):
         python_agent = RandomNegotiationAgent(uuid4(),
                                               self.arbitrary_utilities, self.arbitrary_kb,
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
+                                              self.generic_issues,
                                               utility_computation_method="python")
         python_agent.agent_name = "agent"
         python_agent.set_utilities(self.arbitrary_utilities)
@@ -178,7 +186,6 @@ class TestRandomNegotiationAgent(ut.TestCase):
         expected_uniform_strat_util = (50 - 100)/3 - 3.2 / 30 + pi / 30
         self.assertAlmostEqual(python_agent.calc_strat_utility(
             python_agent.strat_dict), expected_uniform_strat_util)
-
 
     def test_accept(self):
         self.assertFalse(self.agent.accepts(
@@ -222,7 +229,8 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                                 utility_computation_method="problog")
         umbrella_answer = 43
 
-        self.assertAlmostEqual(umbrella_agent.calc_offer_utility(umbrella_offer), umbrella_answer)
+        self.assertAlmostEqual(umbrella_agent.calc_offer_utility(
+            umbrella_offer), umbrella_answer)
 
     def test_format_problog_strat(self):
         self.agent.init_uniform_strategy()
@@ -254,7 +262,7 @@ class TestRandomNegotiationAgent(ut.TestCase):
     def test_generate_offer(self):
         self.agent.strat_dict = self.nested_test_offer
         # set reservation value so search doesn't exit
-        self.agent.set_utilities(self.arbitrary_utilities,-100)
+        self.agent.set_utilities(self.arbitrary_utilities, -100)
         offer = self.agent.generate_offer()
         self.assertEqual(offer, self.nested_test_offer)
 
@@ -335,12 +343,14 @@ class TestRandomNegotiationAgent(ut.TestCase):
             self.nested_test_offer))
 
     def test_atom_to_nested_dict(self):
-        self.agent.set_issues({"dummy0": range(3), "dummy1": range(3), "dummy2": range(3)})
+        self.agent.set_issues(
+            {"dummy0": range(3), "dummy1": range(3), "dummy2": range(3)})
         atom_dict = {'dummy0_0': 0.0, 'dummy0_1': 1.0, 'dummy0_2': 0.0, 'dummy1_0': 0.0, 'dummy1_1': 1.0,
                      'dummy1_2': 0.0, 'dummy2_0': 0.0, 'dummy2_1': 0.0, 'dummy2_2': 1.0}
         nested_dict = {'dummy0': {'0': 0.0, '1': 1.0, '2': 0.0}, 'dummy1': {'0': 0.0, '1': 1.0, '2': 0.0},
                        'dummy2': {'0': 0.0, '1': 0.0, '2': 1.0}}
-        self.assertEqual(nested_dict, self.agent.nested_dict_from_atom_dict(atom_dict))
+        self.assertEqual(
+            nested_dict, self.agent.nested_dict_from_atom_dict(atom_dict))
 
     def test_resetting_issues_resets_strategy(self):
         new_issues = {"first": ["True", "False"]}
@@ -383,6 +393,14 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.agent.negotiate(self.opponent)
         self.assertTrue(
             self.agent.successful and not self.agent.negotiation_active)
+
+    def test_easy_negotiation_ends_with_acceptance_message(self):
+        self.agent.set_issues({"first": ["True", "False"]})
+        self.agent.utilities = {"first_True": 10000}
+        self.opponent.utilities = {"first_True": 10000}
+        self.agent.negotiate(self.opponent)
+        self.assertTrue(self.agent.transcript[-1].is_acceptance())
+        print(len(self.agent.transcript))
 
     def test_slightly_harder_negotiation_ends_successfully(self):
         self.agent.set_issues({"first": ["True", "False"],
@@ -443,9 +461,12 @@ class TestRandomNegotiationAgent(ut.TestCase):
         self.assertAlmostEqual(max_util, self.agent.get_max_utility())
 
     def test_absolute_reservation_value(self):
-        self.assertAlmostEqual(self.agent.absolute_reservation_value, 0.75*(100/3+pi/3))
+        self.assertAlmostEqual(
+            self.agent.absolute_reservation_value, 0.75*(100/3+pi/3))
 
     def test_index_max_utilities(self):
-        self.assertAlmostEqual(self.agent.max_utility_by_issue["boolean"], 100 / 3)
-        self.assertAlmostEqual(self.agent.max_utility_by_issue['float'], pi / 3)
+        self.assertAlmostEqual(
+            self.agent.max_utility_by_issue["boolean"], 100 / 3)
+        self.assertAlmostEqual(
+            self.agent.max_utility_by_issue['float'], pi / 3)
         self.assertAlmostEqual(self.agent.max_utility_by_issue['integer'], 0)

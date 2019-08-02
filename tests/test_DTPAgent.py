@@ -74,7 +74,8 @@ class TestDTPNegotiationAgent(unittest.TestCase):
                                              self.opponent.agent_name,
                                              "offer",
                                              self.optimal_offer)
-        self.termination_message = Message(self.agent.agent_name, self.opponent.agent_name, "terminate", None)
+        self.termination_message = Message(
+            self.agent.agent_name, self.opponent.agent_name, "terminate", None)
 
         # print("In method: {}".format( self._testMethodName))
 
@@ -100,7 +101,8 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         self.assertAlmostEqual(score, 43)
 
     def test_dtp_generates_optimal_bid_in_simple_negotiation_setting(self):
-        expected_message = Message(self.agent.agent_name, self.opponent.agent_name, "offer", self.optimal_offer)
+        expected_message = Message(
+            self.agent.agent_name, self.opponent.agent_name, "offer", self.optimal_offer)
         response = self.agent.generate_next_message_from_transcript()
         self.assertEqual(expected_message, response)
 
@@ -112,11 +114,12 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         third_message = self.agent.generate_next_message_from_transcript()
         forth_message = self.agent.generate_next_message_from_transcript()
         fifth_message = self.agent.generate_next_message_from_transcript()
-        self.assertFalse(first_message == second_message == third_message == forth_message == fifth_message)
+        self.assertFalse(first_message == second_message ==
+                         third_message == forth_message == fifth_message)
 
     def test_generatingOfferRecordsItInUtilities(self):
         self.agent.generate_next_message_from_transcript()
-        self.assertTrue(({"'float_0.1'": 1.0, 'boolean_True': 1.0,'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
+        self.assertTrue(({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
                           'integer_5': 0.0, 'integer_9': 1.0}, 201.0) in self.agent.generated_offers)
 
     def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
@@ -158,7 +161,8 @@ class TestDTPNegotiationAgent(unittest.TestCase):
             "integer_5": -100,
         }
         self.agent.set_utilities(self.arbitrary_utilities)
-        self.assertEqual(self.termination_message, self.agent.generate_next_message_from_transcript())
+        self.assertEqual(self.termination_message,
+                         self.agent.generate_next_message_from_transcript())
 
     def test_countsMessagesCorrectlyInSuccessfulNegotiation(self):
         self.agent.negotiate(self.opponent)
@@ -181,21 +185,25 @@ class TestDTPNegotiationAgent(unittest.TestCase):
     def test_valuesViolatingConstraintWithNonAgreementCost(self):
         constraint = AtomicConstraint("boolean", "True")
         self.agent.add_own_constraint(constraint)
-        self.assertEqual(self.agent.calc_offer_utility(self.optimal_offer), self.agent.non_agreement_cost)
+        self.assertEqual(self.agent.calc_offer_utility(
+            self.optimal_offer), self.agent.non_agreement_cost)
 
     def test_generatesConstraintIfOfferViolates(self):
         self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        self.opponent.receive_message(self.agent.generate_next_message_from_transcript())
+        self.opponent.receive_message(
+            self.agent.generate_next_message_from_transcript())
         opponent_response = self.opponent.generate_next_message_from_transcript()
         # one of the constraints was added manually and the integer ones are added because of their utilities
         # but we can't control which is sent so we check for all of them
         self.assertTrue(opponent_response.constraint == AtomicConstraint("integer", "4") or
                         opponent_response.constraint == AtomicConstraint("integer", "5") or
-                        opponent_response.constraint == AtomicConstraint("boolean", "True"))
+                        opponent_response.constraint == AtomicConstraint("boolean", "True") or
+                        opponent_response.constraint == AtomicConstraint("integer", "2"))
 
     def test_recordsConstraintIfReceived(self):
         self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        self.opponent.receive_message(self.agent.generate_next_message_from_transcript())
+        self.opponent.receive_message(
+            self.agent.generate_next_message_from_transcript())
         self.agent.receive_response(self.opponent)
         self.agent.generate_next_message_from_transcript()
         # one of the constraints was added manually and the integer ones are added because of their utilities

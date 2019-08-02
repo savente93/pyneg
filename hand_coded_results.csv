@@ -1,0 +1,9 @@
+scenario,strat,success,total_message_count
+base,random,True,2
+base,constraint,True,2
+base,random,True,2
+base,constraint,True,2
+base,random,True,2
+base,constraint,True,2
+base,random,False,202
+base,constraint,False,20000

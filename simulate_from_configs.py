@@ -74,27 +74,16 @@ def simulate_negotiation(row_and_index, q):
            'bin_a': bin_a,
            "asym_difficulty": asym_difficulty,
            'success': agent_a.successful,
-           'total_message_count': agent_a.message_count + agent_b.opponent.message_count,
+           'total_message_count': agent_a.message_count + agent_b.message_count,
            'numb_of_own_constraints': 0,
            'numb_of_discovered_constraints': 0,
            'numb_of_opponent_constraints': 0,
            'strat': agent_a.strat_name,
-           'opponent_strat': agent_b.opponent.strat_name,
+           'opponent_strat': agent_b.strat_name,
            'utility': agent_a.calc_offer_utility(agent_a.transcript[-1].offer),
-           'opponent_utility': agent_b.opponent.calc_offer_utility(agent_b.transcript[-1].offer),
-           'total_generated_offers': agent_a.total_offers_generated + agent_b.opponent.total_offers_generated
+           'opponent_utility': agent_b.calc_offer_utility(agent_b.transcript[-1].offer),
+           'total_generated_offers': agent_a.total_offers_generated + agent_b.total_offers_generated
            })
-
-    # if both_accept == 0:
-    #     with iolock:
-    #         print("transcript of impossible negotiation:")
-    #         print("A's transcript: {}".format(agent_a.transcript))
-    #         print("B's transcript: {}".format(agent_b.transcript))
-    #         print(agent_a.absolute_reservation_value)
-    #         print(agent_a.utilities)
-    #         print(agent_b.absolute_reservation_value)
-    #         print(agent_b.utilities)
-    #         print()
 
 
 def record_results(q, file):

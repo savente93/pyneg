@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="90d0f7c8-8989-42b2-944d-c3685d09a6a2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/constraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/constraintNegotiationAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_table_of_scenarios.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_table_of_scenarios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generateScenario.py" beforeDir="false" afterPath="$PROJECT_DIR$/generateScenario.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/randomNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/randomNegotiationAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_ConstraintNegotiationAgent.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -446,7 +441,7 @@
       <workItem from="1564081167615" duration="20423000" />
       <workItem from="1564214197820" duration="2801000" />
       <workItem from="1564406212807" duration="5000" />
-      <workItem from="1564474829553" duration="10291000" />
+      <workItem from="1564474829553" duration="11121000" />
     </task>
     <servers />
   </component>

@@ -37,22 +37,23 @@ results = pd.DataFrame(
     columns=['scenario', 'strat', 'success', 'total_message_count'])
 
 
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(base_case_a, base_case_b)
-# agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"base",
-# 	'strat': "random",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    base_case_a, base_case_b)
+agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                 issues, name="agent_a")
+agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                 issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "base",
+                          'strat': "random",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
 
 issues, utils_a, utils_b = neg_scenario_from_util_matrices(
     base_case_a, base_case_b)
 agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                 issues, name="agent_a", verbose=Verbosity.debug)
+                                 issues, name="agent_a")
 agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
                                  issues, name="agent_b")
 agent_a.setup_negotiation(issues)
@@ -64,94 +65,100 @@ results = results.append({'scenario': "base",
 print("base case done")
 
 
-# single_constrained_a = base_case_a.copy()
-# single_constrained_b = base_case_b.copy()
-# single_constrained_a[0,0] = constr_val
+single_constrained_a = base_case_a.copy()
+single_constrained_b = base_case_b.copy()
+single_constrained_a[0, 0] = constr_val
 
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(single_constrained_a, single_constrained_b)
-# agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"single",
-# 	'strat': "random",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    single_constrained_a, single_constrained_b)
+agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                 issues, name="agent_a")
+agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                 issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "single",
+                          'strat': "random",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
 
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(single_constrained_a, single_constrained_b)
-# agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"single",
-# 	'strat': "constraint",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
-# print("single constraint case done")
-
-
-# col_constrained_a = base_case_a.copy()
-# col_constrained_b = base_case_b.copy()
-# col_constrained_a[:,0] = constr_val
-
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(col_constrained_a, col_constrained_b)
-# agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"col",
-# 	'strat': "random",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
-
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(col_constrained_a, col_constrained_b)
-# agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"col",
-# 	'strat': "constraint",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
-# print("col constraint case done")
-
-# row_constrained_a = base_case_a.copy()
-# row_constrained_b = base_case_b.copy()
-# row_constrained_a[1,:3] = constr_val
-# row_constrained_b[1,3:] = constr_val
-
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(row_constrained_a, row_constrained_b)
-# agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"row",
-# 	'strat': "random",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    single_constrained_a, single_constrained_b)
+agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                     issues, name="agent_a")
+agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                     issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "single",
+                          'strat': "constraint",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+print("single constraint case done")
 
 
-# issues, utils_a, utils_b = neg_scenario_from_util_matrices(row_constrained_a, row_constrained_b)
-# agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-#                                  issues, name="agent_a")
-# agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-#                                  issues, name="agent_b")
-# agent_a.setup_negotiation(issues)
-# agent_a.negotiate(agent_b)
-# results = results.append({'scenario':"row",
-# 	'strat': "constraint",
-# 	'success': agent_a.successful,
-# 	'total_message_count': agent_a.message_count + agent_b.message_count},ignore_index=True)
+col_constrained_a = base_case_a.copy()
+col_constrained_b = base_case_b.copy()
+col_constrained_a[:, 0] = constr_val
 
-# results.to_csv("hand_coded_results.csv", index=False)
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    col_constrained_a, col_constrained_b)
+agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                 issues, name="agent_a")
+agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                 issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "col",
+                          'strat': "random",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    col_constrained_a, col_constrained_b)
+agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                     issues, name="agent_a")
+agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                     issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "col",
+                          'strat': "constraint",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+print("col constraint case done")
+
+row_constrained_a = base_case_a.copy()
+row_constrained_b = base_case_b.copy()
+row_constrained_a[1, :3] = constr_val
+row_constrained_b[1, 3:] = constr_val
+
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    row_constrained_a, row_constrained_b)
+agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                 issues, name="agent_a")
+agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                 issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "row",
+                          'strat': "random",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+
+
+issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    row_constrained_a, row_constrained_b)
+agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+                                     issues, name="agent_a")
+agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+                                     issues, name="agent_b")
+agent_a.setup_negotiation(issues)
+agent_a.negotiate(agent_b)
+results = results.append({'scenario': "row",
+                          'strat': "constraint",
+                          'success': agent_a.successful,
+                          'total_message_count': agent_a.message_count + agent_b.message_count}, ignore_index=True)
+
+results.to_csv("hand_coded_results.csv", index=False)
 print(results)

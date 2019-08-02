@@ -12,6 +12,7 @@ from problog import get_evaluatable
 import gc
 from enum import IntEnum
 
+
 class Verbosity(IntEnum):
     none = 0
     messages = 1
@@ -20,14 +21,15 @@ class Verbosity(IntEnum):
 
 
 class RandomNegotiationAgent:
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=100,
+    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=100,
                  smart=True, name="", verbose=Verbosity.none, reporting=False, utility_computation_method="python",
                  issue_weights=None, linear_additive_utility=True):
 
         if utility_computation_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
         if (not linear_additive_utility and issue_weights) or (not linear_additive_utility and utility_computation_method == 'python'):
-            raise ValueError("Cannot use issue weights or python computation for non-linear-additive utility")
+            raise ValueError(
+                "Cannot use issue weights or python computation for non-linear-additive utility")
         self.utility_computation_method = utility_computation_method
         self.verbose = verbose
         self.uuid = uuid
@@ -100,14 +102,15 @@ class RandomNegotiationAgent:
         return self.message_count > self.max_rounds
 
     def send_message(self, opponent, msg):
-        self.message_count += 1
+        self.record_message(msg)
         if self.verbose >= Verbosity.messages:
             print("{} is sending {}".format(self.agent_name, msg))
         opponent.receive_message(msg)
 
     def negotiate(self, opponent):
         # self is assumed to have setup the negotiation (including issues) beforehand
-        self.negotiation_active = self.call_for_negotiation(opponent, self.issues)
+        self.negotiation_active = self.call_for_negotiation(
+            opponent, self.issues)
 
         # make initial offer
         # if self.negotiationActive:
@@ -189,20 +192,24 @@ class RandomNegotiationAgent:
             log.rename(self.uuid)
             log['runtime'] = time() - self.start_time
             log['success'] = self.successful
-            log['total_message_count'] = self.message_count + self.opponent.message_count
+            log['total_message_count'] = len(self.transcript)
             log['numb_of_own_constraints'] = 0
             log['numb_of_discovered_constraints'] = 0
             log['numb_of_opponent_constraints'] = 0
             log['strat'] = self.strat_name
             log['opponent_strat'] = self.opponent.strat_name
             log['utility'] = self.calc_offer_utility(self.transcript[-1].offer)
-            log['opponent_utility'] = self.opponent.calc_offer_utility(self.transcript[-1].offer)
-            log['total_generated_offers'] = self.total_offers_generated + self.opponent.total_offers_generated
+            log['opponent_utility'] = self.opponent.calc_offer_utility(
+                self.transcript[-1].offer)
+            log['total_generated_offers'] = self.total_offers_generated + \
+                self.opponent.total_offers_generated
             log['issue_count'] = len(self.issues)
-            log['issue_cardinality'] = len(next(iter(self.issues)))  # issue cardinality is uniform
+            # issue cardinality is uniform
+            log['issue_cardinality'] = len(next(iter(self.issues)))
             log['rho_a'] = self.relative_reservation_value
             log['rho_b'] = self.opponent.relative_reservation_value
-            log.to_csv(abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
+            log.to_csv(
+                abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
 
     def receive_message(self, msg):
         if self.verbose >= Verbosity.messages:
@@ -223,10 +230,12 @@ class RandomNegotiationAgent:
                        for key in issues.keys()}
         self.generate_decision_facts()
         if not weights:
-            self.issue_weights = {issue: 1/len(self.issues) for issue in self.issues.keys()}
+            self.issue_weights = {
+                issue: 1/len(self.issues) for issue in self.issues.keys()}
         else:
             if not self.is_dist(weights) and len(weights) != len(self.issues.keys()):
-                raise ValueError("{} Tried to set non dist weights: {}".format(self.agent_name, weights))
+                raise ValueError("{} Tried to set non dist weights: {}".format(
+                    self.agent_name, weights))
             issue_iter = iter(self.issues.keys())
             for i in range(len(weights)):
                 self.issue_weights[next(issue_iter)] = weights[i]
@@ -356,19 +365,25 @@ class RandomNegotiationAgent:
             elif self.verbose >= Verbosity.debug and not self.linear_additive_utility:
                 print("calculating offer with problog and no issue weights")
             # probability_of_facts = self.file_based_problog(problog_model)
-            probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
-            probability_of_facts = {str(atom): prob for atom, prob in probability_of_facts.items()}
+            probability_of_facts = get_evaluatable("sdd").create_from(
+                PrologString(problog_model)).evaluate().copy()
+            probability_of_facts = {
+                str(atom): prob for atom, prob in probability_of_facts.items()}
             for fact, reward in self.utilities.items():
                 if fact in probability_of_facts.keys():
                     if self.linear_additive_utility:
                         issue, _ = self.issue_value_tuple_from_atom(fact)
-                        score += reward * probability_of_facts[fact] * self.issue_weights[issue]
+                        score += reward * \
+                            probability_of_facts[fact] * \
+                            self.issue_weights[issue]
                         if self.verbose >= Verbosity.debug:
-                            print("{} is worth {} with weight {} contributing a total of {}.".format(fact,reward * probability_of_facts[fact],self.issue_weights[issue],reward * probability_of_facts[fact]*self.issue_weights[issue]))
+                            print("{} is worth {} with weight {} contributing a total of {}.".format(
+                                fact, reward * probability_of_facts[fact], self.issue_weights[issue], reward * probability_of_facts[fact]*self.issue_weights[issue]))
                     else:
                         score += reward * probability_of_facts[fact]
                         if self.verbose >= Verbosity.debug:
-                            print("{} is contributing {} to the score of this offer.".format(fact,reward * probability_of_facts[fact]))
+                            print("{} is contributing {} to the score of this offer.".format(
+                                fact, reward * probability_of_facts[fact]))
             if self.verbose >= Verbosity.reasoning:
                 print("{}: offer is worth {}".format(self.agent_name, score))
             # self.utilityCache[frozenOffer] = score
@@ -387,14 +402,17 @@ class RandomNegotiationAgent:
                 atom = self.atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
                     if self.verbose >= Verbosity.debug:
-                        print("Adding utility: {} for atom {}".format(self.utilities[atom], atom))
+                        print("Adding utility: {} for atom {}".format(
+                            self.utilities[atom], atom))
                         if self.verbose >= Verbosity.debug:
                             print("{} is worth {} with weight {} contributing a total of {}.".format(atom,
-                                                                                                     self.utilities[atom] * offer[issue][value],
+                                                                                                     self.utilities[atom] *
+                                                                                                     offer[issue][value],
                                                                                                      self.issue_weights[issue],
                                                                                                      self.utilities[atom] * offer[issue][value] * self.issue_weights[issue]))
 
-                    score += self.utilities[atom] * offer[issue][value] * self.issue_weights[issue]
+                    score += self.utilities[atom] * \
+                        offer[issue][value] * self.issue_weights[issue]
 
         return score
 
@@ -404,13 +422,16 @@ class RandomNegotiationAgent:
         problog_model = self.compile_problog_model(strat)
         # fact_probabilities = self.file_based_problog(problog_model)
 
-        probability_of_facts = get_evaluatable("sdd").create_from(PrologString(problog_model)).evaluate().copy()
-        probability_of_facts = {str(atom): prob for atom, prob in probability_of_facts.items()}
+        probability_of_facts = get_evaluatable("sdd").create_from(
+            PrologString(problog_model)).evaluate().copy()
+        probability_of_facts = {
+            str(atom): prob for atom, prob in probability_of_facts.items()}
 
         score = 0
         for fact, reward in self.utilities.items():
             issue, _ = self.issue_value_tuple_from_atom(fact)
-            score += reward * probability_of_facts[fact] * self.issue_weights[issue]
+            score += reward * \
+                probability_of_facts[fact] * self.issue_weights[issue]
 
         return score
 
@@ -448,7 +469,8 @@ class RandomNegotiationAgent:
     def file_based_problog(model):
         # using the python implementation of problog causes memory leaks
         # so we use the commandline interface separately to avoid this as a temp fix
-        model_path = abspath(join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
+        model_path = abspath(
+            join(dirname(__file__), 'models/temp_model_{}.pl'.format(getpid())))
         with open(model_path, "w") as temp_file:
             temp_file.write(model)
 
@@ -481,7 +503,8 @@ class RandomNegotiationAgent:
 
         if self.verbose >= Verbosity.reasoning:
             if self.verbose >= Verbosity.debug:
-                print("absolute reservation value: {}\n offer utility: {}".format(self.absolute_reservation_value,util))
+                print("absolute reservation value: {}\n offer utility: {}".format(
+                    self.absolute_reservation_value, util))
             if util >= self.absolute_reservation_value:
                 print("{}: offer is acceptable\n".format(self.agent_name))
             else:
@@ -494,8 +517,10 @@ class RandomNegotiationAgent:
         for issue in strat_dict.keys():
             atom_list = []
             for value in strat_dict[issue].keys():
-                atom = RandomNegotiationAgent.atom_from_issue_value(issue, value)
-                atom_list.append("{prob}::{atom}".format(prob=strat_dict[issue][value], atom=atom))
+                atom = RandomNegotiationAgent.atom_from_issue_value(
+                    issue, value)
+                atom_list.append("{prob}::{atom}".format(
+                    prob=strat_dict[issue][value], atom=atom))
 
             return_string += ";".join(atom_list) + ".\n"
 
@@ -522,7 +547,8 @@ class RandomNegotiationAgent:
     def generate_offer_message(self):
         offer = self.generate_offer()
         if not offer:
-            termination_message = Message(self.agent_name, self.opponent.agent_name, "terminate", None)
+            termination_message = Message(
+                self.agent_name, self.opponent.agent_name, "terminate", None)
             self.record_message(termination_message)
             return termination_message
         # Generate offer can return a termination message
@@ -535,15 +561,18 @@ class RandomNegotiationAgent:
     def generate_offer(self):
         listed_strat = {}
         for issue in self.strat_dict.keys():
-            listed_strat[issue] = list(map(list, zip(*self.strat_dict[issue].items())))
+            listed_strat[issue] = list(
+                map(list, zip(*self.strat_dict[issue].items())))
 
         for _ in range(self.max_generation_tries):
             self.total_offers_generated += 1
             offer = {}
             for issue in self.strat_dict.keys():
                 # convert from dict to two lists so we can use np.random.choice
-                chosen_value = str(choice(listed_strat[issue][0], 1, p=listed_strat[issue][1])[0])
-                offer[issue] = {key: 0 for key in self.strat_dict[issue].keys()}
+                chosen_value = str(
+                    choice(listed_strat[issue][0], 1, p=listed_strat[issue][1])[0])
+                offer[issue] = {
+                    key: 0 for key in self.strat_dict[issue].keys()}
                 offer[issue][chosen_value] = 1
             if self.accepts(offer):
                 return offer
@@ -573,7 +602,8 @@ class RandomNegotiationAgent:
         atom_dict = {}
         for issue in nested_dict.keys():
             for value in nested_dict[issue].keys():
-                atom = RandomNegotiationAgent.atom_from_issue_value(issue,value)
+                atom = RandomNegotiationAgent.atom_from_issue_value(
+                    issue, value)
                 atom_dict[atom] = nested_dict[issue][value]
 
         return atom_dict
