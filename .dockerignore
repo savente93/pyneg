@@ -1,0 +1,12 @@
+*.png
+*.log
+*.csv
+*.txt
+__pycache__
+.idea
+.vscode
+.pytest_cache
+coverage_report
+logs
+models
+.ipynb_checkpoints
