@@ -178,12 +178,15 @@ class TestRandomNegotiationAgent(ut.TestCase):
                                               self.arbitrary_reservation_value,
                                               self.arbitrary_non_agreement_cost,
                                               self.generic_issues,
+                                              name="agent",
+                                              verbose=Verbosity.debug,
                                               utility_computation_method="python")
-        python_agent.agent_name = "agent"
+
         python_agent.set_utilities(self.arbitrary_utilities)
         python_agent.setup_negotiation(self.generic_issues)
         python_agent.init_uniform_strategy()
-        expected_uniform_strat_util = (50 - 100)/3 - 3.2 / 3 + pi / 3
+        expected_uniform_strat_util = (
+            100*0.5) / 3 + (-1000*0.1)/3 + (-3.2*0.1 + pi*0.1)/3
         self.assertAlmostEqual(python_agent.calc_strat_utility(
             python_agent.strat_dict), expected_uniform_strat_util)
 

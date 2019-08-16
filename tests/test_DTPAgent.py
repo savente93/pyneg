@@ -166,7 +166,8 @@ class TestDTPNegotiationAgent(unittest.TestCase):
 
     def test_countsMessagesCorrectlyInSuccessfulNegotiation(self):
         self.agent.negotiate(self.opponent)
-        self.assertEqual(self.agent.message_count, 1)
+        # one offer and one acceptance message
+        self.assertEqual(self.agent.message_count, 2)
 
     def test_countsMessagesCorrectlyInUnsuccessfulNegotiation(self):
         self.arbitrary_utilities = {
@@ -180,7 +181,7 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         }
         self.agent.set_utilities(self.arbitrary_utilities)
         self.agent.negotiate(self.opponent)
-        self.assertEqual(self.agent.message_count, 1)
+        self.assertEqual(self.agent.message_count, 2)
 
     def test_valuesViolatingConstraintWithNonAgreementCost(self):
         constraint = AtomicConstraint("boolean", "True")
