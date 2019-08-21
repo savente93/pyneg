@@ -57,7 +57,7 @@ class TestEnumerationNegotiationAgent(ut.TestCase):
                                                                  'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                                  'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0})
         self.assertTrue(self.agent.is_offer_valid(next_best_offer))
-        first = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
         second = self.agent.generate_offer()
         self.assertEqual(next_best_offer, second, second)
 
@@ -66,8 +66,8 @@ class TestEnumerationNegotiationAgent(ut.TestCase):
                                                                  'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                                  'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0})
         self.assertTrue(self.agent.is_offer_valid(next_best_offer))
-        first = self.agent.generate_offer()
-        second = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
         thrid = self.agent.generate_offer()
         self.assertEqual(next_best_offer, thrid, thrid)
 

@@ -1,11 +1,7 @@
 from numpy import isclose
 
 
-class Constraint:
-    pass
-
-
-class AtomicConstraint(Constraint):
+class AtomicConstraint():
     def __init__(self, issue, value):
         self.issue = str(issue)
         self.value = str(value)

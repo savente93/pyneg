@@ -11,19 +11,6 @@ from generateScenario import *
 from randomNegotiationAgent import RandomNegotiationAgent
 
 
-iolock = Lock()
-
-def send_message(message):
-    conn = http.client.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-                 urllib.parse.urlencode({
-                     "token": "a6k31wnqq7vg9qriuxukwaf5ebjasd",
-                     "user": "uUNPbABuEqPWvR5Y9agZeB59ZiMkqo",
-                     "message": message,
-                 }), {"Content-type": "application/x-www-form-urlencoded"})
-    conn.getresponse()
-
-
 def neg_scenario_from_util_matrices(u_a, u_b):
     utils_a = {}
     utils_b = {}
@@ -42,13 +29,11 @@ def neg_scenario_from_util_matrices(u_a, u_b):
 
 
 def simulate_negotiation(row_and_index, q):
-    index, row = row_and_index
-    n, m, tau_a, tau_b, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, bin_a, asym_difficulty = row.values
+    _, row = row_and_index
+    n, m, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b = row.values
     n = int(n)
     m = int(m)
-    tau_a = int(tau_a)
-    tau_b = int(tau_b)
-    u_a, u_b = generate_utility_matrices((n, m), tau_a, tau_b)
+    u_a, u_b = generate_utility_matrices((n, m), 1, 1, kind="lex")
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
     negotiation_id = uuid4()
     non_agreement_cost = -(2 ** 24)  # just a really big number
@@ -62,8 +47,6 @@ def simulate_negotiation(row_and_index, q):
 
     q.put({"n": n,
            "m": m,
-           "tau_a": tau_a,
-           "tau_b": tau_b,
            "rho_a": rho_a,
            "rho_b": rho_b,
            "a_accepts": a_accepts,
@@ -71,8 +54,6 @@ def simulate_negotiation(row_and_index, q):
            "both_accept": both_accept,
            "p_a": p_a,
            "p_b": p_b,
-           'bin_a': bin_a,
-           "asym_difficulty": asym_difficulty,
            'success': agent_a.successful,
            'total_message_count': agent_a.message_count + agent_b.message_count,
            'numb_of_own_constraints': 0,
@@ -90,7 +71,7 @@ def record_results(q, file):
     from pandas import DataFrame, Series
     counter = 0
     chunksize = 5
-    results = DataFrame(columns=["n", "m", "tau_a", "tau_b", "rho_a", "rho_b", "a_accepts", "b_accepts", "both_accept",
+    results = DataFrame(columns=["n", "m", "rho_a", "rho_b", "a_accepts", "b_accepts", "both_accept",
                                  "p_a", "p_b"])
     while True:
         m = q.get()
@@ -132,20 +113,24 @@ class ParallelSimulator:
             remove(self.results_file)
         print("Starting recorder")
         # this must be apply_async because it has to work while the rest of the code continues
-        self.work_pool.apply_async(record_results, (self.output_queue, self.results_file))
+        self.work_pool.apply_async(
+            record_results, (self.output_queue, self.results_file))
 
         print("Starting workers")
-        self.work_pool.starmap(simulate_negotiation, [(x, self.output_queue) for x in self.parameter_space])
+        self.work_pool.starmap(simulate_negotiation, [(
+            x, self.output_queue) for x in self.parameter_space])
+
 
 @try_except_notify
 def main():
-    result_file = "simulation_results.csv"
-    config_file = "admissible_configs.csv"
+    result_file = "results.csv"
+    config_file = "configs.csv"
     configs = pd.read_csv(config_file, index_col=False)
 
     param_space = configs.iterrows()
     simulator = ParallelSimulator(result_file, param_space, max_queue_size=15)
     simulator.start_work()
     simulator.shutdown()
+
 
 main(1)

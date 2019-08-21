@@ -1,7 +1,6 @@
 from os.path import abspath, dirname, join
 from re import search, sub
 from time import time
-
 from pandas import Series
 from numpy import isclose
 from constraint import AtomicConstraint
@@ -57,7 +56,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
     def add_utilities(self, new_utils):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
-        
+
         if self.automatic_constraint_generation and self.issues:
             for atom, util in new_utils.items():
                 new_constraints = self.generate_new_constraints()
@@ -261,7 +260,8 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             self.report()
             return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
-        violated_constraint = self.generate_violated_constraint(last_message.offer)
+        violated_constraint = self.generate_violated_constraint(
+            last_message.offer)
         return self.generate_offer_message(violated_constraint)
 
     def generate_offer_message(self, constr=None):
@@ -314,7 +314,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         for constr in self.own_constraints:
             for issue in offer.keys():
                 for value in offer[issue].keys():
-                    if not constr.is_satisfied_by_assignment(issue, value) and not isclose(offer[issue][value],0):
+                    if not constr.is_satisfied_by_assignment(issue, value) and not isclose(offer[issue][value], 0):
                         return AtomicConstraint(issue, value)
 
     def calc_offer_utility(self, offer):

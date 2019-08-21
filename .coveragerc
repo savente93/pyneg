@@ -3,7 +3,7 @@ omit =
     /usr/*
     */.local/*
 include = 
-    /home/sam/Documents/ProbLogNeg/*
+    /home/sam/Documents/code/work/pyneg/*
 
 [html]
 directory = coverage_report

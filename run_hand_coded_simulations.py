@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
 from constraintNegotiationAgent import ConstraintNegotiationAgent
 from constraint import AtomicConstraint
@@ -51,98 +51,97 @@ results = pd.DataFrame(
              'numb_of_b_constraints_present',
              'numb_of_b_that_are_constraints_discovered'])
 
-for _ in range(numb_of_trails):
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        base_case_a, base_case_b)
-    agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_a")
-    agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_b")
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "base",
-                              'strat': "random",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': 0,
-                              'numb_of_a_that_are_constraints_discovered': 0,
-                              'numb_of_b_constraints_present': 0,
-                              'numb_of_b_that_are_constraints_discovered': 0,
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+for iter_count in range(numb_of_trails):
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     base_case_a, base_case_b)
+    # agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_a")
+    # agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_b")
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "base",
+    #                           'strat': "random",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': 0,
+    #                           'numb_of_a_that_are_constraints_discovered': 0,
+    #                           'numb_of_b_constraints_present': 0,
+    #                           'numb_of_b_that_are_constraints_discovered': 0,
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
 
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        base_case_a, base_case_b)
-    agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
-    agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "base",
-                              'strat': "constraint",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': len(agent_a.own_constraints),
-                              'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
-                              'numb_of_b_constraints_present': len(agent_b.own_constraints),
-                              'numb_of_b_that_are_constraints_discovered': len(agent_b.opponent_constraints),
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
-    print("base case done")
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     base_case_a, base_case_b)
+    # agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
+    # agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "base",
+    #                           'strat': "constraint",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': len(agent_a.own_constraints),
+    #                           'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
+    #                           'numb_of_b_constraints_present': len(agent_b.own_constraints),
+    #                           'numb_of_b_that_are_constraints_discovered': len(agent_b.opponent_constraints),
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+    # print("base case done")
 
-    single_constrained_a = base_case_a.copy()
-    single_constrained_b = base_case_b.copy()
-    single_constrained_a[0, 0] = constr_val
+    # single_constrained_a = base_case_a.copy()
+    # single_constrained_b = base_case_b.copy()
+    # single_constrained_a[0, 0] = constr_val
 
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        single_constrained_a, single_constrained_b)
-    agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_a")
-    agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_b")
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     single_constrained_a, single_constrained_b)
+    # agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_a")
+    # agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_b")
 
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "single",
-                              'strat': "random",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': 0,
-                              'numb_of_a_that_are_constraints_discovered': 0,
-                              'numb_of_b_constraints_present': 0,
-                              'numb_of_b_that_are_constraints_discovered': 0,
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "single",
+    #                           'strat': "random",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': 0,
+    #                           'numb_of_a_that_are_constraints_discovered': 0,
+    #                           'numb_of_b_constraints_present': 0,
+    #                           'numb_of_b_that_are_constraints_discovered': 0,
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
 
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        single_constrained_a, single_constrained_b)
-    agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
-    agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
-    for i in range(base_case_a.shape[0]):
-        for j in range(base_case_a.shape[1]):
-            if single_constrained_a[i, j] == constr_val:
-                agent_a.add_own_constraint(AtomicConstraint(
-                    "issue{}".format(i), "{}".format(j)))
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     single_constrained_a, single_constrained_b)
+    # agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
+    # agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
+    # for i in range(base_case_a.shape[0]):
+    #     for j in range(base_case_a.shape[1]):
+    #         if single_constrained_a[i, j] == constr_val:
+    #             agent_a.add_own_constraint(AtomicConstraint(
+    #                 "issue{}".format(i), "{}".format(j)))
 
-    for i in range(base_case_b.shape[0]):
-        for j in range(base_case_b.shape[1]):
-            if single_constrained_b[i, j] == constr_val:
-                agent_b.add_own_constraint(AtomicConstraint(
-                    "issue{}".format(i), "{}".format(j)))
+    # for i in range(base_case_b.shape[0]):
+    #     for j in range(base_case_b.shape[1]):
+    #         if single_constrained_b[i, j] == constr_val:
+    #             agent_b.add_own_constraint(AtomicConstraint(
+    #                 "issue{}".format(i), "{}".format(j)))
 
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "single",
-                              'strat': "constraint",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': len(agent_a.own_constraints),
-                              'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
-                              'numb_of_b_constraints_present': len(agent_b.own_constraints),
-                              'numb_of_b_that_are_constraints_discovered': len(agent_a.opponent_constraints),
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
-    print("single constraint case done")
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "single",
+    #                           'strat': "constraint",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': len(agent_a.own_constraints),
+    #                           'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
+    #                           'numb_of_b_constraints_present': len(agent_b.own_constraints),
+    #                           'numb_of_b_that_are_constraints_discovered': len(agent_a.opponent_constraints),
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+    # print("single constraint case done")
 
     col_constrained_a = base_case_a.copy()
     col_constrained_b = base_case_b.copy()
-    col_constrained_a[:, 0] = constr_val
-
+    col_constrained_a[:, 4] = constr_val
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(
         col_constrained_a, col_constrained_b)
     agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
@@ -188,58 +187,57 @@ for _ in range(numb_of_trails):
                               'numb_of_b_constraints_present': len(agent_b.own_constraints),
                               'numb_of_b_that_are_constraints_discovered': len(agent_a.opponent_constraints),
                               'total_message_count': len(agent_a.transcript)}, ignore_index=True)
-    print("col constraint case done")
 
-    row_constrained_a = base_case_a.copy()
-    row_constrained_b = base_case_b.copy()
-    row_constrained_a[1, :3] = constr_val
-    row_constrained_b[1, 3:] = constr_val
+    # row_constrained_a = base_case_a.copy()
+    # row_constrained_b = base_case_b.copy()
+    # row_constrained_a[1, :3] = constr_val
+    # row_constrained_b[1, 3:] = constr_val
 
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        row_constrained_a, row_constrained_b)
-    agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_a")
-    agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                     issues, max_rounds=max_rounds, name="agent_b")
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "row",
-                              'strat': "random",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': 0,
-                              'numb_of_a_that_are_constraints_discovered': 0,
-                              'numb_of_b_constraints_present': 0,
-                              'numb_of_b_that_are_constraints_discovered': 0,
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     row_constrained_a, row_constrained_b)
+    # agent_a = RandomNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_a")
+    # agent_b = RandomNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                  issues, max_rounds=max_rounds, name="agent_b")
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "row",
+    #                           'strat': "random",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': 0,
+    #                           'numb_of_a_that_are_constraints_discovered': 0,
+    #                           'numb_of_b_constraints_present': 0,
+    #                           'numb_of_b_that_are_constraints_discovered': 0,
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
 
-    issues, utils_a, utils_b = neg_scenario_from_util_matrices(
-        row_constrained_a, row_constrained_b)
-    agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
-    agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
-                                         issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
-    for i in range(base_case_a.shape[0]):
-        for j in range(base_case_a.shape[1]):
-            if row_constrained_a[i, j] == constr_val:
-                agent_a.add_own_constraint(AtomicConstraint(
-                    "issue{}".format(i), "{}".format(j)))
+    # issues, utils_a, utils_b = neg_scenario_from_util_matrices(
+    #     row_constrained_a, row_constrained_b)
+    # agent_a = ConstraintNegotiationAgent(negotiation_id, utils_a, [], rho_a, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_a")
+    # agent_b = ConstraintNegotiationAgent(negotiation_id, utils_b, [], rho_b, non_agreement_cost,
+    #                                      issues, max_rounds=max_rounds, automatic_constraint_generation=False, name="agent_b")
+    # for i in range(base_case_a.shape[0]):
+    #     for j in range(base_case_a.shape[1]):
+    #         if row_constrained_a[i, j] == constr_val:
+    #             agent_a.add_own_constraint(AtomicConstraint(
+    #                 "issue{}".format(i), "{}".format(j)))
 
-    for i in range(base_case_b.shape[0]):
-        for j in range(base_case_b.shape[1]):
-            if row_constrained_a[i, j] == constr_val:
-                agent_b.add_own_constraint(AtomicConstraint(
-                    "issue{}".format(i), "{}".format(j)))
-    agent_a.setup_negotiation(issues)
-    agent_a.negotiate(agent_b)
-    results = results.append({'scenario': "row",
-                              'strat': "constraint",
-                              'success': agent_a.successful,
-                              'numb_of_a_constraints_present': len(agent_a.own_constraints),
-                              'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
-                              'numb_of_b_constraints_present': len(agent_b.own_constraints),
-                              'numb_of_b_that_are_constraints_discovered': len(agent_a.opponent_constraints),
-                              'total_message_count': len(agent_a.transcript)}, ignore_index=True)
-
+    # for i in range(base_case_b.shape[0]):
+    #     for j in range(base_case_b.shape[1]):
+    #         if row_constrained_a[i, j] == constr_val:
+    #             agent_b.add_own_constraint(AtomicConstraint(
+    #                 "issue{}".format(i), "{}".format(j)))
+    # agent_a.setup_negotiation(issues)
+    # agent_a.negotiate(agent_b)
+    # results = results.append({'scenario': "row",
+    #                           'strat': "constraint",
+    #                           'success': agent_a.successful,
+    #                           'numb_of_a_constraints_present': len(agent_a.own_constraints),
+    #                           'numb_of_a_that_are_constraints_discovered': len(agent_b.opponent_constraints),
+    #                           'numb_of_b_constraints_present': len(agent_b.own_constraints),
+    #                           'numb_of_b_that_are_constraints_discovered': len(agent_a.opponent_constraints),
+    #                           'total_message_count': len(agent_a.transcript)}, ignore_index=True)
+    print("iter {i} done!".format(i=iter_count))
 
 results.to_csv("hand_coded_results.csv", index=False)
 # print(results)

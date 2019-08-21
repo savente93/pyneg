@@ -50,10 +50,16 @@ def generate_utility_matrices(shape, tau_a, tau_b=None, kind="binary"):
 
         return u_a, u_b
 
+    elif kind == "lex":
+        n, m = shape
+        u_a = np.arange(n*m).reshape(n, m) ** 4
+        u_b = np.flip(np.arange(n*m)).reshape(n, m) ** 4
+
+        return u_a, u_b
+
     else:
-        raise ValueError("Trying to generate unknown type of utility matrix: {}".format(kind))
-
-
+        raise ValueError(
+            "Trying to generate unknown type of utility matrix: {}".format(kind))
 
 
 def pretty_print_matrix(mat):
@@ -61,7 +67,8 @@ def pretty_print_matrix(mat):
     m = len(mat[0])
     max_elt = max([max(row) for row in mat.values()])
     max_len = len(str(max_elt))
-    print((" " * (max_len + 2)) + ", ".join(map(lambda x: "{:>{}}".format(x, max_len), map(str, range(m)))))
+    print((" " * (max_len + 2)) +
+          ", ".join(map(lambda x: "{:>{}}".format(x, max_len), map(str, range(m)))))
     for i in range(n):
         st = "{}, ".format(i) + ", ".join(
             map(lambda x: "{:>{}}".format(x, max_len), map(lambda j: str(mat[i][j]), range(len(mat[i])))))
