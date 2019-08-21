@@ -5,14 +5,12 @@ from numpy.random import choice
 import subprocess as sp
 from os import remove, getpid
 from os.path import join, abspath, dirname
-from pandas import Series
-from time import time
 from problog.program import PrologString
 from problog import get_evaluatable
-import gc
 from enum import IntEnum
 
-standard_max_rounds = 100
+standard_max_rounds = 200
+
 
 class Verbosity(IntEnum):
     none = 0
@@ -22,24 +20,19 @@ class Verbosity(IntEnum):
 
 
 class RandomNegotiationAgent:
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
-                 smart=True, name="", verbose=Verbosity.none, reporting=False, utility_computation_method="python",
+    def __init__(self, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
+                 smart=True, name="", verbose=Verbosity.none, utility_computation_method="python",
                  issue_weights=None, linear_additive_utility=True):
 
         if utility_computation_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
-        if (not linear_additive_utility and issue_weights) or (not linear_additive_utility and utility_computation_method == 'python'):
-            raise ValueError(
-                "Cannot use issue weights or python computation for non-linear-additive utility")
         self.utility_computation_method = utility_computation_method
         self.verbose = verbose
-        self.uuid = uuid
-        self.reporting = reporting
         if not max_rounds:
             self.max_rounds = standard_max_rounds
         else:
             self.max_rounds = max_rounds
-        
+
         self.non_agreement_cost = non_agreement_cost
         self.relative_reservation_value = reservation_value
         self.absolute_reservation_value = None
@@ -57,14 +50,8 @@ class RandomNegotiationAgent:
         self.decision_facts = []
         self.next_message_to_send = None
         self.opponent = None
-        self.start_time = 0
         self.issue_weights = None
         self.max_utility_by_issue = {}
-        if self.utility_computation_method == "python":
-            self.linear_additive_utility = True
-        else:
-            self.linear_additive_utility = linear_additive_utility
-        # self.utilityCache = {}
 
         if issues:
             self.set_issues(issues, issue_weights)
@@ -72,9 +59,7 @@ class RandomNegotiationAgent:
             self.set_utilities(utilities, reservation_value)
 
         self.max_generation_tries = 500
-
         self.set_kb(kb)
-        self.smart = smart
 
     def set_kb(self, new_kb):
         if len(new_kb) > 0:
@@ -118,20 +103,17 @@ class RandomNegotiationAgent:
             opponent, self.issues)
 
         # make initial offer
-        # if self.negotiationActive:
-        #     oppResponse = opponent.receiveMessage(self.generateOfferMessage())
-        self.start_time = time()
         while self.negotiation_active:
             self.next_message_to_send = self.generate_next_message_from_transcript()
             if self.next_message_to_send:
-                self.send_message(opponent,self.next_message_to_send)
-                # opponent.receive_message(self.next_message_to_send)
+                self.send_message(opponent, self.next_message_to_send)
                 self.receive_response(opponent)
 
         return self.successful
 
     def receive_response(self, sender):
-        response = sender.send_message(self,sender.generate_next_message_from_transcript())
+        response = sender.send_message(
+            self, sender.generate_next_message_from_transcript())
         self.record_message(response)
 
     def record_message(self, msg):
@@ -149,25 +131,21 @@ class RandomNegotiationAgent:
         if last_message.is_acceptance():
             self.negotiation_active = False
             self.successful = True
-            self.report()
             return None
 
         if last_message.is_termination():
             self.negotiation_active = False
             self.successful = False
-            self.report()
             return None
 
         if self.should_terminate(last_message):
             self.negotiation_active = False
             self.successful = False
-            self.report()
             return Message(self.agent_name, self.opponent.agent_name, "terminate", last_message.offer)
 
         if self.accepts(last_message.offer):
             self.negotiation_active = False
             self.successful = True
-            self.report()
             return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
         return self.generate_offer_message()
@@ -184,38 +162,6 @@ class RandomNegotiationAgent:
                 self.agent_name, self.utilities))
             print("{} Starting strategy: {}".format(
                 self.agent_name, self.strat_dict))
-
-    def report(self):
-        if self.verbose >= Verbosity.messages:
-            if self.successful:
-                print("Negotiation succeeded after {} rounds!".format(
-                    self.message_count))
-            else:
-                print("Negotiation failed after {} rounds!".format(
-                    self.message_count))
-        if self.reporting:
-            log = Series()
-            log.rename(self.uuid)
-            log['runtime'] = time() - self.start_time
-            log['success'] = self.successful
-            log['total_message_count'] = len(self.transcript)
-            log['numb_of_own_constraints'] = 0
-            log['numb_of_discovered_constraints'] = 0
-            log['numb_of_opponent_constraints'] = 0
-            log['strat'] = self.strat_name
-            log['opponent_strat'] = self.opponent.strat_name
-            log['utility'] = self.calc_offer_utility(self.transcript[-1].offer)
-            log['opponent_utility'] = self.opponent.calc_offer_utility(
-                self.transcript[-1].offer)
-            log['total_generated_offers'] = self.total_offers_generated + \
-                self.opponent.total_offers_generated
-            log['issue_count'] = len(self.issues)
-            # issue cardinality is uniform
-            log['issue_cardinality'] = len(next(iter(self.issues)))
-            log['rho_a'] = self.relative_reservation_value
-            log['rho_b'] = self.opponent.relative_reservation_value
-            log.to_csv(
-                abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
 
     def receive_message(self, msg):
         if self.verbose >= Verbosity.messages:
@@ -393,7 +339,6 @@ class RandomNegotiationAgent:
             if self.verbose >= Verbosity.reasoning:
                 print("{}: offer is worth {}".format(self.agent_name, score))
             # self.utilityCache[frozenOffer] = score
-            gc.collect()
             return score
 
         elif self.utility_computation_method == "python":

@@ -1,0 +1,7 @@
+*.pyc
+*/__pycache__/*
+*.pkl
+*.png
+coverage_report/
+.vscode
+.ipynb_checkpoints

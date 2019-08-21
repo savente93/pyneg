@@ -89,15 +89,5 @@ def main():
     simulator.start_work()
     simulator.shutdown()
 
-    # numb_of_bins = 20
-    # results = pd.read_csv(result_file, index_col=False)
-    # bin_index = pd.IntervalIndex(
-    #     pd.cut(results['p_a'], bins=numb_of_bins)).sort_values().unique()
-    # results['bin_a'] = pd.cut(results['p_a'], bins=bin_index)
-    # results['asym_difficulty'] = results['p_a'] - results['p_b']
-    # # [(np.abs(results['asym_difficulty']) < 0.5)] # & (results['p_a'] > 0.01) & (results['p_a'] < 0.95)]
-    # admissible_configs = results
-    # admissible_configs.to_csv("admissible_configs.csv", index=False)
 
-
-main(1)
+main(1, "tokens.pkl")
