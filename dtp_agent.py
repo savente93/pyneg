@@ -7,15 +7,17 @@ from problog.program import PrologString
 from numpy import isclose
 from numpy.random import choice
 import gc
-from constraintNegotiationAgent import ConstraintNegotiationAgent
-from randomNegotiationAgent import Verbosity
+from constr_agent import ConstrAgent
+from rand_agent import Verbosity
 
 
-class DTPNegotiationAgent(ConstraintNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues=None, max_rounds=None,
-                 verbose=0, name="", reporting=True, automatic_constraint_generation=True):
-        super().__init__(uuid, utilities, kb, reservation_value, non_agreement_cost, issues=issues,
-                         max_rounds=max_rounds, verbose=verbose, name=name, reporting=reporting, automatic_constraint_generation=True)
+class DTPAgent(ConstrAgent):
+    def __init__(self, name, utilities, kb, reservation_value,
+                 non_agreement_cost, issues=None, max_rounds=None,
+                 verbose=Verbosity.none, auto_constraints=True):
+        super().__init__(name, utilities, kb, reservation_value, non_agreement_cost,
+                         issues=issues, max_rounds=max_rounds, verbose=verbose,
+                         auto_constraints=True)
         self.strat_name = "DTP"
         self.generated_offers = []
 

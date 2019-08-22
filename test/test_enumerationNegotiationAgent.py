@@ -1,8 +1,8 @@
 import unittest as ut
 from math import pi
-from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
+from rand_agent import RandAgent, Verbosity
 from enumerationNegotiationAgent import EnumerationNegotiationAgent
-from simulate_from_configs import neg_scenario_from_util_matrices
+from utils import neg_scenario_from_util_matrices
 from message import Message
 from uuid import uuid4
 import numpy as np

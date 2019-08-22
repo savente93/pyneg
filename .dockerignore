@@ -2,6 +2,7 @@
 *.log
 *.csv
 *.txt
+*.pkl
 __pycache__
 .idea
 .vscode
@@ -10,3 +11,4 @@ coverage_report
 logs
 models
 .ipynb_checkpoints
+results

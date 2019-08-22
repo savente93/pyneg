@@ -1,9 +1,9 @@
 import unittest
 
-from constraint import AtomicConstraint
+from atomic_constraint import AtomicConstraint
 
 
-class TestNoGood(unittest.TestCase):
+class TestAtomicConstraint(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -28,7 +28,8 @@ class TestNoGood(unittest.TestCase):
         self.assertFalse(self.test_atomic_constraint == other)
 
     def test_equal_no_goods_are_equal(self):
-        self.assertTrue(self.test_atomic_constraint, self.test_atomic_constraint)
+        self.assertTrue(self.test_atomic_constraint,
+                        self.test_atomic_constraint)
 
     def test_dict_of_no_good_contains_it(self):
         d = {self.test_atomic_constraint: "hello World"}

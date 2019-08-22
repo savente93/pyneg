@@ -1,15 +1,12 @@
 import unittest
-from uuid import uuid4
-
 from math import pi
 from numpy.random import choice
-
-from constraint import AtomicConstraint
-from constraintNegotiationAgent import ConstraintNegotiationAgent, Verbosity
+from atomic_constraint import AtomicConstraint
+from constr_agent import ConstrAgent, Verbosity
 from message import Message
 
 
-class TestConstraintNegotiationAgent(unittest.TestCase):
+class TestConstrAgent(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -20,6 +17,8 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         pass
 
     def setUp(self):
+        self.agent_name = "agent"
+        self.opponent_name = "opponent"
         self.generic_issues = {
             "boolean": [True, False],
             "integer": list(range(10)),
@@ -59,22 +58,19 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.violating_offer["integer"]["3"] = 1
         self.violating_offer['float']["0.6"] = 1
 
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-                                                self.arbitrary_utilities,
-                                                self.arbitrary_kb,
-                                                self.arbitrary_reservation_value,
-                                                self.arbitrary_non_agreement_cost,
-                                                self.generic_issues,
-                                                verbose=0)
-        self.agent.agent_name = "agent"
-        self.opponent = ConstraintNegotiationAgent(uuid4(),
-                                                   self.arbitrary_utilities,
-                                                   self.arbitrary_kb,
-                                                   self.arbitrary_reservation_value,
-                                                   self.arbitrary_non_agreement_cost,
-                                                   self.generic_issues,
-                                                   verbose=0)
-        self.opponent.agent_name = "opponent"
+        self.agent = ConstrAgent(self.agent_name,
+                                 self.arbitrary_utilities,
+                                 self.arbitrary_kb,
+                                 self.arbitrary_reservation_value,
+                                 self.arbitrary_non_agreement_cost,
+                                 self.generic_issues)
+        self.opponent = ConstrAgent(self.opponent_name,
+                                    self.arbitrary_utilities,
+                                    self.arbitrary_kb,
+                                    self.arbitrary_reservation_value,
+                                    self.arbitrary_non_agreement_cost,
+                                    self.generic_issues)
+
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.call_for_negotiation(self.opponent, self.generic_issues)
 
@@ -129,22 +125,19 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
             "boolean_True": 100,
             "'float_0.5'": pi
         }
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-                                                self.arbitrary_utilities,
-                                                self.arbitrary_kb,
-                                                self.arbitrary_reservation_value,
-                                                self.arbitrary_non_agreement_cost,
-                                                self.generic_issues,
-                                                verbose=0)
-        self.agent.agent_name = "agent"
-        self.opponent = ConstraintNegotiationAgent(uuid4(),
-                                                   self.arbitrary_utilities,
-                                                   self.arbitrary_kb,
-                                                   self.arbitrary_reservation_value,
-                                                   self.arbitrary_non_agreement_cost,
-                                                   self.generic_issues,
-                                                   verbose=0)
-        self.opponent.agent_name = "opponent"
+        self.agent = ConstrAgent(self.agent_name,
+                                 self.arbitrary_utilities,
+                                 self.arbitrary_kb,
+                                 self.arbitrary_reservation_value,
+                                 self.arbitrary_non_agreement_cost,
+                                 self.generic_issues)
+
+        self.opponent = ConstrAgent(self.opponent_name,
+                                    self.arbitrary_utilities,
+                                    self.arbitrary_kb,
+                                    self.arbitrary_reservation_value,
+                                    self.arbitrary_non_agreement_cost,
+                                    self.generic_issues)
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.opponent = self.opponent
 
@@ -205,14 +198,14 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
                                  self.opponent.agent_name, "terminate", None), agent_response)
 
     def test_receiving_constraint_on_binary_constraint_doesnt_result_in_zero_strategy(self):
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-                                                self.arbitrary_utilities,
-                                                self.arbitrary_kb,
-                                                self.arbitrary_reservation_value,
-                                                self.arbitrary_non_agreement_cost,
-                                                self.generic_issues,
-                                                automatic_constraint_generation=False)
-        self.agent.agent_name = "agent"
+        self.agent = ConstrAgent(self.agent_name,
+                                 self.arbitrary_utilities,
+                                 self.arbitrary_kb,
+                                 self.arbitrary_reservation_value,
+                                 self.arbitrary_non_agreement_cost,
+                                 self.generic_issues,
+                                 auto_constraints=False)
+
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.strat_dict = self.nested_test_offer
 
@@ -238,18 +231,17 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
         self.arbitrary_opponent_utilities = {
             "boolean_False": 1000
         }
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-                                                self.arbitrary_agent_utilities,
-                                                self.arbitrary_kb,
-                                                self.arbitrary_reservation_value, self.arbitrary_non_agreement_cost,
-                                                self.generic_issues,
-                                                verbose=0)
-        self.agent.agent_name = "agent"
-        self.opponent = ConstraintNegotiationAgent(uuid4(),
-                                                   self.arbitrary_opponent_utilities, self.arbitrary_kb,
-                                                   self.arbitrary_reservation_value, self.arbitrary_non_agreement_cost,
-                                                   self.generic_issues, verbose=0)
-        self.opponent.agent_name = "opponent"
+        self.agent = ConstrAgent(self.agent_name,
+                                 self.arbitrary_agent_utilities,
+                                 self.arbitrary_kb,
+                                 self.arbitrary_reservation_value, self.arbitrary_non_agreement_cost,
+                                 self.generic_issues)
+
+        self.opponent = ConstrAgent(self.opponent_name,
+                                    self.arbitrary_opponent_utilities, self.arbitrary_kb,
+                                    self.arbitrary_reservation_value, self.arbitrary_non_agreement_cost,
+                                    self.generic_issues)
+
         self.agent.setup_negotiation(self.generic_issues)
         # self.agent.call_for_negotiation(self.opponent, self.generic_issues)
 
@@ -314,43 +306,44 @@ class TestConstraintNegotiationAgent(unittest.TestCase):
 
     def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
         temp_issues = {
-            "boolean1" : [True, False],
-            "boolean2" : [True, False]
+            "boolean1": [True, False],
+            "boolean2": [True, False]
         }
-        temp_utils = { 
-            "boolean1_True" : -1000,
+        temp_utils = {
+            "boolean1_True": -1000,
             "boolean1_False": 0,
-            "boolean2_True" : 1000,
-            "boolean2_False" : 1000
+            "boolean2_True": 1000,
+            "boolean2_False": 1000
 
         }
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-            temp_utils, [], 0.1, -(2**31), temp_issues)
+        self.agent = ConstrAgent(self.agent_name,
+                                 temp_utils, [], 0.1, -(2**31), temp_issues)
         self.agent.add_utilities(temp_utils)
-        self.assertEqual(len(self.agent.own_constraints), 1 )
+        self.assertEqual(len(self.agent.own_constraints), 1)
 
     def test_constraint_doesnt_trigger_if_offer_doesnt_assign_it(self):
         temp_issues = {
-            "integer1" : range(3),
-            "integer2" : range(3)
+            "integer1": range(3),
+            "integer2": range(3)
         }
-        temp_utils = { 
-            "integer1_0" : -10000,
-            "integer1_1" : 10,
-            "integer1_2" : 0,
-            "integer2_0" : 0,
-            "integer2_1" : 10,
-            "integer2_2" : 10
+        temp_utils = {
+            "integer1_0": -10000,
+            "integer1_1": 10,
+            "integer1_2": 0,
+            "integer2_0": 0,
+            "integer2_1": 10,
+            "integer2_2": 10
         }
-        self.agent = ConstraintNegotiationAgent(uuid4(),
-            temp_utils, [], 0.1, -(2**31), temp_issues,name="agent")
+        self.agent = ConstrAgent(self.agent_name,
+                                 temp_utils, [], 0.1, -(2**31), temp_issues)
         self.agent.add_utilities(temp_utils)
         self.agent.opponent = self.opponent
         offer = {
-            "integer1" : {"0": 0, "1" : 0, "2": 1},
-            "integer2" : {"0": 1, "1" : 0, "2": 0}
+            "integer1": {"0": 0, "1": 0, "2": 1},
+            "integer2": {"0": 1, "1": 0, "2": 0}
         }
-        offer_msg = Message(self.opponent.agent_name, self.agent.agent_name,"offer", offer)
+        offer_msg = Message(self.opponent.agent_name,
+                            self.agent.agent_name, "offer", offer)
         self.agent.receive_message(offer_msg)
         response = self.agent.generate_next_message_from_transcript()
         self.assertFalse(response.constraint)

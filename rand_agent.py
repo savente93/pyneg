@@ -19,14 +19,15 @@ class Verbosity(IntEnum):
     debug = 3
 
 
-class RandomNegotiationAgent:
-    def __init__(self, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
-                 smart=True, name="", verbose=Verbosity.none, utility_computation_method="python",
-                 issue_weights=None, linear_additive_utility=True):
+class RandAgent:
+    def __init__(self,  name, utilities, kb, reservation_value, non_agreement_cost,
+                 issues, max_rounds=standard_max_rounds, verbose=Verbosity.none,
+                 util_method="python", issue_weights=None):
 
-        if utility_computation_method not in ['problog', 'python']:
+        if util_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
-        self.utility_computation_method = utility_computation_method
+        self.name = name
+        self.util_method = util_method
         self.verbose = verbose
         if not max_rounds:
             self.max_rounds = standard_max_rounds
@@ -64,7 +65,7 @@ class RandomNegotiationAgent:
     def set_kb(self, new_kb):
         if len(new_kb) > 0:
             self.linear_additive_utility = False
-            self.utility_computation_method = "problog"
+            self.util_method = "problog"
             self.issue_weights = {}
 
         self.kb = new_kb
@@ -310,7 +311,7 @@ class RandomNegotiationAgent:
 
         score = 0
 
-        if self.utility_computation_method == "problog":
+        if self.util_method == "problog":
             problog_model = self.compile_problog_model(offer)
             if self.verbose >= Verbosity.debug and self.linear_additive_utility:
                 print("calculating offer with problog and issue weights")
@@ -341,7 +342,7 @@ class RandomNegotiationAgent:
             # self.utilityCache[frozenOffer] = score
             return score
 
-        elif self.utility_computation_method == "python":
+        elif self.util_method == "python":
             if self.verbose >= Verbosity.debug:
                 print("calculating offer with python")
             return self.calc_lookup_utility(offer)
@@ -468,7 +469,7 @@ class RandomNegotiationAgent:
         for issue in strat_dict.keys():
             atom_list = []
             for value in strat_dict[issue].keys():
-                atom = RandomNegotiationAgent.atom_from_issue_value(
+                atom = RandAgent.atom_from_issue_value(
                     issue, value)
                 atom_list.append("{prob}::{atom}".format(
                     prob=strat_dict[issue][value], atom=atom))
@@ -553,7 +554,7 @@ class RandomNegotiationAgent:
         atom_dict = {}
         for issue in nested_dict.keys():
             for value in nested_dict[issue].keys():
-                atom = RandomNegotiationAgent.atom_from_issue_value(
+                atom = RandAgent.atom_from_issue_value(
                     issue, value)
                 atom_dict[atom] = nested_dict[issue][value]
 

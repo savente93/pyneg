@@ -1,4 +1,4 @@
-from constraint import Constraint
+from atomic_constraint import AtomicConstraint
 
 
 class Message():
@@ -94,7 +94,8 @@ class Message():
             return "Message({sender}, {recip}, {kind}, \n{offer}, \n{constraint}\n)".format(sender=self.sender,
                                                                                             recip=self.recipient,
                                                                                             kind=self.kind,
-                                                                                            offer=self.format_offer(self.offer),
+                                                                                            offer=self.format_offer(
+                                                                                                self.offer),
                                                                                             constraint=self.constraint)
         else:
             return "Message({sender}, {recip}, {kind}, \n{offer}\n)".format(sender=self.sender,

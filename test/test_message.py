@@ -1,6 +1,5 @@
 import unittest
-
-from constraint import AtomicConstraint
+from atomic_constraint import AtomicConstraint
 from message import Message
 
 
@@ -19,17 +18,23 @@ class TestMessage(unittest.TestCase):
             "False": 1}, "third": {"-3": 1}, "forth": {"1.8": 1}}
         self.empty_message = Message("A", "B", "empty", None)
         self.accept_message = Message("A", "B", "accept", self.generic_offer)
-        self.termination_message = Message("A", "B", "terminate", self.generic_offer)
-        self.constraint_message = Message("A", "B", "offer", self.generic_offer, AtomicConstraint("dummy1", "True"))
+        self.termination_message = Message(
+            "A", "B", "terminate", self.generic_offer)
+        self.constraint_message = Message(
+            "A", "B", "offer", self.generic_offer, AtomicConstraint("dummy1", "True"))
         self.offer_message = Message("A", "B", "offer", self.generic_offer)
         self.offer_string = "    first: True\n    second: False\n    third: -3\n    forth: 1.8"
-        self.offer_message_string = "Message(A, B, offer, \n{offer}\n)".format(offer=self.offer_string)
-        self.empty_message_string = "Message(A, B, empty)".format(offer=self.offer_string)
-        self.accept_message_string = "Message(A, B, accept, \n{}\n)".format(self.offer_string)
+        self.offer_message_string = "Message(A, B, offer, \n{offer}\n)".format(
+            offer=self.offer_string)
+        self.empty_message_string = "Message(A, B, empty)".format(
+            offer=self.offer_string)
+        self.accept_message_string = "Message(A, B, accept, \n{}\n)".format(
+            self.offer_string)
         self.constraint_message_string = "Message(A, B, offer, \n{offer}, \n{constraint}\n)".format(
             offer=self.offer_string,
             constraint=AtomicConstraint("dummy1", "True"))
-        self.termination_message_string = "Message(A, B, terminate, \n{}\n)".format(self.offer_string)
+        self.termination_message_string = "Message(A, B, terminate, \n{}\n)".format(
+            self.offer_string)
 
     def tearDown(self):
         pass

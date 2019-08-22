@@ -1,10 +1,10 @@
-from DTPAgent import DTPNegotiationAgent
+from dtp_agent import DTPAgent
 from message import Message
 import unittest
-from constraint import AtomicConstraint
+from atomic_constraint import AtomicConstraint
 
 
-class TestDTPNegotiationAgent(unittest.TestCase):
+class TestDTPAgent(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -15,6 +15,8 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         pass
 
     def setUp(self):
+        self.agent_name = "agent"
+        self.opponent_name = "opponent"
         self.generic_issues = {
             "boolean": [True, False],
             "integer": list(range(10)),
@@ -54,20 +56,18 @@ class TestDTPNegotiationAgent(unittest.TestCase):
         self.optimal_offer["integer"]["9"] = 1.0
         self.optimal_offer['float']["0.1"] = 1.0
 
-        self.agent = DTPNegotiationAgent("",
-                                         self.arbitrary_utilities,
-                                         self.arbitrary_kb,
-                                         self.arbitrary_reservation_value,
-                                         self.arbitrary_non_agreement_cost,
-                                         verbose=0)
-        self.agent.agent_name = "agent"
-        self.opponent = DTPNegotiationAgent("",
-                                            self.arbitrary_utilities,
-                                            self.arbitrary_kb,
-                                            self.arbitrary_reservation_value,
-                                            self.arbitrary_non_agreement_cost,
-                                            verbose=0)
-        self.opponent.agent_name = "opponent"
+        self.agent = DTPAgent(self.agent_name,
+                              self.arbitrary_utilities,
+                              self.arbitrary_kb,
+                              self.arbitrary_reservation_value,
+                              self.arbitrary_non_agreement_cost)
+
+        self.opponent = DTPAgent(self.opponent_name,
+                                 self.arbitrary_utilities,
+                                 self.arbitrary_kb,
+                                 self.arbitrary_reservation_value,
+                                 self.arbitrary_non_agreement_cost)
+
         self.agent.setup_negotiation(self.generic_issues)
         self.agent.call_for_negotiation(self.opponent, self.generic_issues)
         self.optimal_offer_message = Message(self.agent.agent_name,
@@ -76,8 +76,6 @@ class TestDTPNegotiationAgent(unittest.TestCase):
                                              self.optimal_offer)
         self.termination_message = Message(
             self.agent.agent_name, self.opponent.agent_name, "terminate", None)
-
-        # print("In method: {}".format( self._testMethodName))
 
     def test_dt_umbrella_example(self):
         model = ''' ?::umbrella.

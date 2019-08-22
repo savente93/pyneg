@@ -5,19 +5,17 @@ from pandas import Series
 from numpy import isclose
 from constraint import AtomicConstraint
 from message import Message
-from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
+from rand_agent import RandAgent, Verbosity
 
 
-class ConstraintNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues,
-                 constraint_threshold=20, max_rounds=None, verbose=0, name="", reporting=False,
-                 utility_computation_method="python", automatic_constraint_generation=True):
+class ConstrAgent(RandAgent):
+    def __init__(self, name, utilities, kb, reservation_value, non_agreement_cost, issues,
+                 max_rounds=None, verbose=Verbosity.none, util_method="python", auto_constraints=True):
         self.own_constraints = set()
         self.opponent_constraints = set()
-        self.automatic_constraint_generation = automatic_constraint_generation
-        super().__init__(uuid, utilities, kb, reservation_value,
-                         non_agreement_cost, issues=issues, verbose=verbose, reporting=reporting,
-                         utility_computation_method=utility_computation_method, max_rounds=max_rounds)
+        self.auto_constraints = auto_constraints
+        super().__init__(name, utilities, kb, reservation_value, non_agreement_cost,
+                         issues=issues, verbose=verbose, util_method=util_method, max_rounds=max_rounds)
         self.utilities = {}
         self.add_utilities(utilities)
         self.negotiation_active = False
@@ -25,7 +23,6 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         self.successful = False
         self.strat_name = "Constrained"
         self.message_count = 0
-        self.constraint_threshold = constraint_threshold
         self.constraints_satisfiable = True
 
     def index_max_utilities(self):
@@ -57,7 +54,7 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         for atom, util in new_utils.items():
             self.utilities[atom] = util
 
-        if self.automatic_constraint_generation and self.issues:
+        if self.auto_constraints and self.issues:
             for atom, util in new_utils.items():
                 new_constraints = self.generate_new_constraints()
                 for new_constr in new_constraints:
@@ -239,25 +236,21 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
         if last_message.is_acceptance():
             self.negotiation_active = False
             self.successful = True
-            self.report()
             return None
 
         if last_message.is_termination():
             self.negotiation_active = False
             self.successful = False
-            self.report()
             return None
 
         if self.should_terminate(last_message):
             self.negotiation_active = False
             self.successful = False
-            self.report()
             return Message(self.agent_name, self.opponent.agent_name, "terminate", None)
 
         if self.accepts(last_message.offer):
             self.negotiation_active = False
             self.successful = True
-            self.report()
             return Message(self.agent_name, self.opponent.agent_name, "accept", last_message.offer)
 
         violated_constraint = self.generate_violated_constraint(
@@ -279,7 +272,6 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             termination_message = Message(
                 self.agent_name, self.opponent.agent_name, "terminate", None)
             self.record_message(termination_message)
-            self.report()
             return termination_message
 
         if not self.satisfies_all_constraints(offer):
@@ -394,37 +386,3 @@ class ConstraintNegotiationAgent(RandomNegotiationAgent):
             return super().negotiate(opponent)
         else:
             return False
-
-    def report(self):
-        if self.verbose >= Verbosity.messages:
-            if self.successful:
-                print("Negotiation succeded after {} rounds!".format(
-                    self.message_count))
-            else:
-                print("Negotiation failed after {} rounds!".format(
-                    self.message_count))
-        if self.reporting:
-            log = Series()
-            log.rename(self.uuid)
-            log['runtime'] = time() - self.start_time
-            log['success'] = self.successful
-            log['totalMessageCount'] = self.message_count + \
-                self.opponent.message_count
-            log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
-            log['totalMessageCount'] = self.message_count + \
-                self.opponent.message_count
-            log['numbOfOwnConstraints'] = len(self.own_constraints)
-            log['numbOfDiscoveredConstraints'] = len(self.opponent_constraints)
-            log['strat'] = self.strat_name
-            log['opponentStrat'] = self.opponent.strat_name
-            log['utility'] = self.calc_offer_utility(self.transcript[-1].offer)
-            log['opponentUtility'] = self.opponent.calc_offer_utility(
-                self.transcript[-1].offer)
-            log['totalGeneratedOffers'] = self.total_offers_generated + \
-                self.opponent.total_offers_generated
-            log['issueCount'] = len(self.issues)
-            # issue cardinality is uniform
-            log['issueCardinality'] = len(next(iter(self.issues)))
-            log['rho_b'] = self.opponent.relative_reservation_value
-            log.to_csv(
-                abspath(join(dirname(__file__), "logs/{}.log".format(self.uuid))), header=0)
