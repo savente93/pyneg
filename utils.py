@@ -1,5 +1,12 @@
 import numpy as np
 from itertools import product
+from numpy.random import randint
+
+
+def generate_random_utility_matrices(shape, tau_a, tau_b=None):
+    u_a = randint(0, 100, shape[0]*shape[1]).reshape(shape)
+    u_b = randint(0, 100, shape[0]*shape[1]).reshape(shape)
+    return u_a, u_b
 
 
 def generate_binary_utility_matrices(shape, tau_a, tau_b=None):
