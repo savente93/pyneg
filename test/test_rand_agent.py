@@ -145,13 +145,17 @@ class TestRandAgent(ut.TestCase):
 
     def test_calc_offer_utility_problog(self):
         problog_agent = RandAgent(self.agent_name,
-                                  self.arbitrary_utilities, self.arbitrary_kb,
+                                  self.arbitrary_utilities,
+                                  self.arbitrary_kb,
                                   self.arbitrary_reservation_value,
                                   self.arbitrary_non_agreement_cost,
-                                  self.generic_issues, util_method="problog")
+                                  self.generic_issues,
+                                  util_method="problog")
         expected_offer_utility = 100/3-1000/3 + pi/3
-        self.assertAlmostEqual(problog_agent.calc_offer_utility(
-            self.nested_test_offer), expected_offer_utility)
+        self.assertAlmostEqual(
+            problog_agent.calc_offer_utility(self.nested_test_offer),
+            expected_offer_utility
+        )
 
     def test_calc_strat_utility_problog(self):
         problog_agent = RandAgent(self.agent_name,

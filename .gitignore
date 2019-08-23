@@ -1,7 +1,8 @@
 *.pyc
-__pycache__/
+__pycache__
 *.pkl
 *.png
-coverage_report/
+coverage_report
 .vscode
 .ipynb_checkpoints
+.mypy_cache

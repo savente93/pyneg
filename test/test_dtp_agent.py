@@ -1,7 +1,8 @@
-from dtp_agent import DTPAgent
-from message import Message
 import unittest
+
+from message import Message
 from atomic_constraint import AtomicConstraint
+from dtp_agent import DTPAgent
 
 
 class TestDTPAgent(unittest.TestCase):

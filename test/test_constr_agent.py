@@ -1,6 +1,8 @@
 import unittest
 from math import pi
+
 from numpy.random import choice
+
 from atomic_constraint import AtomicConstraint
 from constr_agent import ConstrAgent, Verbosity
 from message import Message
