@@ -22,7 +22,7 @@ class Verbosity(IntEnum):
 class RandAgent:
     def __init__(self,  name, utilities, kb, reservation_value, non_agreement_cost,
                  issues, max_rounds=standard_max_rounds, verbose=Verbosity.none,
-                 util_method="python", issue_weights=None):
+                 util_method="python", issue_weights=None, linear_additive_utility=True):
 
         if util_method not in ['problog', 'python']:
             raise ValueError("unknown utility computation method")
@@ -33,7 +33,7 @@ class RandAgent:
             self.max_rounds = standard_max_rounds
         else:
             self.max_rounds = max_rounds
-
+        self.linear_additive_utility = linear_additive_utility
         self.non_agreement_cost = non_agreement_cost
         self.relative_reservation_value = reservation_value
         self.absolute_reservation_value = None
@@ -427,7 +427,7 @@ class RandAgent:
             temp_file.write(model)
 
         process = sp.Popen(["problog", model_path], stdout=sp.PIPE)
-        output, error = process.communicate()
+        output, _ = process.communicate()
 
         ans = {}
 

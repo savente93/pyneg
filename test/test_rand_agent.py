@@ -220,7 +220,7 @@ class TestRandAgent(ut.TestCase):
                                    0,
                                    0,
                                    umbrella_issues,
-                                   util_method="problog")
+                                   util_method="problog", verbose=Verbosity.debug)
         umbrella_answer = 43
 
         self.assertAlmostEqual(umbrella_agent.calc_offer_utility(

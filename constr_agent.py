@@ -3,7 +3,7 @@ from re import search, sub
 from time import time
 from pandas import Series
 from numpy import isclose
-from constraint import AtomicConstraint
+from atomic_constraint import AtomicConstraint
 from message import Message
 from rand_agent import RandAgent, Verbosity
 

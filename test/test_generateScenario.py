@@ -1,6 +1,6 @@
 import unittest
 
-from generateScenario import *
+from utils import *
 
 
 class TestConfigurationGeneration(unittest.TestCase):
@@ -24,17 +24,18 @@ class TestConfigurationGeneration(unittest.TestCase):
         pass
 
     def test_generates_matrices_of_right_dimentions(self):
-        a, b = generate_utility_matrices(self.u_a.shape, self.standard_tau_a)
+        a, b = generate_binary_utility_matrices(
+            self.u_a.shape, self.standard_tau_a)
         self.assertTrue(a.shape == (self.standard_n, self.standard_m))
         self.assertTrue(b.shape == (self.standard_n, self.standard_m))
 
     def test_tau_of_0_creates_only_0_or_1(self):
-        a, b = generate_utility_matrices(self.u_a.shape, 0)
+        a, b = generate_binary_utility_matrices(self.u_a.shape, 0)
         self.assertTrue(np.all(a == 0))
         self.assertTrue(np.all(b == 1))
 
     def test_trivial_2_by_2_example_is_counted_correctly(self):
-        u_a, u_b = generate_utility_matrices((2, 2), 1)
+        u_a, u_b = generate_binary_utility_matrices((2, 2), 1)
         a, b, both = count_acceptable_offers(u_a, u_b, 1 / 3, 1 / 3)
         self.assertEqual(a, 3)
         self.assertEqual(b, 3)
@@ -45,7 +46,7 @@ class TestConfigurationGeneration(unittest.TestCase):
         self.standard_n = 2
         self.u_a = np.zeros((self.standard_n, self.standard_m))
         self.u_b = np.zeros((self.standard_n, self.standard_m))
-        u_a, u_b = generate_utility_matrices(self.u_a.shape, 1)
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
         a, b, both = count_acceptable_offers(u_a, u_b, 0, 0)
         self.assertTrue(a == b == both == 4)
 
@@ -54,23 +55,23 @@ class TestConfigurationGeneration(unittest.TestCase):
         self.standard_n = 2
         self.u_a = np.zeros((self.standard_n, self.standard_m))
         self.u_b = np.zeros((self.standard_n, self.standard_m))
-        u_a, u_b = generate_utility_matrices(self.u_a.shape, 1)
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
         a, b, both = count_acceptable_offers(u_a, u_b, 0, 0)
         self.assertTrue(a == b == both == 3 ** 2)
 
     def test_rho_0_counts_all_possibilities_5_by_6(self):
-        u_a, u_b = generate_utility_matrices(self.u_a.shape, 1)
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
         a, b, both = count_acceptable_offers(self.u_a, self.u_b, 0, 0)
         self.assertTrue(a == b == both == self.standard_m ** self.standard_n)
 
     def test_rho_exceeds_n_makes_counts_0(self):
-        u_a, u_b = generate_utility_matrices(self.u_a.shape, 1)
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
         a, b, both = count_acceptable_offers(
             u_a, u_b, self.standard_n + 1, self.standard_n + 1)
         self.assertTrue(a == b == both == 0)
 
     def test_sum_of_rho_exceeds_n_makes_counts_0(self):
-        u_a, u_b = generate_utility_matrices(self.u_a.shape, 1)
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
         _, _, both = count_acceptable_offers(
             u_a, u_b, self.standard_n / 2, self.standard_n / 2 + 1)
         self.assertTrue(both == 0)

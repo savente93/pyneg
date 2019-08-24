@@ -36,7 +36,7 @@ class DTPAgent(ConstrAgent):
 
         process = sp.Popen(["problog", "dt", model_path,
                             "--verbose"], stdout=sp.PIPE)
-        output, error = process.communicate()
+        output, _ = process.communicate()
         decoded_output = output.decode("ascii")
         score = float(re.search(r"SCORE: (-?\d+\.\d+)",
                                 decoded_output).group(1))
