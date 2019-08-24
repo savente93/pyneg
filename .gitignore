@@ -7,3 +7,4 @@ coverage_report
 .ipynb_checkpoints
 results
 .mypy_cache
+coverage.xml
