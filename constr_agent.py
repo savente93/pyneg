@@ -3,7 +3,7 @@ from re import search, sub
 from time import time
 from pandas import Series
 from numpy import isclose
-from constraint import AtomicConstraint
+from atomic_constraint import AtomicConstraint
 from message import Message
 from rand_agent import RandAgent, Verbosity
 
@@ -14,6 +14,7 @@ class ConstrAgent(RandAgent):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.auto_constraints = auto_constraints
+        self.constraints_satisfiable = True
         super().__init__(name, utilities, kb, reservation_value, non_agreement_cost,
                          issues=issues, verbose=verbose, util_method=util_method, max_rounds=max_rounds)
         self.utilities = {}
@@ -23,7 +24,6 @@ class ConstrAgent(RandAgent):
         self.successful = False
         self.strat_name = "Constrained"
         self.message_count = 0
-        self.constraints_satisfiable = True
 
     def index_max_utilities(self):
         if self.verbose >= Verbosity.debug:

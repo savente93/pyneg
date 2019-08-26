@@ -1,6 +1,50 @@
 import numpy as np
 from itertools import product
 from numpy.random import randint
+from os import path, listdir, mkdir
+from shutil import rmtree
+from uuid import uuid4
+
+
+def setup_random_scenarios(root_dir, shape, numb_of_scenarios):
+    if path.exists(root_dir):
+        rmtree(root_dir)
+    mkdir(root_dir)
+
+    lower = 0
+    upper = 100
+
+    base_a = randint(lower, upper, shape[0]*shape[1]).reshape(shape)
+    base_b = randint(lower, upper, shape[0]*shape[1]).reshape(shape)
+
+    for _ in range(numb_of_scenarios):
+        uuid = uuid4()
+
+        scenario_dir = path.join(root_dir, str(uuid))
+        mkdir(scenario_dir)
+
+        for cntr in range(2*shape[0]):
+            instance_dir = path.join(scenario_dir, str(cntr))
+            mkdir(instance_dir)
+            constr_a, constr_b = insert_difficult_constraints(
+                base_a, base_b, cntr)
+            np.save(path.join(instance_dir, "a.npy"), constr_a)
+            np.save(path.join(instance_dir, "b.npy"), constr_b)
+
+
+def insert_difficult_constraints(a, b, numb):
+    constr = -1000
+    a_ret = a.copy()
+    b_ret = b.copy()
+    for ind in map(lambda x: np.unravel_index(x, a.shape), b.flatten().argsort()[::-1][:numb]):
+        i, j = ind
+        a_ret[i, j] = constr
+
+    for ind in map(lambda x: np.unravel_index(x, a.shape), a.flatten().argsort()[::-1][:numb]):
+        i, j = ind
+        b_ret[i, j] = constr
+
+    return a_ret, b_ret
 
 
 def generate_random_utility_matrices(shape, tau_a, tau_b=None):

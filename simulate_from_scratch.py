@@ -99,4 +99,4 @@ def main():
     simulator.shutdown()
 
 
-main(1, "tokens.pkl")
+main()

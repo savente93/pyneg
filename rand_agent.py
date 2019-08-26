@@ -53,6 +53,7 @@ class RandAgent:
         self.opponent = None
         self.issue_weights = None
         self.max_utility_by_issue = {}
+        self.opponent_constraints = set()
 
         if issues:
             self.set_issues(issues, issue_weights)
@@ -521,6 +522,11 @@ class RandAgent:
             offer = {}
             for issue in self.strat_dict.keys():
                 # convert from dict to two lists so we can use np.random.choice
+                if not isclose(sum(listed_strat[issue][1]), 1):
+                    print("invalid strat in {}: {}".format(
+                        self.agent_name, listed_strat))
+                    print(self.strat_dict[issue])
+                    raise ValueError("")
                 chosen_value = str(
                     choice(listed_strat[issue][0], 1, p=listed_strat[issue][1])[0])
                 offer[issue] = {
