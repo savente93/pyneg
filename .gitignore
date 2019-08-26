@@ -7,9 +7,9 @@ coverage_report
 .ipynb_checkpoints
 results
 .mypy_cache
+<<<<<<< HEAD
 coverage.xml
 .pytest_cache
 .venv
 .idea
 *.npy
-
