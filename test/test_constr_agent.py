@@ -347,3 +347,37 @@ class TestConstrAgent(unittest.TestCase):
         self.agent.receive_message(offer_msg)
         response = self.agent.generate_next_message_from_transcript()
         self.assertFalse(response.constraint)
+
+    def test_impossible_negotiation_ends_unsuccesfull_and_does_not_crash(self):
+        # case was found during simulations
+        utils_a = {'issue0_0': 36,
+                   'issue0_1': -1000,
+                   'issue0_2': 74,
+                   'issue1_0': -1000,
+                   'issue1_1': 90,
+                   'issue1_2': 48,
+                   'issue2_0': -1000,
+                   'issue2_1': 33,
+                   'issue2_2': -1000}
+
+        utils_b = {'issue0_0': 10,
+                   'issue0_1': 58,
+                   'issue0_2': -1000,
+                   'issue1_0': -1000,
+                   'issue1_1': -1000,
+                   'issue1_2': -1000,
+                   'issue2_0': 97,
+                   'issue2_1': 11,
+                   'issue2_2': 61}
+
+        issues = {'issue0': [0, 1, 2], 'issue1': [
+            0, 1, 2], 'issue2': [0, 1, 2]}
+        non_agreement_cost = -(2 ** 24)
+        self.agent = ConstrAgent("agent", utils_a, [], 0.5, non_agreement_cost,
+                                 issues)
+        self.opponent = ConstrAgent("opponent", utils_b, [], 0.5, non_agreement_cost,
+                                    issues)
+
+        self.agent.setup_negotiation(issues)
+        self.agent.negotiate(self.opponent)
+        self.assertFalse(self.agent.successful)
