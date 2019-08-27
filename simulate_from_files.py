@@ -1,6 +1,8 @@
 from utils import neg_scenario_from_util_matrices, count_acceptable_offers, setup_random_scenarios
 from rand_agent import RandAgent, Verbosity
 from constr_agent import ConstrAgent
+from enum_agent import EnumAgent
+from constr_enum_agent import EnumConstrAgent
 from parallel_simulator import ParallelSimulator, record_results_as_csv
 from notify import try_except_notify
 from functools import partial
@@ -48,38 +50,38 @@ def simulate_negotiations(config, q):
     b = np.load(abspath(join(_id, str(cntr), "b.npy")))
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(a, b)
     non_agreement_cost = -(2 ** 24)  # just a really big number
-    if strat == "rand":
-        agent_a = RandAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
-                            issues)
-        agent_b = RandAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
-                            issues)
-    elif strat == "enum":
-        agent_a = ConstrAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
-                              issues)
-        agent_b = ConstrAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
-                              issues)
-    elif strat == "constr_rand":
-        return
-    #     agent_a = RandAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
-    #                         issues)
-    #     agent_b = RandAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
-    #                         issues)
-    elif strat == "constr_enum":
-        return
-    #     agent_a = RandAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
-    #                         issues)
-    #     agent_b = RandAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
-    #                         issues)
-    else:
-        raise ValueError("unknown agent type: {}".format(strat))
-
-    agent_a.setup_negotiation(issues)
     try:
+        if strat == "rand":
+            agent_a = RandAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                issues)
+            agent_b = RandAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                issues)
+        elif strat == "enum":
+            agent_a = EnumAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                issues)
+            agent_b = EnumAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                issues)
+        elif strat == "constr_rand":
+            agent_a = ConstrAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                  issues)
+            agent_b = ConstrAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                  issues)
+        elif strat == "constr_enum":
+
+            agent_a = EnumConstrAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                      issues)
+            agent_b = EnumConstrAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                      issues)
+
+        else:
+            raise ValueError("unknown agent type: {}".format(strat))
+
+        agent_a.setup_negotiation(issues)
         agent_a.negotiate(agent_b)
     except Exception as e:
         print(
-            "following exception was raised in negotiation {} with counter {} using strat{}".format(
-                _id, cntr, agent_a.strat_name))
+            "following exception was raised during exceution of {}".format(
+                config))
         traceback.print_exc()
         raise RuntimeError()
 
@@ -112,9 +114,9 @@ def simulate_negotiations(config, q):
 
 @try_except_notify
 def main():
-    n_scenarios = 3
-    shape = (4, 4)
-    rho_sample_rate = 10
+    n_scenarios = 5
+    shape = (5, 5)
+    rho_sample_rate = 2
     scenario_dir = path.abspath("./src/scenarios")
     configs_file = path.abspath("./results/rand_configs.csv")
     results_file = path.abspath("./results/rand_results.csv")
@@ -131,7 +133,7 @@ def main():
     record_func = partial(record_results_as_csv, columns=csv_columns)
     param_space = product(
         *[ids,
-          range(2*shape[0]),
+          range(3*shape[0]),
           rho_a_range,
           rho_b_range,
           strats])
