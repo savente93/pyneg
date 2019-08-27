@@ -1,7 +1,9 @@
 import http.client
 import urllib
 import traceback
-from pickle import load
+from os import environ
+import requests
+.content
 
 
 def try_except_notify(func):
@@ -31,14 +33,22 @@ def try_except_notify(func):
     return try_except_function
 
 
-def send_message(message, token_file):
-    with open(token_file, "rb") as f:
-        user_token, api_token = load(f)
-    conn = http.client.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-                 urllib.parse.urlencode({
-                     "token": user_token,
-                     "user": api_token,
-                     "message": message,
-                 }), {"Content-type": "application/x-www-form-urlencoded"})
-    conn.getresponse()
+# def send_message(message, token_file):
+
+    # conn = http.client.HTTPSConnection("api.pushover.net:443")
+    # conn.request("POST", "/1/messages.json",
+    #              urllib.parse.urlencode({
+    #                  "token": user_token,
+    #                  "user": api_token,
+    #                  "message": message,
+    #              }), {"Content-type": "application/x-www-form-urlencoded"})
+    # conn.getresponse()
+
+
+def send_message(message):
+    user_token = environ.get("PUSHOVER_USR_TOKEN")
+    api_token = environ.get("PUSHOVER_API_TOKEN")
+    requests.post("http://api.pushover.net/1/messages.json", data={
+        "message": message,
+        "token": environ.get("PUSHOVER_API_TOKEN"),
+        "user": environ.get("PUSHOVER_USR_TOKEN")})
