@@ -7,7 +7,7 @@ from os import remove, getpid
 from os.path import join, abspath, dirname
 from pandas import Series
 from time import time
-from randomNegotiationAgent import RandomNegotiationAgent
+from rand_agent import RandAgent
 from problog.program import PrologString
 from problog import get_evaluatable
 import gc
@@ -25,14 +25,15 @@ class Verbosity(IntEnum):
     debug = 3
 
 
-class EnumerationNegotiationAgent(RandomNegotiationAgent):
-    def __init__(self, uuid, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
-                 smart=True, name="", verbose=Verbosity.none, reporting=False, issue_weights=None, linear_additive_utility=True):
+class EnumAgent(RandAgent):
+    # TODO implement consession rate
+    def __init__(self, name, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds=standard_max_rounds,
+                 verbose=Verbosity.none, issue_weights=None, linear_additive_utility=True):
+        super().__init__(name, utilities, kb, reservation_value, non_agreement_cost, issues, max_rounds,
+                         verbose=Verbosity.none, issue_weights=issue_weights)
         self.utility_computation_method = "python"
         self.linear_additive_utility = True
         self.verbose = verbose
-        self.uuid = uuid
-        self.reporting = reporting
         if not max_rounds:
             self.max_rounds = standard_max_rounds
         else:
@@ -66,20 +67,6 @@ class EnumerationNegotiationAgent(RandomNegotiationAgent):
             self.set_utilities(utilities, reservation_value)
 
         self.set_kb(kb)
-        self.smart = smart
-
-    def generate_decision_facts(self):
-        self.decision_facts = []
-        for issue in self.issues.keys():
-            fact_list = []
-            for value in self.issues[issue]:
-                if "." in str(value):
-                    fact_list.append("'{issue}_{value}'".format(
-                        issue=issue, value=value))
-                else:
-                    fact_list.append("{issue}_{value}".format(
-                        issue=issue, value=value))
-            self.decision_facts.append(fact_list)
 
     def init_offer_generator(self):
         if not self.utilities or not self.issues:
@@ -130,29 +117,3 @@ class EnumerationNegotiationAgent(RandomNegotiationAgent):
                 offer[issue][self.sorted_utils[issue]
                              [self.current_offer_indices[issue]][0]] = 1
             return offer
-
-    @staticmethod
-    def atom_dict_from_nested_dict(nested_dict):
-        atom_dict = {}
-        for issue in nested_dict.keys():
-            for value in nested_dict[issue].keys():
-                atom = RandomNegotiationAgent.atom_from_issue_value(
-                    issue, value)
-                atom_dict[atom] = nested_dict[issue][value]
-
-        return atom_dict
-
-    @staticmethod
-    def format_offer(offer, indent_level=1):
-        if type(offer) == Message:
-            offer = offer.offer
-        string = ""
-        if not offer:
-            return string
-        for issue in offer.keys():
-            string += " " * indent_level * 4 + '{}: '.format(issue)
-            for key in offer[issue].keys():
-                if offer[issue][key] == 1:
-                    string += "{}\n".format(key)
-                    break
-        return string[:-1]  # remove trailing newline

@@ -1,14 +1,14 @@
 import unittest as ut
 from math import pi
-from randomNegotiationAgent import RandomNegotiationAgent, Verbosity
-from enumerationNegotiationAgent import EnumerationNegotiationAgent
-from simulate_from_configs import neg_scenario_from_util_matrices
+from rand_agent import RandAgent, Verbosity
+from enum_agent import EnumAgent
+from utils import neg_scenario_from_util_matrices
 from message import Message
 from uuid import uuid4
 import numpy as np
 
 
-class TestEnumerationNegotiationAgent(ut.TestCase):
+class TestEnumAgent(ut.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -24,20 +24,18 @@ class TestEnumerationNegotiationAgent(ut.TestCase):
         self.arbitrary_reservation_value = 0.75
         self.arbitrary_non_agreement_cost = -1000
 
-        self.agent = EnumerationNegotiationAgent(uuid4(),
-                                                 self.utilities,
-                                                 [],
-                                                 self.arbitrary_reservation_value,
-                                                 self.arbitrary_non_agreement_cost,
-                                                 self.issues)
-        self.agent.agent_name = "agent"
-        self.opponent = EnumerationNegotiationAgent(uuid4(),
-                                                    self.utilities,
-                                                    [],
-                                                    self.arbitrary_reservation_value,
-                                                    self.arbitrary_non_agreement_cost,
-                                                    self.issues)
-        self.opponent.agent_name = "opponent"
+        self.agent = EnumAgent("agent",
+                               self.utilities,
+                               [],
+                               self.arbitrary_reservation_value,
+                               self.arbitrary_non_agreement_cost,
+                               self.issues)
+        self.opponent = EnumAgent("opponent",
+                                  self.utilities,
+                                  [],
+                                  self.arbitrary_reservation_value,
+                                  self.arbitrary_non_agreement_cost,
+                                  self.issues)
         self.agent.setup_negotiation(self.issues)
         self.agent.opponent = self.opponent
         self.opponent.opponent = self.agent
@@ -57,7 +55,7 @@ class TestEnumerationNegotiationAgent(ut.TestCase):
                                                                  'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                                  'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0})
         self.assertTrue(self.agent.is_offer_valid(next_best_offer))
-        first = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
         second = self.agent.generate_offer()
         self.assertEqual(next_best_offer, second, second)
 
@@ -66,18 +64,18 @@ class TestEnumerationNegotiationAgent(ut.TestCase):
                                                                  'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                                  'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0})
         self.assertTrue(self.agent.is_offer_valid(next_best_offer))
-        first = self.agent.generate_offer()
-        second = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
+        _ = self.agent.generate_offer()
         thrid = self.agent.generate_offer()
         self.assertEqual(next_best_offer, thrid, thrid)
 
     def test_terminates_after_options_become_unacceptable(self):
-        self.agent = self.agent = EnumerationNegotiationAgent(uuid4(),
-                                                              self.utilities,
-                                                              [],
-                                                              1,
-                                                              self.arbitrary_non_agreement_cost,
-                                                              self.issues)
+        self.agent = self.agent = EnumAgent("agent",
+                                            self.utilities,
+                                            [],
+                                            1,
+                                            self.arbitrary_non_agreement_cost,
+                                            self.issues)
         self.agent.opponent = self.opponent
         self.agent.generate_offer()
         next_message = self.agent.generate_next_message_from_transcript()

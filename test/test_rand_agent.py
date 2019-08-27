@@ -149,7 +149,7 @@ class TestRandAgent(ut.TestCase):
                                   self.arbitrary_reservation_value,
                                   self.arbitrary_non_agreement_cost,
                                   self.generic_issues, util_method="problog")
-        expected_offer_utility = 100/3-1000/3 + pi/3
+        expected_offer_utility = 100-1000 + pi
         self.assertAlmostEqual(problog_agent.calc_offer_utility(
             self.nested_test_offer), expected_offer_utility)
 

@@ -14,7 +14,7 @@ class ConstrAgent(RandAgent):
         self.own_constraints = set()
         self.opponent_constraints = set()
         self.auto_constraints = auto_constraints
-        self.constraints_satisfiable = True
+        self.constraints_satisfiable = auto_constraints
         super().__init__(name, utilities, kb, reservation_value, non_agreement_cost,
                          issues=issues, verbose=verbose, util_method=util_method, max_rounds=max_rounds)
         self.utilities = {}
@@ -22,7 +22,7 @@ class ConstrAgent(RandAgent):
         self.negotiation_active = False
         self.agent_name = name
         self.successful = False
-        self.strat_name = "Constrained"
+        self.strat_name = "Constrained Random"
         self.message_count = 0
 
     def index_max_utilities(self):
