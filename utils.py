@@ -23,7 +23,7 @@ def setup_random_scenarios(root_dir, shape, numb_of_scenarios):
         scenario_dir = path.join(root_dir, str(uuid))
         mkdir(scenario_dir)
 
-        for cntr in range(2*shape[0]):
+        for cntr in range(3*shape[0]):
             instance_dir = path.join(scenario_dir, str(cntr))
             mkdir(instance_dir)
             constr_a, constr_b = insert_difficult_constraints(

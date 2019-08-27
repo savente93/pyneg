@@ -240,7 +240,9 @@ class RandAgent:
         if self.verbose >= Verbosity.debug:
             print("{}'s utilities: {}".format(self.agent_name, self.utilities))
 
-        if relative_reservation_value and self.issues:
+        if relative_reservation_value is not None and self.issues:
+            if isclose(relative_reservation_value, 0):
+                self.absolute_reservation_value = -(2**31)
             self.index_max_utilities()
             self.relative_reservation_value = relative_reservation_value
             self.absolute_reservation_value = relative_reservation_value * self.get_max_utility()
@@ -448,6 +450,9 @@ class RandAgent:
 
         if not offer:
             return False
+
+        if isclose(self.relative_reservation_value, 0):
+            return True
 
         if type(offer) == Message:
             util = self.calc_offer_utility(offer.offer)

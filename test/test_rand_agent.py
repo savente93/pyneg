@@ -120,6 +120,15 @@ class TestRandAgent(ut.TestCase):
     def tearDown(self):
         pass
 
+    def test_accepts_offer_when_reservation_value_is_0(self):
+        self.agent = RandAgent(self.agent_name,
+                               self.arbitrary_utilities,
+                               self.arbitrary_kb,
+                               0,
+                               self.arbitrary_non_agreement_cost,
+                               self.generic_issues)
+        self.assertTrue(self.agent.accepts(self.offer_message))
+
     def test_generateDecisionFacts(self):
         expected_facts = [
             ["boolean_True", "boolean_False"],

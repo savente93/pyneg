@@ -144,7 +144,7 @@ class TestEnumConstrAgent(ut.TestCase):
         self.agent.satisfies_all_constraints(
             self.next_best_offer)
 
-        self.assertEqual(self.agent.own_constraints,
+        self.assertEqual(self.agent.get_all_constraints(),
                          {self.own_constraint,
                              self.opponent_constraint})
 
@@ -344,3 +344,42 @@ class TestEnumConstrAgent(ut.TestCase):
         self.agent.setup_negotiation(issues)
         self.agent.negotiate(self.opponent)
         self.assertFalse(self.agent.successful)
+
+    def test_boundary_conditions_are_correctly_handled_when_generating_offers(self):
+        # found during simulation
+        utils_a = {'issue0_0': 62, 'issue0_1': 36, 'issue0_2': 89, 'issue1_0': 40,
+                   'issue1_1': 48, 'issue1_2': 75, 'issue2_0': 22, 'issue2_1': -1000, 'issue2_2': 72}
+        utils_b = {'issue0_0': 74, 'issue0_1': 77, 'issue0_2': -1000, 'issue1_0': 77,
+                   'issue1_1': 60, 'issue1_2': 78, 'issue2_0': 26, 'issue2_1': 97, 'issue2_2': 38}
+        issues = {'issue0': [0, 1, 2], 'issue1': [
+            0, 1, 2], 'issue2': [0, 1, 2]}
+        rho_a = 0.0
+        rho_b = 0.0
+
+        non_agreement_cost = -(2 ** 24)  # just a really big number
+
+        agent_a = EnumConstrAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                  issues)
+        agent_b = EnumConstrAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                  issues)
+
+        self.assertTrue(agent_a.negotiate(agent_b))
+
+    def test_terminates_nicely_when_cant_generate_offers(self):
+        utils_a = {'issue0_0': -1000, 'issue0_1': -1000, 'issue0_2': 32, 'issue1_0': -1000,
+                   'issue1_1': -1000, 'issue1_2': -1000, 'issue2_0': -1000, 'issue2_1': -1000, 'issue2_2': -1000}
+        utils_b = {'issue0_0': -1000, 'issue0_1': -1000, 'issue0_2': -1000, 'issue1_0': -1000,
+                   'issue1_1': -1000, 'issue1_2': -1000, 'issue2_0': 43, 'issue2_1': -1000, 'issue2_2': -1000}
+        issues = {'issue0': [0, 1, 2], 'issue1': [
+            0, 1, 2], 'issue2': [0, 1, 2]}
+        rho_a = 1.0
+        rho_b = 1.0
+
+        non_agreement_cost = -(2 ** 24)  # just a really big number
+
+        agent_a = EnumConstrAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                                  issues)
+        agent_b = EnumConstrAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                                  issues)
+
+        self.assertFalse(agent_a.setup_negotiation(issues))

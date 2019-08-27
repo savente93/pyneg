@@ -80,3 +80,23 @@ class TestEnumAgent(ut.TestCase):
         self.agent.generate_offer()
         next_message = self.agent.generate_next_message_from_transcript()
         self.assertTrue(next_message.is_termination(), next_message)
+
+    def test_boundary_conditions_are_correctly_handled_when_generating_offers(self):
+        # found during simulation
+        utils_a = {'issue0_0': -1000, 'issue0_1': -1000, 'issue0_2': 32, 'issue1_0': -1000,
+                   'issue1_1': -1000, 'issue1_2': 88, 'issue2_0': -1000, 'issue2_1': -1000, 'issue2_2': -1000}
+        utils_b = {'issue0_0': -1000, 'issue0_1': -1000, 'issue0_2': -1000, 'issue1_0': -1000,
+                   'issue1_1': 48, 'issue1_2': -1000, 'issue2_0': 43, 'issue2_1': -1000, 'issue2_2': -1000}
+        issues = {'issue0': [0, 1, 2], 'issue1': [
+            0, 1, 2], 'issue2': [0, 1, 2]}
+        rho_a = 1.0
+        rho_b = 1.0
+
+        non_agreement_cost = -(2 ** 24)  # just a really big number
+
+        agent_a = EnumAgent("agent_a", utils_a, [], rho_a, non_agreement_cost,
+                            issues)
+        agent_b = EnumAgent("agent_b", utils_b, [], rho_b, non_agreement_cost,
+                            issues)
+
+        self.assertFalse(agent_a.negotiate(agent_b))

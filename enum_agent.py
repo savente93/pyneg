@@ -97,9 +97,9 @@ class EnumAgent(RandAgent):
         issue_to_incr = -1
         for issue in self.issues.keys():
             next_offer_indeces = deepcopy(self.current_offer_indices)
+            if next_offer_indeces[issue] + 1 >= len(self.sorted_utils[issue]):
+                continue
             next_offer_indeces[issue] += 1
-            # a = [self.sorted_utils[issue][next_offer_indeces[issue]][1]
-            #      for issue in self.issues]
             next_util = np.dot([self.sorted_utils[i][next_offer_indeces[i]][1]
                                 for i in self.issues.keys()], list(self.issue_weights.values()))
             if next_util >= best_next_util and next_util >= self.absolute_reservation_value:

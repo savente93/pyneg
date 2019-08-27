@@ -88,9 +88,15 @@ class EnumConstrAgent(RandAgent):
         issue_to_incr = -1
         for issue in self.issues.keys():
             next_offer_indeces = deepcopy(self.current_offer_indices)
+            if next_offer_indeces[issue] + 1 >= len(self.sorted_utils[issue]):
+                continue
             next_offer_indeces[issue] += 1
-            next_util = np.dot([self.sorted_utils[i][next_offer_indeces[i]][1]
-                                for i in self.issues.keys()], list(self.issue_weights.values()))
+            util_list = []
+            for i in self.issues.keys():
+                sorted_utils_of_issue = self.sorted_utils[i]
+                chosen_util = sorted_utils_of_issue[next_offer_indeces[i]][1]
+                util_list.append(chosen_util)
+            next_util = np.dot(util_list, list(self.issue_weights.values()))
             if next_util >= best_next_util and next_util >= self.absolute_reservation_value:
                 best_next_util = next_util
                 issue_to_incr = issue
@@ -204,6 +210,8 @@ class EnumConstrAgent(RandAgent):
         self.index_max_utilities()
 
     def add_opponent_constraint(self, constraint):
+        if constraint in self.opponent_constraints:
+            return
         if self.verbose >= Verbosity.reasoning:
             print("{} is adding opponent constraint: {}".format(
                 self.agent_name, constraint))
@@ -211,11 +219,11 @@ class EnumConstrAgent(RandAgent):
         if not self.constraints_satisfiable:
             return
 
-        if not self.atom_from_issue_value(constraint.issue, constraint.value) in self.utilities.keys():
-            self.add_utilities({self.atom_from_issue_value(
-                constraint.issue, constraint.value): self.non_agreement_cost})
-        self.add_utilities({self.atom_from_issue_value(
-            constraint.issue, constraint.value): self.non_agreement_cost})
+        atom = self.atom_from_issue_value(constraint.issue, constraint.value)
+        if not atom in self.utilities.keys():
+            self.add_utilities({atom: self.non_agreement_cost})
+        else:
+            self.utilities[atom] = self.non_agreement_cost
 
         if not all([len(self.get_unconstrained_values_by_issue(issue)) > 0 for issue in self.issues.keys()]):
             self.constraints_satisfiable = False
@@ -282,10 +290,12 @@ class EnumConstrAgent(RandAgent):
             return False
 
     def setup_negotiation(self, issues):
-        super().setup_negotiation(issues)
-        if self.verbose >= Verbosity.reasoning:
-            print("{}: starting constraints: {}".format(
-                self.agent_name, self.own_constraints))
+        try:
+            super().setup_negotiation(issues)
+            return True
+        except RuntimeError as e:
+            self.constraints_satisfiable = False
+            return False
 
     def negotiate(self, opponent):
         if self.constraints_satisfiable:
@@ -335,12 +345,6 @@ class EnumConstrAgent(RandAgent):
         if self.verbose >= Verbosity.reasoning:
             print("{} is using {} to generate next offer.".format(
                 self.agent_name, last_message))
-
-        if last_message.constraint:
-            if self.verbose >= Verbosity.reasoning:
-                print("{} is adding opponent constraint {}".format(
-                    self.agent_name, last_message.constraint))
-            self.add_opponent_constraint(last_message.constraint)
 
         if last_message.is_acceptance():
             self.negotiation_active = False
