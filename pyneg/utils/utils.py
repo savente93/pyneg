@@ -3,6 +3,7 @@ from itertools import product
 from pyneg.types import NestedDict
 from typing import Tuple
 from re import search, sub
+from typing import List, Dict
 
 
 def nested_dict_from_atom_dict(atom_dict) -> NestedDict:
@@ -110,15 +111,14 @@ def count_acceptable_offers(u_a, u_b, rho_a_percentile, rho_b_percentile, w_a=No
 def neg_scenario_from_util_matrices(u_a, u_b):
     utils_a = {}
     utils_b = {}
-    issues = {}
+    issues: Dict[str, List[str]] = {}
     number_of_issues_to_generate, issue_cardinality = u_a.shape
 
     for i in range(number_of_issues_to_generate):
-        issues["issue{i}".format(i=i)] = list(range(issue_cardinality))
+        issues["issue{i}".format(i=i)] = list(map(
+            str, list(range(issue_cardinality))))
         for j in range(issue_cardinality):
-            if u_a[i, j] != 0:
-                utils_a["issue{i}_{j}".format(i=i, j=j)] = u_a[i, j]
-            if u_b[i, j] != 0:
-                utils_b["issue{i}_{j}".format(i=i, j=j)] = u_b[i, j]
+            utils_a["issue{i}_{j}".format(i=i, j=j)] = u_a[i, j]
+            utils_b["issue{i}_{j}".format(i=i, j=j)] = u_b[i, j]
 
     return issues, utils_a, utils_b

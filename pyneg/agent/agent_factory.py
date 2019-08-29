@@ -13,10 +13,10 @@ class AgentFactory():
     def make_linear_consession_agent(name: str,
                                      neg_space: NegSpace,
                                      utilities: Union[Dict[str, float],
-                                                      Dict[Dict[str, float]]],
+                                                      Dict[str, Dict[str, float]]],
                                      reservation_value: float,
                                      non_agreement_cost: float,
-                                     issue_weights: Optional[Dict[str, float]] = None,
+                                     issue_weights: Optional[Dict[str, float]],
                                      max_rounds: int = None) -> Agent:
         agent = Agent()
         agent.name = name
@@ -50,7 +50,7 @@ class AgentFactory():
     def make_linear_random_agent(name: str,
                                  neg_space: NegSpace,
                                  utilities: Union[Dict[str, float],
-                                                  Dict[Dict[str, float]]],
+                                                  Dict[str, Dict[str, float]]],
                                  reservation_value: float,
                                  non_agreement_cost: float,
                                  issue_weights: Optional[Dict[str, float]] = None,
@@ -88,7 +88,7 @@ class AgentFactory():
     def make_random_agent(name: str,
                           neg_space: NegSpace,
                           utilities: Union[Dict[str, float],
-                                           Dict[Dict[str, float]]],
+                                           Dict[str, Dict[str, float]]],
                           reservation_value: float,
                           non_agreement_cost: float,
                           kb: List[str],

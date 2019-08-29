@@ -1,6 +1,6 @@
 import unittest
 
-from atomic_constraint import AtomicConstraint
+from pyneg.comms import AtomicConstraint
 
 
 class TestAtomicConstraint(unittest.TestCase):

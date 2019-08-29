@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from utils import generate_binary_utility_matrices, count_acceptable_offers
+from pyneg.utils import generate_binary_utility_matrices, count_acceptable_offers, neg_scenario_from_util_matrices
 
 
 class TestUtils(unittest.TestCase):
@@ -75,3 +75,22 @@ class TestUtils(unittest.TestCase):
         _, _, both = count_acceptable_offers(
             u_a, u_b, self.standard_n / 2, self.standard_n / 2 + 1)
         self.assertTrue(both == 0)
+
+    def test_neg_scenario_from_util_matrices_returns_propper_types(self):
+        u_a, u_b = generate_binary_utility_matrices(self.u_a.shape, 1)
+        issues, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
+        # check that issue has type Dict[str, List[str]]
+        self.assertTrue(isinstance(issues, dict))
+        self.assertTrue(isinstance(next(iter(issues.values())),
+                                   list), type(next(iter(issues.values()))))
+        self.assertTrue(isinstance(
+            next(iter(next(iter(issues.values())))), str))
+
+        self.assertTrue(isinstance(utils_a, dict))
+        self.assertTrue(isinstance(next(iter(utils_a.values())),
+                                   float))
+        self.assertTrue(isinstance(next(iter(utils_a.keys())), str))
+
+        self.assertTrue(isinstance(utils_b, dict))
+        self.assertTrue(isinstance(next(iter(utils_b.values())), float))
+        self.assertTrue(isinstance(next(iter(utils_b.keys())), str))

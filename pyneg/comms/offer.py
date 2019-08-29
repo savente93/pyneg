@@ -8,10 +8,13 @@ class Offer:
     def __init__(self, values_by_issue: Union[NestedDict, AtomicDict],
                  indent_level: int = 1):
         self.indent_level = indent_level
-        if isinstance(next(iter(values_by_issue.items())), dict):
+        if not isinstance(values_by_issue, dict):
+            raise TypeError(
+                "Expected a dictionary not {}".format(type(values_by_issue)))
+        if isinstance(next(iter(values_by_issue.values())), dict):
             self.values_by_issue: NestedDict = cast(
                 NestedDict, values_by_issue)
-        elif isinstance(next(iter(values_by_issue.items())), float):
+        elif isinstance(next(iter(values_by_issue.values())), float):
             # convert to nested dict so checking for validity is easier
             self.values_by_issue = nested_dict_from_atom_dict(
                 values_by_issue)
@@ -22,7 +25,7 @@ class Offer:
         for issue in self.values_by_issue.keys():
             if not isclose(sum(self.values_by_issue[issue].values()), 1):
                 raise ValueError(
-                    "Invalid offer, {issue} doesn't sum to 1".format(issue=issue))
+                    "Invalid offer, {issue} doesn't sum to 1 in dict {d}".format(issue=issue, d=self.values_by_issue))
             for value, prob in self.values_by_issue[issue].items():
                 if not (isclose(prob, 1) or isclose(prob, 0)):
                     raise ValueError(
@@ -30,6 +33,12 @@ class Offer:
                 if value not in self.values_by_issue[issue].keys():
                     raise ValueError(
                         "Invalid offer, {issue} has unknown value: {value}".format(issue=issue, value=value))
+
+        for issue in self.values_by_issue.keys():
+            for value in self.values_by_issue[issue].keys():
+                if not isinstance(self.values_by_issue[issue][value], float):
+                    self.values_by_issue[issue][value] = float(
+                        self.values_by_issue[issue][value])
 
     # will return the one value which is assigned 1
     # there is guaranteed to be exactly 1
@@ -49,6 +58,12 @@ class Offer:
 
     def get_issues(self):
         return self.values_by_issue.keys()
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Offer):
+            return False
+
+        return self.values_by_issue == other.values_by_issue
 
     def __repr__(self) -> str:
         return_string = ""

@@ -38,7 +38,12 @@ class EnumGenerator(Generator):
         self.utilities = utilities
         self.evaluator = evaluator
         self.acceptability_prec = acceptability_prec
-        self.init_generator()
+        self.generator_ready = False
+        self.last_offer_util = 2**32
+
+        # convert to strings for callers' convinience
+        for issue in self.neg_space.keys():
+            self.neg_space[issue] = list(map(str, self.neg_space[issue]))
 
     def add_utilities(self, new_utils: AtomicDict) -> None:
         self.utilities = {
@@ -72,64 +77,68 @@ class EnumGenerator(Generator):
         # offer counter is only really used to tell if have made an offer before
         # otherwise it's just an interesting stat
         self.offer_counter = 0
-        self.max_util = self.evaluator.calc_offer_utility(
-            self.offer_from_index_dict(self.current_assignement_indices))
+        self.generator_ready = True
+
+    def generate_fisrt_offer(self) -> Offer:
+        first_offer = self.offer_from_index_dict(
+            self.current_assignement_indices)
+        self.max_util = self.evaluator.calc_offer_utility(first_offer)
         self.acceptability_threshold = self.max_util * self.acceptability_prec
+        if self.evaluator.calc_offer_utility(first_offer) < self.acceptability_threshold:
+            raise StopIteration()
+        self.offer_counter += 1
+        self.last_offer_util = self.max_util
+        return first_offer
 
     def generate_offer(self) -> Offer:
+        if not self.generator_ready:
+            self.init_generator()
+            return self.generate_fisrt_offer()
+
         # if we have not yet generated any offers, simply return the first one
-        if self.offer_counter == 0:
-            offer = {}
-            for issue in self.neg_space.keys():
-                chosen_value = self.sorted_utils[issue][self.current_assignement_indices[issue]]
-                offer[issue] = {value: 0.0 for value in self.neg_space[issue]}
-                offer[issue][chosen_value] = 1.0
-            self.offer_counter += 1
-            return Offer(offer)
-        else:
-            # we have generted offers so we have to pick from the list
-            # N potential offers we can obtain by picking the next best
-            # for every issue we store the utility we would get
-            # if we were to choose the next best value assignement for that issue
-            # that way we can choose the next best offer, and also know which issue
-            # we incremented so we cna update our current state
-            util_by_issue_to_incr = {}
+        # we have generted offers so we have to pick from the list
+        # N potential offers we can obtain by picking the next best
+        # for every issue we store the utility we would get
+        # if we were to choose the next best value assignement for that issue
+        # that way we can choose the next best offer, and also know which issue
+        # we incremented so we cna update our current state
+        util_by_issue_to_incr = {}
 
-            # make a potential offer by choosing a different value for each issue
-            # then we can choose the best from those
-            for issue_to_incr in self.neg_space.keys():
-                if self.current_assignement_indices[issue_to_incr] + 1 < len(self.sorted_utils[issue_to_incr]):
-                    # if we are already at the ends we don't have to explore this further
-                    continue
-                else:
-                    potential_offer_indeces = deepcopy(
-                        self.current_assignement_indices)
-                    potential_offer_indeces[issue_to_incr] += 1
-                    potential_offer = self.offer_from_index_dict(
-                        potential_offer_indeces)
-                    util_by_issue_to_incr[issue_to_incr] = self.evaluator.calc_offer_utility(
-                        potential_offer)
+        # make a potential offer by choosing a different value for each issue
+        # then we can choose the best from those
+        for issue_to_incr in self.neg_space.keys():
 
-            issue_to_change = ""
-            max_util = -(2.0 ** 32)
-            for issue, util in util_by_issue_to_incr.items():
-                if util > max_util and util >= self.acceptability_threshold:
-                    issue_to_change = issue
-                    max_util = util
+            potential_offer_indeces = deepcopy(
+                self.current_assignement_indices)
+            potential_offer_indeces[issue_to_incr] = (
+                potential_offer_indeces[issue_to_incr] + 1) % len(self.sorted_utils[issue_to_incr])
+            potential_offer = self.offer_from_index_dict(
+                potential_offer_indeces)
+            util_by_issue_to_incr[issue_to_incr] = self.evaluator.calc_offer_utility(
+                potential_offer)
 
-            if issue_to_change == "":
-                    # we weren't able to find anything that is still acceptable
-                raise StopIteration()
-            else:
-                self.current_assignement_indices[issue_to_incr] += 1
-                self.offer_counter += 1
-                return self.offer_from_index_dict(self.current_assignement_indices)
+        issue_to_incr = ""
+        max_util = -(2.0 ** 32)
+        for issue, util in util_by_issue_to_incr.items():
+            if util > max_util and util >= self.acceptability_threshold:
+                issue_to_incr = issue
+                max_util = util
+
+        if issue_to_incr == "":
+                # we weren't able to find anything that is still acceptable
+            raise StopIteration()
+
+        self.current_assignement_indices[issue_to_incr] += 1
+        self.offer_counter += 1
+        self.last_offer_util = max_util
+
+        return self.offer_from_index_dict(self.current_assignement_indices)
 
     def offer_from_index_dict(self, index_dict: Dict[str, int]) -> Offer:
         offer: NestedDict = {}
         for issue in index_dict.keys():
             offer[issue] = {}
-            chosen_value = self.sorted_utils[issue][index_dict[issue]]
+            chosen_value: str = self.sorted_utils[issue][index_dict[issue]]
             for value in self.neg_space[issue]:
                 if value == chosen_value:
                     offer[issue][value] = 1

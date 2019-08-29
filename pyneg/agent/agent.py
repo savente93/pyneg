@@ -19,7 +19,9 @@ class Agent:
         self.successful: bool = False
         self.negotiation_active: bool = False
 
-    def receive_negotiation_request(self, opponent: Agent, neg_space: NegSpace) -> bool:
+    # for string annotation reason see
+    # https://www.python.org/dev/peps/pep-0484/#the-problem-of-forward-declarations
+    def receive_negotiation_request(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
         # allows others to initiate negotiations with us
         # only accept if we're talking about the same things
         if self.neg_space == neg_space:
@@ -28,7 +30,7 @@ class Agent:
         else:
             return False
 
-    def _call_for_negotiation(self, opponent: Agent, neg_space: NegSpace) -> bool:
+    def _call_for_negotiation(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
         # allows us to initiate negotiations with others
         response: bool = opponent.receive_negotiation_request(self, neg_space)
         if response:
@@ -38,7 +40,7 @@ class Agent:
     def _should_terminate(self) -> bool:
         return len(self.transcript) > self.max_rounds
 
-    def negotiate(self, opponent: Agent) -> bool:
+    def negotiate(self, opponent: 'Agent') -> bool:
         # self is assumed to have setup the negotiation (including issues) beforehand
         self.negotiation_active = self._call_for_negotiation(
             opponent, self.neg_space)
@@ -51,11 +53,11 @@ class Agent:
 
         return self.successful
 
-    def send_message(self, opponent: Agent, msg: Message) -> None:
+    def send_message(self, opponent: 'Agent', msg: Message) -> None:
         self._record_message(msg)
         opponent.receive_message(msg)
 
-    def wait_for_response(self, sender: Agent) -> None:
+    def wait_for_response(self, sender: 'Agent') -> None:
         response = sender._generate_next_message()
         if response:
             self.receive_message(response)
@@ -107,7 +109,7 @@ class Agent:
     def _accepts(self, offer: Offer) -> bool:
         return self._calc_offer_utility(offer) >= self.absolute_reservation_value
 
-    def _generate_offer_message(self, recipient: Agent) -> Message:
+    def _generate_offer_message(self, recipient: 'Agent') -> Message:
         try:
             offer: Offer = self._generate_offer()
         except StopIteration:

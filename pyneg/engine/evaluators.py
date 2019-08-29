@@ -2,7 +2,7 @@ from pyneg.comms import Offer
 from typing import Dict, Union, Optional, List
 from pyneg.utils import atom_from_issue_value
 from pyneg.types import AtomicDict
-from strategy import Strategy
+from .strategy import Strategy
 from pyneg.types import NegSpace
 from problog.program import PrologString
 from problog import get_evaluatable
