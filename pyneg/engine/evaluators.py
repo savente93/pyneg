@@ -48,6 +48,16 @@ class LinearEvaluator(Evaluator):
 
         return score
 
+    def calc_strat_utility(self, strat: Strategy) -> float:
+        score = 0
+        for issue in strat.get_issues():
+            for value, prob in strat.get_value_dist(issue).items():
+                atom = atom_from_issue_value(issue, value)
+                score += self.issue_weights[issue] * \
+                    self.utilities[atom] * prob
+
+        return score
+
 
 class ProblogEvaluator(Evaluator):
     def __init__(self,
@@ -97,3 +107,12 @@ class ProblogEvaluator(Evaluator):
             total_util += prob * self.utilities[atom]
 
         return total_util
+
+    def calc_strat_utility(self, strat: Strategy) -> float:
+        score = 0
+        for issue in strat.get_issues():
+            for value, prob in strat.get_value_dist(issue).items():
+                atom = atom_from_issue_value(issue, value)
+                score += self.utilities[atom] * prob
+
+        return score

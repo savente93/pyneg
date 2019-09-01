@@ -1,18 +1,9 @@
 from unittest import TestCase
-from unittest.mock import Mock
 from pyneg.engine import DTPGenerator
 from pyneg.comms import Offer
 
 
 class TestDTPGenerator(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.maxDiff = None
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
 
     def setUp(self):
         self.neg_space = {
@@ -57,7 +48,6 @@ class TestDTPGenerator(TestCase):
 
         self.optimal_offer = Offer(self.optimal_offer)
 
-        self.evaluator = Mock.mock()
         self.generator = DTPGenerator(self.neg_space, self.utilities,
                                       self.non_agreement_cost, self.reservation_value,
                                       self.kb)

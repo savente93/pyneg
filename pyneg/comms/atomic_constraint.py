@@ -1,4 +1,5 @@
 from numpy import isclose
+from .offer import Offer
 
 
 class AtomicConstraint():
@@ -21,13 +22,10 @@ class AtomicConstraint():
     def is_satisfied_by_assignment(self, issue: str, value: str) -> bool:
         return not (issue == self.issue and value == self.value)
 
-    def is_satisfied_by_strat(self, strat: dict) -> bool:
-        for issue in strat.keys():
-            for value in strat[issue]:
-                if isclose(strat[issue][value], 0):
-                    continue
-
-                if not self.is_satisfied_by_assignment(issue, value):
+    def is_satisfied_by_offer(self, offer: Offer) -> bool:
+        for issue in offer.keys():
+            for value in offer[issue]:
+                if not isclose(offer[issue][value], 0) and not self.is_satisfied_by_assignment(issue, value):
                     return False
 
         return True

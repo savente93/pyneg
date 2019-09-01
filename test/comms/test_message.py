@@ -4,14 +4,6 @@ from pyneg.comms import AtomicConstraint, Message, MessageType, Offer
 
 class TestMessage(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def setUp(self):
         self.generic_offer = Offer({"first": {"True": 1}, "second": {
             "False": 1}, "third": {"-3": 1}, "forth": {"1.8": 1}})

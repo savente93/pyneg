@@ -5,19 +5,8 @@ from pyneg.comms import AtomicConstraint
 
 class TestAtomicConstraint(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def setUp(self):
         self.test_atomic_constraint = AtomicConstraint("dummy1", "True")
-
-    def tearDown(self):
-        pass
 
     def test_no_good_with_different_issue_are_unequal(self):
         other = AtomicConstraint("Dummy1", "True")

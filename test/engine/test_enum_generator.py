@@ -7,14 +7,6 @@ from numpy import arange
 
 class TestEnumGenerator(TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.maxDiff = None
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def setUp(self):
         self.issues, self.utilities, _ = neg_scenario_from_util_matrices(
             arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
@@ -25,17 +17,14 @@ class TestEnumGenerator(TestCase):
         self.evaluator = LinearEvaluator(
             self.utilities, uniform_weights, self.arbitrary_non_agreement_cost)
 
-        self.gen = EnumGenerator(
+        self.generator = EnumGenerator(
             self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value)
-
-    def tearDown(self):
-        pass
 
     def test_generates_best_offer_first_time(self):
         best_offer = Offer(nested_dict_from_atom_dict({'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
                                                        'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                        'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
-        generated_offer = self.gen.generate_offer()
+        generated_offer = self.generator.generate_offer()
         self.assertEqual(best_offer, generated_offer)
 
     def test_generates_next_best_offer_second_time(self):
@@ -43,8 +32,8 @@ class TestEnumGenerator(TestCase):
                                                             'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                             'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
 
-        _ = self.gen.generate_offer()
-        second = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        second = self.generator.generate_offer()
         self.assertEqual(next_best_offer, second)
 
     def test_generates_next_next_best_offer_third_time(self):
@@ -54,9 +43,9 @@ class TestEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        thrid = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        thrid = self.generator.generate_offer()
         self.assertEqual(next_next_best_offer, thrid)
 
     def test_generates_expected_offer_forth_time(self):
@@ -66,10 +55,10 @@ class TestEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        offer = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        offer = self.generator.generate_offer()
         self.assertEqual(expected_offer, offer)
 
     def test_generates_expected_offer_fith_time(self):
@@ -79,29 +68,25 @@ class TestEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        offer = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        offer = self.generator.generate_offer()
         self.assertEqual(expected_offer, offer)
 
     def test_terminates_first_time_if_no_options_are_acceptable(self):
-        self.gen = EnumGenerator(
+        self.generator = EnumGenerator(
             self.issues, self.utilities, self.evaluator, 1)
 
-        _ = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
 
         with self.assertRaises(StopIteration):
-            self.gen.generate_offer()
+            self.generator.generate_offer()
 
     def test_terminates_after_options_become_unacceptable(self):
-        self.gen = EnumGenerator(
+        self.generator = EnumGenerator(
             self.issues, self.utilities, self.evaluator, 1.1)
 
         with self.assertRaises(StopIteration):
-            next_message = self.gen.generate_offer()
-
-#     def test_get_max_utility(self):
-#         max_util = 100/3+pi/3
-#         self.assertAlmostEqual(max_util, self.agent.get_max_utility())
+            _ = self.generator.generate_offer()
