@@ -17,8 +17,7 @@ class Message():
         if not isinstance(type_, MessageType):
             raise ValueError("Invalid message type")
 
-        if not isinstance(offer, Offer):
-
+        if not isinstance(offer, Offer) and offer is not None:
             raise ValueError("Invalid offer")
 
         if type_ == MessageType.empty:

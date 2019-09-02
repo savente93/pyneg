@@ -10,10 +10,10 @@ class Strategy(Offer):
     def __init__(self, values_by_issue: Union[NestedDict, AtomicDict],
                  indent_level: int = 1, verbose=Verbosity.none):
         self.indent_level = indent_level
-        if isinstance(next(iter(values_by_issue.items())), dict):
+        if isinstance(next(iter(values_by_issue.values())), dict):
             self.values_by_issue: NestedDict = cast(
                 NestedDict, values_by_issue)
-        elif isinstance(next(iter(values_by_issue.items())), float):
+        elif isinstance(next(iter(values_by_issue.values())), float):
             # convert to nested dict so checking for validity is easier
             self.values_by_issue = nested_dict_from_atom_dict(
                 values_by_issue)

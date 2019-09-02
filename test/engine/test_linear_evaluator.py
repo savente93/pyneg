@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pyneg.engine import LinearEvaluator
+from pyneg.engine import LinearEvaluator, Strategy
 from pyneg.comms import Offer
 from math import pi
 
@@ -46,11 +46,11 @@ class TestLinearEvaluator(TestCase):
 
         self.optimal_offer = Offer(self.optimal_offer)
 
-        self.uniform_strat = {
+        self.uniform_strat = Strategy({
             "boolean": {"True": 0.5, "False": 0.5},
             "integer": {str(i): 0.1 for i in range(10)},
             "float": {"{0:.1f}".format(i * 0.1): 0.1 for i in range(10)}
-        }
+        })
 
         self.uniform_weights = {
             issue: 1/len(self.neg_space.keys()) for issue in self.neg_space.keys()}

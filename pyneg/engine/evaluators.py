@@ -53,8 +53,9 @@ class LinearEvaluator(Evaluator):
         for issue in strat.get_issues():
             for value, prob in strat.get_value_dist(issue).items():
                 atom = atom_from_issue_value(issue, value)
-                score += self.issue_weights[issue] * \
-                    self.utilities[atom] * prob
+                if atom in self.utilities.keys():
+                    score += self.issue_weights[issue] * \
+                        self.utilities[atom] * prob
 
         return score
 

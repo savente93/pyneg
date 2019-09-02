@@ -63,7 +63,18 @@ class Offer:
         if not isinstance(other, Offer):
             return False
 
-        return self.values_by_issue == other.values_by_issue
+        # This way sparse and dense offers can still be equal
+        # but they must have the same issues
+        try:
+            for issue in self.values_by_issue.keys():
+                my_chosen_value = self.get_chosen_value(issue)
+                their_chosen_value = other.get_chosen_value(issue)
+                if my_chosen_value != their_chosen_value:
+                    raise ValueError
+        except:
+            return False
+
+        return True
 
     def __repr__(self) -> str:
         return_string = ""
@@ -90,8 +101,11 @@ class Offer:
         return return_string
 
     def get_sparse_repr(self):
-        return {issue: self.get_chosen_value(issue) for issue in self.values_by_issue.keys()}
+        return frozenset({(issue, self.get_chosen_value(issue)) for issue in self.values_by_issue.keys()})
 
     def get_sparse_str_repr(self):
         return ",".join([atom_from_issue_value(issue, self.get_chosen_value(issue))
                          for issue in self.values_by_issue.keys()]) + "."
+
+    def __hash__(self):
+        return hash(self.get_sparse_repr())

@@ -87,7 +87,7 @@ class TestConstrainedEnumGenerator(TestCase):
         self.assertEqual(expected_offer, offer)
 
     def test_terminates_first_time_if_no_options_are_acceptable(self):
-        self.gen = ConstraintEnumGenerator(
+        self.gen = ConstrainedEnumGenerator(
             self.issues, self.utilities, self.evaluator, 1, None)
 
         _ = self.gen.generate_offer()
@@ -96,7 +96,7 @@ class TestConstrainedEnumGenerator(TestCase):
             self.gen.generate_offer()
 
     def test_terminates_after_options_become_unacceptable(self):
-        self.gen = ConstraintEnumGenerator(
+        self.gen = ConstrainedEnumGenerator(
             self.issues, self.utilities, self.evaluator, 1.1, None)
 
         with self.assertRaises(StopIteration):
@@ -119,7 +119,7 @@ class TestConstrainedEnumGenerator(TestCase):
         low_util_dict = {"issue1_0": -100000}
         self.generator.add_utilities(low_util_dict)
         self.assertTrue(AtomicConstraint("issue1", "0")
-                        in self.generator.own_constraints)
+                        in self.generator.constraints)
 
     def test_all_values_can_get_constrained(self):
         low_util_dict = {"issue2_{i}".format(

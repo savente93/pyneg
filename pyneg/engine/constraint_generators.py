@@ -42,6 +42,13 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def generate_constraints(self, offer: Offer) -> Offer:
         raise NotImplementedError()
 
+    def satisfies_all_constraints(self, offer: Offer) -> bool:
+        for constr in self.constraints:
+            if not constr.is_satisfied_by_offer(offer):
+                return False
+
+        return True
+
 
 class ConstrainedRandomGenerator(RandomGenerator):
     def __init__(self,
@@ -74,6 +81,13 @@ class ConstrainedRandomGenerator(RandomGenerator):
 
     def generate_constraints(self, offer: Offer) -> Offer:
         raise NotImplementedError()
+
+    def satisfies_all_constraints(self, offer: Offer) -> bool:
+        for constr in self.constraints:
+            if not constr.is_satisfied_by_offer(offer):
+                return False
+
+        return True
 
 
 class ConstrainedDTPGenerator(DTPGenerator):
@@ -112,3 +126,10 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
     def generate_constraints(self, offer: Offer) -> Offer:
         raise NotImplementedError()
+
+    def satisfies_all_constraints(self, offer: Offer) -> bool:
+        for constr in self.constraints:
+            if not constr.is_satisfied_by_offer(offer):
+                return False
+
+        return True

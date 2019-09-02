@@ -52,64 +52,96 @@ class TestDTPGenerator(TestCase):
                                       self.non_agreement_cost, self.reservation_value,
                                       self.kb)
 
-    def test_trivial(self):
-        pass
+    def test_dtp_generates_optimal_bid_in_simple_negotiation_setting(self):
+        result = self.generator.generate_offer()
+        self.assertEqual(result, self.optimal_offer)
 
-    # def test_dtp_generates_optimal_bid_in_simple_negotiation_setting(self):
-    #     result = self.generator.generate_offer()
-    #     self.assertEqual(result, self.optimal_offer)
+    def test_extend_parial_offer(self):
+        temp_issues = {"issue0": ["0", "1"],
+                       "issue1": ["0", "1"],
+                       "issue2": ["0", "1"]}
+        temp_utils = {"issue0_1": 10.0}
+        partial_offer = {"issue0_1": 1.0}
+        self.generator = DTPGenerator(
+            temp_issues, temp_utils, self.non_agreement_cost, 0, [])
+        self.generator.extend_partial_offer(partial_offer, 10)
 
-    # def test_doesnt_generate_same_offer_five_times(self):
-    #     # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
-    #     # shouldn't keep happening so we'll try it a couple of times
-    #     last_offer = self.generator.generate_offer()
-    #     for _ in range(5):
-    #         new_offer = self.generator.generate_offer()
-    #         self.assertNotEqual(last_offer, new_offer)
-    #         last_offer = new_offer
+        extended_offers = set(self.generator.offer_queue)
+        extended_offers.add(self.generator.best_offer)
+        # the best offer was popped during the initialisation of the generator
+        # so just put it back for testing purposes
+        self.assertEqual({
+            Offer({"issue0": {"0": 0.0, "1": 1.0},
+                   "issue1": {"0": 0.0, "1": 1.0},
+                   "issue2": {"0": 0.0, "1": 1.0}}),
 
-    # def test_generatingOfferRecordsItInUtilities(self):
-    #     _ = self.generator.generate_offer()
-    #     self.assertTrue(Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
-    #                            'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_str_repr() in self.generator.generated_offers.keys())
+            Offer({"issue0": {"0": 0.0, "1": 1.0},
+                   "issue1": {"0": 0.0, "1": 1.0},
+                   "issue2": {"0": 1.0, "1": 0.0}}),
 
-    # def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
-    #     self.arbitraryUtilities = {
-    #         "boolean_True": 100,
-    #         "boolean_False": 10,
-    #         "integer_9": 100,
-    #         "integer_3": 10,
-    #         "integer_1": 0.1,
-    #         "integer_4": -10,
-    #         "integer_5": -100,
-    #     }
-    #     self.generator = DTPGenerator(
-    #         self.neg_space,
-    #         self.arbitraryUtilities,
-    #         self.non_agreement_cost,
-    #         self.reservation_value,
-    #         self.kb)
+            Offer({"issue0": {"0": 0.0, "1": 1.0},
+                   "issue1": {"0": 1.0, "1": 0.0},
+                   "issue2": {"0": 0.0, "1": 1.0}}),
 
-    #     # should not raise an exception
-    #     _ = self.generator.generate_offer()
+            Offer({"issue0": {"0": 0.0, "1": 1.0},
+                   "issue1": {"0": 1.0, "1": 0.0},
+                   "issue2": {"0": 1.0, "1": 0.0}})},
+            extended_offers)
 
-    # def test_endsNegotiationIfOffersGeneratedAreNotAcceptable(self):
-    #     # simply a set of impossible utilities to check that we exit immediately
-    #     self.arbitrary_utilities = {
-    #         "boolean_True": -100,
-    #         "boolean_False": -10,
-    #         "integer_9": -100,
-    #         "integer_3": -10,
-    #         "integer_1": -0.1,
-    #         "integer_4": -10,
-    #         "integer_5": -100,
-    #     }
-    #     self.generator = DTPGenerator(
-    #         self.neg_space,
-    #         self.arbitraryUtilities,
-    #         self.non_agreement_cost,
-    #         self.reservation_value,
-    #         self.kb)
+    def test_doesnt_generate_same_offer_five_times(self):
+        # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
+        # shouldn't keep happening so we'll try it a couple of times
+        last_offer = self.generator.generate_offer()
+        for _ in range(5):
+            new_offer = self.generator.generate_offer()
+            self.assertNotEqual(last_offer, new_offer)
+            last_offer = new_offer
 
-    #     with self.assertRaises(StopIteration):
-    #         self.generator.generate_offer()
+    def test_generatingOfferRecordsItInUtilities(self):
+        _ = self.generator.generate_offer()
+        offer = Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
+                       'integer_5': 0.0, 'integer_9': 1.0})
+        self.assertTrue(offer.get_sparse_repr()
+                        in self.generator.generated_offers.keys())
+
+    def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
+        self.arbitrary_utilities = {
+            "boolean_True": 100,
+            "boolean_False": 10,
+            "integer_9": 100,
+            "integer_3": 10,
+            "integer_1": 0.1,
+            "integer_4": -10,
+            "integer_5": -100,
+        }
+        self.generator = DTPGenerator(
+            self.neg_space,
+            self.arbitrary_utilities,
+            self.non_agreement_cost,
+            self.reservation_value,
+            self.kb)
+
+        # should not raise an exception
+        _ = self.generator.generate_offer()
+
+    def test_ends_negotiation_if_offers_generated_are_not_acceptable(self):
+        # simply a set of impossible utilities to check that we exit immediately
+        self.arbitrary_utilities = {
+            "boolean_True": 100,
+            "boolean_False": 10,
+            "integer_9": 100,
+            "integer_3": 10,
+            "integer_1": 0.1,
+            "integer_4": -10,
+            "integer_5": -100,
+        }
+        self.generator = DTPGenerator(
+            self.neg_space,
+            self.arbitrary_utilities,
+            self.non_agreement_cost,
+            1.2,
+            self.kb)
+
+        with self.assertRaises(StopIteration):
+            self.generator.generate_offer()
+            self.generator.generate_offer()

@@ -46,7 +46,7 @@ class Agent:
             opponent, self.neg_space)
 
         while self.negotiation_active:
-            next_message_to_send = self._generate_next_message()
+            next_message_to_send = self.generate_next_message()
             if next_message_to_send:
                 self.send_message(opponent, next_message_to_send)
                 self.wait_for_response(opponent)

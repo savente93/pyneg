@@ -5,10 +5,13 @@ from problog import get_evaluatable
 from problog.tasks.dtproblog import dtproblog
 from pyneg.comms import Offer
 from pyneg.types import NegSpace, NestedDict, AtomicDict
-from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value
+from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value, atom_dict_from_nested_dict
 from .evaluators import Evaluator
 from .strategy import Strategy
 from numpy.random import choice
+from re import search
+from queue import Queue
+from numpy import isclose
 
 
 class Generator():
@@ -215,15 +218,23 @@ class DTPGenerator(Generator):
 
         self.utilities = utilities
         self.kb = kb
-        self.neg_space = neg_space
+        self.neg_space = {issue: list(map(str, values))
+                          for issue, values in neg_space.items()}
         self.non_agreement_cost = non_agreement_cost
         self.acceptability_prec = acceptability_prec
         self.acceptability_threshold = None
+        self.initial_offer_made = False
+        self.best_offer = None
         self.reset_generator()
 
     def reset_generator(self):
         self.generated_offers = {}
+        self.offer_queue = []
         self.best_offer = self.generate_offer()
+        # best offer was possped rom the queue
+        # so just put it back so we can return it next time
+        self.offer_queue.append(self.best_offer)
+        self.initial_offer_made = False
         # generated offers will only ontain one offer
         # which is the best one so pinch the utility
         # of that to calculate acceptability_threshold
@@ -253,31 +264,87 @@ class DTPGenerator(Generator):
         # we have to make sure we offset the utility of previously generated
         # offers so dtproblog won't generate them again
         for sparse_offer, util in self.generated_offers.items():
-            sparse_offer_string = [atom_from_issue_value(
-                issue, value) for issue, value in sparse_offer.items()]
+            offer_string = ",".join(
+                list(map(lambda x: atom_from_issue_value(x[0], x[1]), sparse_offer)))
             utility_string += "utility({},{}).\n".format(
-                sparse_offer_string, -util + self.non_agreement_cost)
+                offer_string, -util + self.non_agreement_cost)
 
         kb_string = "\n".join(self.kb) + "\n"
         return dtp_decision_vars + kb_string + utility_string
 
+    def extend_partial_offer(self, partial_offer, score) -> None:
+        partial_offer_queue = []
+        partial_offer_queue.append(partial_offer)
+        while len(partial_offer_queue) > 0:
+            partial_offer = nested_dict_from_atom_dict(
+                partial_offer_queue.pop())
+            try:
+                # do we have all issues covered?
+                if partial_offer.keys() != self.neg_space.keys():
+                    raise ValueError()
+
+                # is the partial offer valid? (Offer will raise valueerror if not)
+                full_offer = Offer(partial_offer)
+                if full_offer.get_sparse_repr() not in self.generated_offers.keys():
+                    self.generated_offers[full_offer.get_sparse_repr()] = score
+                    self.offer_queue.append(full_offer)
+                continue
+
+            except ValueError:
+                # make sure we cover all of the issues
+                for issue in self.neg_space.keys():
+                    if issue not in partial_offer.keys():
+                        partial_offer[issue] = {
+                            value: 0.0 for value in self.neg_space[issue]}
+
+                for issue in self.neg_space.keys():
+                    for value in self.neg_space[issue]:
+                        if value not in partial_offer[issue].keys():
+                            partial_offer[issue][value] = 0.0
+
+                # if an issue didn't have any utilities we can use that
+                # to make lateral moves for free.
+                for issue in self.neg_space.keys():
+                    if isclose(sum(partial_offer[issue].values()), 0):
+                        for value in self.neg_space[issue]:
+                            partial_offer_copy = deepcopy(partial_offer)
+                            partial_offer_copy[issue][value] = 1.0
+                            partial_atom_dict = atom_dict_from_nested_dict(
+                                partial_offer_copy)
+                            partial_offer_queue.append(partial_atom_dict)
+                try:
+                    if full_offer.get_sparse_repr() not in self.generated_offers.keys():
+                        self.generated_offers[full_offer.get_sparse_repr(
+                        )] = score
+                        self.offer_queue.append(full_offer)
+                except:
+                    pass
+
+    def clean_query_output(self, query_output: Dict) -> Dict:
+        return_dict = {}
+        for atom, prob in query_output.items():
+            # sometimes dtproblog can return things like "choice(0,0,boolean_true)" so we need to filter that out
+            s = search(r"(\'?[A-z0-9|\.]+\_[A-z0-9|\.]+\'?)", str(atom))
+            clean_atom = s.group(0)
+            return_dict[clean_atom] = prob
+
+        return return_dict
+
     def generate_offer(self) -> Offer:
-        program = PrologString(self.compile_dtproblog_model())
-        query_output, score, _ = dtproblog(program)
-        query_output = {str(atom): float(prob)
-                        for atom, prob in query_output.items()}
+        if len(self.offer_queue) == 0:
+            program = PrologString(self.compile_dtproblog_model())
+            query_output, score, _ = dtproblog(program)
+            query_output = self.clean_query_output(query_output)
 
-        partial_offer = nested_dict_from_atom_dict(query_output)
-        for issue in self.neg_space.keys():
-             # if dtproblog didn't choose a value we'll
-             # just randomly choose one since it makes no difference
-            if issue not in partial_offer.keys():
-                partial_offer[issue] = choice(self.neg_space[issue])
-        generated_offer = Offer(partial_offer)
-        self.generated_offers[generated_offer.get_sparse_str_repr()] = score
+            # score of offers are now below acceptability threshold
+            # so we should terminate
 
-        # score of offers are now below acceptability threshold
-        # so we should terminate
+            self.extend_partial_offer(query_output, score)
+
+        if len(self.offer_queue) == 0:
+            raise RuntimeError()
+        generated_offer = self.offer_queue.pop()
+        score = self.generated_offers[generated_offer.get_sparse_repr()]
         if self.acceptability_threshold and score < self.acceptability_threshold:
             raise StopIteration()
 
