@@ -6,3 +6,5 @@ coverage_report
 .vscode
 .ipynb_checkpoints
 .mypy_cache
+.pytest_cache
+*.pytest_cache

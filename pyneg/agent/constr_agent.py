@@ -1,5 +1,13 @@
+from .agent import Agent
+from pyneg.comms import AtomicConstraint
 
 
+class ConstrainedAgent(Agent):
+    def __init__(self):
+        raise NotImplementedError()
+
+    def add_constraint(self, constraint: AtomicConstraint) -> None:
+        raise NotImplementedError()
 #         super().__init__(name, neg_space, utilities, reservation_value, issue_weights,
 #                          verbose=Verbosity.none, max_rounds=max_rounds)
 #         self.auto_constraints = auto_constraints

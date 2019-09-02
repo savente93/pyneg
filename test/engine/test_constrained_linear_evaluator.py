@@ -4,7 +4,7 @@ from pyneg.comms import Offer, Message, MessageType, AtomicConstraint
 from math import pi
 
 
-class TestConstraintLinearEvaluator(TestCase):
+class TestConstrainedLinearEvaluator(TestCase):
 
     def setUp(self):
         self.asdf_name = "A"

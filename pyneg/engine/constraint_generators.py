@@ -36,6 +36,12 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)
 
+    def add_constraints(self, constraints: List[AtomicConstraint]) -> None:
+        self.constraints.update(constraints)
+
+    def generate_constraints(self, offer: Offer) -> Offer:
+        raise NotImplementedError()
+
 
 class ConstrainedRandomGenerator(RandomGenerator):
     def __init__(self,
@@ -62,6 +68,12 @@ class ConstrainedRandomGenerator(RandomGenerator):
 
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)
+
+    def add_constraints(self, constraints: List[AtomicConstraint]) -> None:
+        self.constraints.update(constraints)
+
+    def generate_constraints(self, offer: Offer) -> Offer:
+        raise NotImplementedError()
 
 
 class ConstrainedDTPGenerator(DTPGenerator):
@@ -94,3 +106,9 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)
+
+    def add_constraints(self, constraints: List[AtomicConstraint]) -> None:
+        self.constraints.update(constraints)
+
+    def generate_constraints(self, offer: Offer) -> Offer:
+        raise NotImplementedError()

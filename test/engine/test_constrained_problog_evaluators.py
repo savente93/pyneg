@@ -4,7 +4,7 @@ from pyneg.engine import ConstrainedProblogEvaluator
 from math import pi
 
 
-class TestConstraintProblogEvaluator(TestCase):
+class TestConstrainedProblogEvaluator(TestCase):
 
     def setUp(self):
         self.agent_name = "A"

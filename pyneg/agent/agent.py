@@ -68,7 +68,7 @@ class Agent:
     def receive_message(self, msg: Message) -> None:
         self._record_message(msg)
 
-    def _generate_next_message(self) -> Optional[Message]:
+    def generate_next_message(self) -> Optional[Message]:
         # this check is only for the type lining
         # we should never get here if we don't have an opponent
         if not self.opponent:
@@ -122,6 +122,9 @@ class Agent:
 
     def add_utilities(self, new_utils: Dict[str, float]) -> None:
         self.engine.add_utilities(new_utils)
+
+    def set_utilities(self, new_utils: Dict[str, float]) -> None:
+        self.engine.set_utilities(new_utils)
 
     def _generate_offer(self) -> Offer:
         return self.engine.generate_offer()

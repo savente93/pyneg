@@ -3,7 +3,7 @@ from pyneg.comms import Offer, AtomicConstraint, MessageType, Message
 from pyneg.engine import ConstrainedRandomGenerator, ConstrainedLinearEvaluator
 
 
-class TestConstraintRandomGenerator(TestCase):
+class TestConstrainedRandomGenerator(TestCase):
 
     def setUp(self):
         self.neg_space = {
@@ -47,6 +47,14 @@ class TestConstraintRandomGenerator(TestCase):
         self.optimal_offer['float']["0.1"] = 1.0
 
         self.optimal_offer = Offer(self.optimal_offer)
+
+        self.violating_offer = {
+            "boolean": {"True": 1.0, "False": 0.0},
+            "integer": {str(i): 0.0 for i in range(10)},
+            "float": {"{0:.1f}".format(i * 0.1): 0.0 for i in range(10)}
+        }
+        self.violating_offer["integer"]["2"] = 1.0
+        self.violating_offer['float']["0.1"] = 1.0
 
         self.uniform_weights = {
             issue: 1/len(self.neg_space.keys()) for issue in self.neg_space.keys()}
@@ -92,3 +100,25 @@ class TestConstraintRandomGenerator(TestCase):
         self.evaluator.add_utilities(low_util_dict)
         self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint(
             "float", "0.9")}.issubset(self.evaluator.constraints))
+
+    def test_doesnt_generate_same_offer_five_times(self):
+        # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
+        # shouldn't keep happening so we'll try it a couple of times
+        last_offer = self.generator.generate_offer()
+        for _ in range(5):
+            new_offer = self.generator.generate_offer()
+            self.assertNotEqual(last_offer, new_offer)
+            last_offer = new_offer
+
+    def test_terminates_after_constrains_become_unsatisfiable(self):
+        self.generator.add_constraints({
+            AtomicConstraint("boolean", "True"),
+            AtomicConstraint("boolean", "False")})
+
+        with self.assertRaises(StopIteration):
+            _ = self.generator.generate_offer()
+
+    def test_responds_to_violating_offer_with_constraint(self):
+        self.generator.add_constraint(AtomicConstraint("boolean", "True"))
+        constr = self.generator.generate_constraints(self.violating_offer)
+        self.assertEqual(constr, AtomicConstraint("boolean", "True"))

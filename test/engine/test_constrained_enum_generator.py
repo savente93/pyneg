@@ -1,29 +1,29 @@
 from unittest import TestCase
 from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
-from pyneg.engine import ConstraintEnumGenerator, ConstraintLinearEvaluator
+from pyneg.engine import ConstrainedEnumGenerator, ConstrainedLinearEvaluator
 from pyneg.comms import Offer, AtomicConstraint
 from numpy import arange
 from math import pi
 
 
-class TestConstraintEnumGenerator(TestCase):
+class TestConstrainedEnumGenerator(TestCase):
 
     def setUp(self):
         self.issues, self.utilities, _ = neg_scenario_from_util_matrices(
             arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0.1000
         self.arbitrary_non_agreement_cost = -1000
-        uniform_weights = {
+        self.uniform_weights = {
             issue: 1/len(values) for issue, values in self.issues.items()}
-        self.evaluator = ConstraintLinearEvaluator(
-            self.utilities, uniform_weights, self.arbitrary_non_agreement_cost)
-        self.violating_offer = {
+        self.evaluator = ConstrainedLinearEvaluator(
+            self.utilities, self.uniform_weights, self.arbitrary_non_agreement_cost, None)
+        self.violating_offer = Offer({
             "issue0": {"0": 0.0, "1": 0.0, "2": 1.0},
             "issue1": {"0": 0.0, "1": 0.0, "2": 1.0},
             "issue2": {"0": 0.0, "1": 0.0, "2": 1.0}
-        }
-        self.generator = ConstraintEnumGenerator(
-            self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value)
+        })
+        self.generator = ConstrainedEnumGenerator(
+            self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value, None)
 
     def test_responds_to_violating_offer_with_constraint(self):
 
@@ -137,3 +137,12 @@ class TestConstraintEnumGenerator(TestCase):
         self.evaluator.add_utilities(low_util_dict)
         self.assertTrue({AtomicConstraint("issue2", "0"), AtomicConstraint(
             "issue0", "1")}.issubset(self.evaluator.constraints))
+
+    def test_terminates_after_constrains_become_unsatisfiable(self):
+        self.generator.add_constraints({
+            AtomicConstraint("issue0", "0"),
+            AtomicConstraint("issue0", "1"),
+            AtomicConstraint("issue0", "2")})
+
+        with self.assertRaises(StopIteration):
+            _ = self.generator.generate_offer()

@@ -1,8 +1,12 @@
-from typing import Dict, Optional, Union, List
-from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator, DTPGenerator, Generator, EnumGenerator, Engine, RandomGenerator
+from typing import Dict, Optional, Union, List, Set
+from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator, DTPGenerator
+from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
+from pyneg.engine import ConstrainedLinearEvaluator, ConstrainedProblogEvaluator, ConstrainedDTPGenerator
+from pyneg.engine import ConstrainedEnumGenerator, ConstrainedRandomGenerator
 from pyneg.utils import atom_dict_from_nested_dict
-from pyneg.agent import Agent
+from pyneg.agent import Agent, ConstrainedAgent
 from pyneg.types import NegSpace
+from pyneg.comms import AtomicConstraint
 
 
 STANDARD_MAX_ROUNDS = 200
@@ -112,6 +116,40 @@ class AgentFactory():
             neg_space, utilities, evaluator, reservation_value, [], reservation_value)
 
         engine = Engine(generator, evaluator)
+        agent.engine = engine
+        agent.absolute_reservation_value = generator.acceptability_threshold
+
+        return agent
+
+    @staticmethod
+    def make_constrained_linear_consession_agent(name: str,
+                                                 neg_space: NegSpace,
+                                                 utilities: Union[Dict[str, float],
+                                                                  Dict[str, Dict[str, float]]],
+                                                 reservation_value: float,
+                                                 non_agreement_cost: float,
+                                                 issue_weights: Optional[Dict[str, float]],
+                                                 initial_constraints: Optional[Set[AtomicConstraint]],
+                                                 auto_constraints=True) -> ConstrainedAgent:
+        agent = ConstrainedAgent()
+        agent.name = name
+        agent._type = "Constrained Linear Consession"
+
+        if not issue_weights:
+            issue_weights = {
+                issue: 1/len(neg_space[issue])
+                for issue in neg_space.keys()}
+
+        # convert to atomic dict if we are given a nested dict
+        if isinstance(next(iter(utilities.values())), dict):
+            utilities = atom_dict_from_nested_dict(utilities)
+
+        evaluator: Evaluator = ConstrainedLinearEvaluator(
+            utilities, issue_weights, non_agreement_cost, initial_constraints)
+        generator: Generator = ConstrainedEnumGenerator(
+            neg_space, utilities, evaluator, reservation_value, initial_constraints, auto_constraints=auto_constraints)
+
+        engine: Engine = Engine(generator, evaluator)
         agent.engine = engine
         agent.absolute_reservation_value = generator.acceptability_threshold
 

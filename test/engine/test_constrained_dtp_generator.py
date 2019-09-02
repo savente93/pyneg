@@ -1,9 +1,12 @@
 from unittest import TestCase
-from pyneg.engine import DTPGenerator
-from pyneg.comms import Offer
+from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
+from pyneg.engine import ConstrainedDTPGenerator
+from pyneg.comms import Offer, AtomicConstraint
+from numpy import arange
+from math import pi
 
 
-class TestConstraintDTPGenerator(TestCase):
+class TestConstrainedDTPGenerator(TestCase):
 
     def setUp(self):
         self.neg_space = {
@@ -21,6 +24,7 @@ class TestConstraintDTPGenerator(TestCase):
             "integer_5": -100,
             "'float_0.1'": 1
         }
+
         self.kb = [
             "boolean_True :- integer_2, 'float_0.1'."
         ]
@@ -35,7 +39,6 @@ class TestConstraintDTPGenerator(TestCase):
         }
         self.nested_test_offer["integer"]["3"] = 1
         self.nested_test_offer['float']["0.6"] = 1
-
         self.nested_test_offer = Offer(self.nested_test_offer)
 
         self.optimal_offer = {
@@ -45,50 +48,22 @@ class TestConstraintDTPGenerator(TestCase):
         }
         self.optimal_offer["integer"]["9"] = 1.0
         self.optimal_offer['float']["0.1"] = 1.0
-
         self.optimal_offer = Offer(self.optimal_offer)
 
-        self.generator = DTPGenerator(self.neg_space, self.utilities,
-                                      self.non_agreement_cost, self.reservation_value,
-                                      self.kb)
+        self.violating_offer = Offer({
+            "issue0": {"0": 0.0, "1": 0.0, "2": 1.0},
+            "issue1": {"0": 0.0, "1": 0.0, "2": 1.0},
+            "issue2": {"0": 0.0, "1": 0.0, "2": 1.0}
+        })
+
+        self.generator = ConstrainedDTPGenerator(self.neg_space, self.utilities,
+                                                 self.non_agreement_cost, self.reservation_value,
+                                                 self.kb, None)
 
     def test_responds_to_violating_offer_with_constraint(self):
-        self.arbitrary_utilities = {
-            "boolean_True": 100,
-            "'float_0.5'": pi
-        }
-        self.agent = ConstrAgent(self.agent_name,
-                                 self.arbitrary_utilities,
-                                 self.arbitrary_kb,
-                                 self.arbitrary_reservation_value,
-                                 self.arbitrary_non_agreement_cost,
-                                 self.generic_issues)
-
-        self.opponent = ConstrAgent(self.opponent_name,
-                                    self.arbitrary_utilities,
-                                    self.arbitrary_kb,
-                                    self.arbitrary_reservation_value,
-                                    self.arbitrary_non_agreement_cost,
-                                    self.generic_issues)
-        self.agent.setup_negotiation(self.generic_issues)
-        self.agent.opponent = self.opponent
-
-        # set strategy to something constant so we can predict what message it will generate
-        self.agent.strat_dict = self.nested_test_offer.copy()
-
-        self.agent.add_own_constraint(AtomicConstraint("boolean", "False"))
-        self.agent.receive_message(Message(self.opponent.agent_name,
-                                           self.agent.agent_name,
-                                           "offer",
-                                           self.violating_offer))
-
-        response = self.agent.generate_next_message_from_transcript()
-        self.assertEqual(Message(self.agent.agent_name,
-                                 self.opponent.agent_name,
-                                 "offer",
-                                 self.agent.strat_dict,
-                                 AtomicConstraint("boolean", "False")),
-                         response)
+        self.generator.add_constraint(AtomicConstraint("issue2", "2"))
+        constr = self.generator.generate_constraints(self.violating_offer)
+        self.assertEqual(constr, AtomicConstraint("issue2", "2"))
 
     def test_dtp_generates_optimal_bid_in_simple_negotiation_setting(self):
         result = self.generator.generate_offer()
@@ -103,13 +78,13 @@ class TestConstraintDTPGenerator(TestCase):
             self.assertNotEqual(last_offer, new_offer)
             last_offer = new_offer
 
-    def test_generatingOfferRecordsItInUtilities(self):
+    def test_generating_offer_records_it(self):
         _ = self.generator.generate_offer()
         self.assertTrue(Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
                                'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_str_repr() in self.generator.generated_offers.keys())
 
     def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
-        self.arbitraryUtilities = {
+        arbitrary_utilities = {
             "boolean_True": 100,
             "boolean_False": 10,
             "integer_9": 100,
@@ -118,19 +93,20 @@ class TestConstraintDTPGenerator(TestCase):
             "integer_4": -10,
             "integer_5": -100,
         }
-        self.generator = DTPGenerator(
+        self.generator = ConstrainedDTPGenerator(
             self.neg_space,
-            self.arbitraryUtilities,
+            arbitrary_utilities,
             self.non_agreement_cost,
             self.reservation_value,
-            self.kb)
+            self.kb, None)
 
         # should not raise an exception
-        _ = self.generator.generate_offer()
+        offer = self.generator.generate_offer()
+        self.assertEqual(self.neg_space.keys(), offer.get_issues())
 
-    def test_endsNegotiationIfOffersGeneratedAreNotAcceptable(self):
+    def test_ends_negotiation_if_offers_generated_are_not_acceptable(self):
         # simply a set of impossible utilities to check that we exit immediately
-        self.arbitrary_utilities = {
+        arbitrary_utilities = {
             "boolean_True": -100,
             "boolean_False": -10,
             "integer_9": -100,
@@ -139,91 +115,32 @@ class TestConstraintDTPGenerator(TestCase):
             "integer_4": -10,
             "integer_5": -100,
         }
-        self.generator = DTPGenerator(
+        self.generator = ConstrainedDTPGenerator(
             self.neg_space,
-            self.arbitraryUtilities,
+            arbitrary_utilities,
             self.non_agreement_cost,
-            self.reservation_value,
-            self.kb)
+            1.1,
+            self.kb, None)
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
 
-    def test_generatesConstraintIfOfferViolates(self):
-        self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        self.opponent.receive_message(
-            self.agent.generate_next_message_from_transcript())
-        opponent_response = self.opponent.generate_next_message_from_transcript()
-        # one of the constraints was added manually and the integer ones are added because of their utilities
-        # but we can't control which is sent so we check for all of them
-        self.assertTrue(opponent_response.constraint == AtomicConstraint("integer", "4") or
-                        opponent_response.constraint == AtomicConstraint("integer", "5") or
-                        opponent_response.constraint == AtomicConstraint("boolean", "True") or
-                        opponent_response.constraint == AtomicConstraint("integer", "2"))
-
-    def test_recordsConstraintIfReceived(self):
-        self.opponent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        self.opponent.receive_message(
-            self.agent.generate_next_message_from_transcript())
-        self.agent.receive_response(self.opponent)
-        self.agent.generate_next_message_from_transcript()
-        # one of the constraints was added manually and the integer ones are added because of their utilities
-        # but we can't control which is sent so we check for all of them
-        self.assertTrue(AtomicConstraint("integer", "4") in self.agent.opponent_constraints or
-                        AtomicConstraint("integer", "5") in self.agent.opponent_constraints or
-                        AtomicConstraint("boolean", "True") in self.agent.opponent_constraints)
-
-    def test_ownOfferDoesNotViolateConstraint(self):
-        self.agent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        generated_message = self.agent.generate_next_message_from_transcript()
+    def test_own_offer_does_not_violate_constraint(self):
+        self.generator.add_constraint(AtomicConstraint("boolean", "True"))
+        generated_message = self.generator.generate_offer()
         self.assertAlmostEqual(generated_message.offer["boolean"]['True'], 0.0)
 
-    def test_generatesValidOffersWhenConstraintsArePresent(self):
-        self.arbitraryUtilities = {
-            "boolean_True": 100,
-            "boolean_False": 10,
-            "integer_9": 100,
-            "integer_3": 10,
-            "integer_1": 0.1,
-            "integer_4": -10,
-            "integer_5": -100,
-        }
-        self.agent.add_own_constraint(AtomicConstraint("boolean", "True"))
-        response = self.agent.generate_next_message_from_transcript()
-        self.assertTrue(self.agent.is_offer_valid(response.offer))
-
-    def test_valuesViolatingConstraintWithNonAgreementCost(self):
-        constraint = AtomicConstraint("boolean", "True")
-        self.agent.add_own_constraint(constraint)
-        self.assertEqual(self.agent.calc_offer_utility(
-            self.optimal_offer), self.agent.non_agreement_cost)
-
     def test_getting_utility_below_threshold_creates_constraint(self):
-        self.asdf.automatic_constraint_generation = True
-        low_util_dict = {"integer_4": -1000}
-        self.asdf.add_utilities(low_util_dict)
+        low_util_dict = {"integer_4": -10000}
+        self.generator.add_utilities(low_util_dict)
         self.assertTrue(AtomicConstraint("integer", "4")
-                        in self.asdf.own_constraints)
-
-    def test_all_values_get_constrained_terminates_negotiation(self):
-        self.agent.automatic_constraint_generation = True
-        low_util_dict = {"integer_{i}".format(
-            i=i): -1000 for i in range(len(self.agent.issues['integer']))}
-        self.agent.add_utilities(low_util_dict)
-        self.assertTrue(
-            self.agent.generate_next_message_from_transcript().is_termination())
-
-    def test_getting_utility_below_threshold_creates_constraint(self):
-        low_util_dict = {"integer_4": -100000}
-        self.evaluator.add_utilities(low_util_dict)
-        self.assertTrue(AtomicConstraint("integer", "4")
-                        in self.evaluator.constraints)
+                        in self.generator.constraints)
 
     def test_all_values_can_get_constrained(self):
         low_util_dict = {"integer_{i}".format(
             i=i): -100000 for i in range(len(self.neg_space['integer']))}
-        self.evaluator.add_utilities(low_util_dict)
-        constraints = self.evaluator.constraints
+        self.generator.add_utilities(low_util_dict)
+        constraints = self.generator.constraints
         self.assertTrue(
             all([constr.issue == "integer" for constr in constraints]))
         self.assertEqual(
@@ -231,7 +148,15 @@ class TestConstraintDTPGenerator(TestCase):
             len(self.neg_space['integer']))
 
     def test_multiple_issues_can_get_constrained(self):
-        low_util_dict = {"integer_4": -1000, "'float_0.9'": -1000}
-        self.evaluator.add_utilities(low_util_dict)
+        low_util_dict = {"eger_4": -1000, "'float_0.9'": -1000}
+        self.generator.add_utilities(low_util_dict)
         self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint(
-            "float", "0.9")}.issubset(self.evaluator.constraints))
+            "float", "0.9")}.issubset(self.generator.constraints))
+
+    def test_terminates_after_constrains_become_unsatisfiable(self):
+        self.generator.add_constraints({
+            AtomicConstraint("boolean", "True"),
+            AtomicConstraint("boolean", "False")})
+
+        with self.assertRaises(StopIteration):
+            _ = self.generator.generate_offer()

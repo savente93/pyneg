@@ -19,6 +19,10 @@ class Engine():
         self.generator.add_utilities(new_utils)
         self.evaluator.add_utilities(new_utils)
 
+    def set_utilities(self, new_utils: AtomicDict) -> None:
+        self.generator.add_utilities(new_utils)
+        self.evaluator.add_utilities(new_utils)
+
 
 class AbstractEngine(Engine):
     def __init__(self):
@@ -31,4 +35,7 @@ class AbstractEngine(Engine):
         raise NotImplementedError()
 
     def add_utilities(self, new_utils: AtomicDict) -> None:
+        raise NotImplementedError()
+
+    def set_utilities(self, new_utils: AtomicDict) -> None:
         raise NotImplementedError()

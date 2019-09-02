@@ -28,6 +28,9 @@ class Generator():
     def add_utilities(self, new_utils: AtomicDict) -> None:
         raise NotImplementedError()
 
+    def set_utilities(self, new_utils: AtomicDict) -> None:
+        raise NotImplementedError()
+
 
 class EnumGenerator(Generator):
     def __init__(self, neg_space: NegSpace,
@@ -240,8 +243,8 @@ class DTPGenerator(Generator):
             for value in self.neg_space[issue]:
                 atom_list.append("?::{atom}".format(
                     atom=atom_from_issue_value(issue, value)))
-                dtp_decision_vars += ";".join(
-                    atom_list) + ".\n"
+            dtp_decision_vars += ";".join(
+                atom_list) + ".\n"
 
         utility_string = ""
         for u, r in self.utilities.items():
