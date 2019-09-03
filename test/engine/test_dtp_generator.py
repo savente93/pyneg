@@ -56,6 +56,21 @@ class TestDTPGenerator(TestCase):
         result = self.generator.generate_offer()
         self.assertEqual(result, self.optimal_offer)
 
+    def test_extending_full_offer_does_nothing(self):
+        temp_issues = {"issue0": ["0", "1"],
+                       "issue1": ["0", "1"],
+                       "issue2": ["0", "1"]}
+        temp_utils = {"issue0_1": 10.0}
+        sparese_offer = {"issue0_1": 1.0,
+                         "issue1_1": 1.0,
+                         "issue2_1": 1.0,
+                         }
+        self.generator = DTPGenerator(
+            temp_issues, temp_utils, self.non_agreement_cost, 0, [])
+
+        self.assertTrue(
+            len(self.generator.extend_partial_offer(sparese_offer)))
+
     def test_extend_parial_offer(self):
         temp_issues = {"issue0": ["0", "1"],
                        "issue1": ["0", "1"],
@@ -64,10 +79,8 @@ class TestDTPGenerator(TestCase):
         partial_offer = {"issue0_1": 1.0}
         self.generator = DTPGenerator(
             temp_issues, temp_utils, self.non_agreement_cost, 0, [])
-        self.generator.extend_partial_offer(partial_offer, 10)
+        extended_offers = self.generator.extend_partial_offer(partial_offer)
 
-        extended_offers = set(self.generator.offer_queue)
-        extended_offers.add(self.generator.best_offer)
         # the best offer was popped during the initialisation of the generator
         # so just put it back for testing purposes
         self.assertEqual({
@@ -92,9 +105,9 @@ class TestDTPGenerator(TestCase):
         # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
         # shouldn't keep happening so we'll try it a couple of times
         last_offer = self.generator.generate_offer()
-        for _ in range(5):
+        for i in range(5):
             new_offer = self.generator.generate_offer()
-            self.assertNotEqual(last_offer, new_offer)
+            self.assertNotEqual(last_offer, new_offer, i)
             last_offer = new_offer
 
     def test_generatingOfferRecordsItInUtilities(self):
@@ -139,9 +152,8 @@ class TestDTPGenerator(TestCase):
             self.neg_space,
             self.arbitrary_utilities,
             self.non_agreement_cost,
-            1.2,
+            500,
             self.kb)
 
         with self.assertRaises(StopIteration):
-            self.generator.generate_offer()
             self.generator.generate_offer()
