@@ -10,7 +10,7 @@ from .evaluators import Evaluator
 from .strategy import Strategy
 from numpy.random import choice
 from re import search
-from queue import Queue
+from queue import PriorityQueue
 from numpy import isclose
 
 
@@ -39,13 +39,14 @@ class EnumGenerator(Generator):
     def __init__(self, neg_space: NegSpace,
                  utilities: AtomicDict,
                  evaluator: Evaluator,
-                 acceptability_prec: float) -> None:
+                 acceptability_threshold: float) -> None:
         self.neg_space = neg_space
         self.utilities = utilities
         self.evaluator = evaluator
-        self.acceptability_prec = acceptability_prec
-        self.generator_ready = False
-        self.last_offer_util = 2**32
+        self.acceptability_threshold = acceptability_threshold
+        self.assignement_frontier = PriorityQueue()
+        self.init_generator()
+        # self.last_offer_util = 2**32
 
         # convert to strings for callers' convinience
         for issue in self.neg_space.keys():
@@ -77,68 +78,100 @@ class EnumGenerator(Generator):
                                                        map(lambda tup: tup[0], sorter(issue)))
                                                    for issue in self.neg_space.keys()}
 
-        self.current_assignement_indices = {
-            issue: 0 for issue in self.neg_space.keys()}
+        best_offer_indices = {issue: 0 for issue in self.neg_space.keys()}
+        self.offer_counter = 0
+        self.generated_offers = set()
+        util = self.evaluator.calc_offer_utility(
+            self.offer_from_index_dict(best_offer_indices))
+        if util >= self.acceptability_threshold:
+            # index by -util to get a max priority queue instead of the standard min
+            # use offer_counter to break ties
+            self.assignement_frontier.put(
+                (-util, self.offer_counter, best_offer_indices))
+            self.generated_offers.add(
+                self.offer_from_index_dict(best_offer_indices))
+
+    def expland_assignment(self, sorted_offer_indices):
+        for issue in self.neg_space.keys():
+            copied_offer_indices = deepcopy(sorted_offer_indices)
+            if copied_offer_indices[issue] + 1 >= len(self.sorted_utils[issue]):
+                continue
+            copied_offer_indices[issue] += 1
+            offer = self.offer_from_index_dict(copied_offer_indices)
+            util = self.evaluator.calc_offer_utility(offer)
+            if util >= self.acceptability_threshold and self.offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
+                self.assignement_frontier.put(
+                    (-util, self.offer_counter, copied_offer_indices))
+                self.generated_offers.add(
+                    self.offer_from_index_dict(copied_offer_indices))
+
+    def generate_offer(self) -> Offer:
+        if self.assignement_frontier.empty():
+            raise StopIteration()
+
+        self.offer_counter += 1
+        negative_util, offer_counter, indices = self.assignement_frontier.get()
+        self.expland_assignment(indices)
+        return self.offer_from_index_dict(indices)
+        # self.current_assignement_indices = {
+        #     issue: 0 for issue in self.neg_space.keys()}
+        # self.current_assignement_indices[next(
+        #     iter(self.current_assignement_indices.keys()))] = -1
 
         # offer counter is only really used to tell if have made an offer before
         # otherwise it's just an interesting stat
-        self.offer_counter = 0
-        self.generator_ready = True
 
-    def generate_fisrt_offer(self) -> Offer:
-        first_offer = self.offer_from_index_dict(
-            self.current_assignement_indices)
-        self.max_util = self.evaluator.calc_offer_utility(first_offer)
-        self.acceptability_threshold = self.max_util * self.acceptability_prec
-        if self.evaluator.calc_offer_utility(first_offer) < self.acceptability_threshold:
-            raise StopIteration()
-        self.offer_counter += 1
-        self.last_offer_util = self.max_util
-        return first_offer
+    # def generate_potential_assignments(self, index_dict):
+    #     potential_offers = []
+    #     for issue in index_dict.keys():
+    #         if index_dict[issue] >= len(self.sorted_utils[issue]):
+    #             index_dict[issue] = 0
+    #             break
+    #     for issue_to_incr in self.neg_space.keys():
+    #         potential_offer_indeces = deepcopy(
+    #             index_dict)
+    #         potential_offer_indeces[issue_to_incr] = (
+    #             potential_offer_indeces[issue_to_incr] + 1)
+    #         if potential_offer_indeces[issue_to_incr] >= len(self.sorted_utils[issue_to_incr]):
+    #             potential_offers.extend(
+    #                 self.generate_potential_assignments(potential_offer_indeces))
+    #         else:
+    #             potential_offers.append(potential_offer_indeces)
 
-    def generate_offer(self) -> Offer:
-        if not self.generator_ready:
-            self.init_generator()
-            return self.generate_fisrt_offer()
+    #     return potential_offers
 
-        # if we have not yet generated any offers, simply return the first one
-        # we have generted offers so we have to pick from the list
-        # N potential offers we can obtain by picking the next best
-        # for every issue we store the utility we would get
-        # if we were to choose the next best value assignement for that issue
-        # that way we can choose the next best offer, and also know which issue
-        # we incremented so we cna update our current state
-        util_by_issue_to_incr = {}
+    # def generate_offer(self) -> Offer:
+    #     if not self.generator_ready:
+    #         self.init_generator()
+    #         return self.generate_offer()
 
-        # make a potential offer by choosing a different value for each issue
-        # then we can choose the best from those
-        for issue_to_incr in self.neg_space.keys():
+    #     # if all the indices are at the very end we've run out of offers to generate
+    #     if all([self.current_assignement_indices[issue] == len(self.neg_space[issue])-1 for issue in self.neg_space.keys()]):
+    #         raise StopIteration()
 
-            potential_offer_indeces = deepcopy(
-                self.current_assignement_indices)
-            potential_offer_indeces[issue_to_incr] = (
-                potential_offer_indeces[issue_to_incr] + 1) % len(self.sorted_utils[issue_to_incr])
-            potential_offer = self.offer_from_index_dict(
-                potential_offer_indeces)
-            util_by_issue_to_incr[issue_to_incr] = self.evaluator.calc_offer_utility(
-                potential_offer)
+    #     potential_configs = self.generate_potential_assignments(
+    #         self.current_assignement_indices)
 
-        issue_to_incr = ""
-        max_util = -(2.0 ** 32)
-        for issue, util in util_by_issue_to_incr.items():
-            if util > max_util and util >= self.acceptability_threshold:
-                issue_to_incr = issue
-                max_util = util
+    #     next_config = None
+    #     local_max_util = -(2.0 ** 32)
+    #     for config in potential_configs:
+    #         util = self.evaluator.calc_offer_utility(
+    #             self.offer_from_index_dict(config))
+    #         if util > self.last_offer_util:
+    #             continue
+    #         if util > local_max_util and util >= self.acceptability_threshold:
+    #             next_config = config
+    #             local_max_util = util
 
-        if issue_to_incr == "":
-                # we weren't able to find anything that is still acceptable
-            raise StopIteration()
+    #     if next_config is None:
+    #             # we weren't able to find anything that is still acceptable
+    #         raise StopIteration()
 
-        self.current_assignement_indices[issue_to_incr] += 1
-        self.offer_counter += 1
-        self.last_offer_util = max_util
+    #     self.current_assignement_indices = next_config
+    #     self.offer_counter += 1
+    #     self.last_offer_util = local_max_util
 
-        return self.offer_from_index_dict(self.current_assignement_indices)
+    #     return self.offer_from_index_dict(self.current_assignement_indices)
 
     def offer_from_index_dict(self, index_dict: Dict[str, int]) -> Offer:
         offer: NestedDict = {}
@@ -161,7 +194,7 @@ class RandomGenerator(Generator):
                  evaluator: Evaluator,
                  non_agreement_cost: float,
                  kb: List[str],
-                 acceptability_prec: float,
+                 acceptability_threshold: float,
                  max_generation_tries: int = 500):
 
         self.utilities = utilities
@@ -171,13 +204,7 @@ class RandomGenerator(Generator):
         self.evaluator = evaluator
         self.init_uniform_strategy(neg_space)
         self.max_generation_tries = max_generation_tries
-
-        # we need something like DTP to find the max possible utility
-        # so we sneakily use that and then delete it again
-        temp_gen = DTPGenerator(
-            neg_space, utilities, non_agreement_cost, kb, acceptability_prec)
-        self.acceptability_threshold = temp_gen.acceptability_threshold
-        del temp_gen
+        self.acceptability_threshold = acceptability_threshold
 
     def init_uniform_strategy(self, neg_space: NegSpace) -> None:
         strat_dict: Dict[str, Dict[str, float]] = {}
