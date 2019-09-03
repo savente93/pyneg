@@ -90,7 +90,7 @@ class Offer:
         return_string = ""
         for issue in self.values_by_issue.keys():
             atom_list: List[str] = []
-            for value in self.values_by_issue.keys():
+            for value in self.values_by_issue[issue].keys():
                 atom = atom_from_issue_value(
                     issue, value)
                 atom_list.append("{prob}::{atom}".format(

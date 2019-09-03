@@ -1,7 +1,7 @@
 from pyneg.comms import Offer
 from pyneg.types import AtomicDict
-from .generators import Generator
-from .evaluators import Evaluator
+from .generator import Generator
+from .evaluator import Evaluator
 
 
 class Engine():
