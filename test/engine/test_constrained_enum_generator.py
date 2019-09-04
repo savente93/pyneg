@@ -9,12 +9,12 @@ from math import pi
 class TestConstrainedEnumGenerator(TestCase):
 
     def setUp(self):
-        self.issues, self.utilities, _ = neg_scenario_from_util_matrices(
+        self.neg_space, self.utilities, _ = neg_scenario_from_util_matrices(
             arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0
         self.arbitrary_non_agreement_cost = -1000
         self.uniform_weights = {
-            issue: 1/len(values) for issue, values in self.issues.items()}
+            issue: 1/len(values) for issue, values in self.neg_space.items()}
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities, self.uniform_weights, self.arbitrary_non_agreement_cost, None)
         self.violating_offer = Offer({
@@ -23,25 +23,28 @@ class TestConstrainedEnumGenerator(TestCase):
             "issue2": {"0": 0.0, "1": 0.0, "2": 1.0}
         })
         self.generator = ConstrainedEnumGenerator(
-            self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value, None)
+            self.neg_space, self.utilities, self.evaluator, self.arbitrary_reservation_value, None)
+        self.difficult_constraint = AtomicConstraint("issue2", "2")
+        self.generator.add_constraint(self.difficult_constraint)
 
     def test_responds_to_violating_offer_with_constraint(self):
-
-        self.generator.add_constraint(AtomicConstraint("issue2", "2"))
-        constr = self.generator.generate_constraints(self.violating_offer)
-        self.assertEqual(constr, AtomicConstraint("issue2", "2"))
+        self.generator.add_constraint(self.difficult_constraint)
+        constr = self.generator.find_violated_constraint(self.violating_offer)
+        self.assertEqual(constr, self.difficult_constraint)
 
     def test_generates_best_offer_first_time(self):
-        best_offer = Offer(nested_dict_from_atom_dict({'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
-                                                       'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
-                                                       'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
+        best_offer = Offer(nested_dict_from_atom_dict(
+            {'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
+             'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
+             'issue2_0': 0.0, 'issue2_1': 1.0, 'issue2_2': 0.0}))
         generated_offer = self.generator.generate_offer()
         self.assertEqual(best_offer, generated_offer)
 
     def test_generates_next_best_offer_second_time(self):
-        next_best_offer = Offer(nested_dict_from_atom_dict({'issue0_0': 0.0, 'issue0_1': 1.0, 'issue0_2': 0.0,
-                                                            'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
-                                                            'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
+        next_best_offer = Offer(nested_dict_from_atom_dict(
+            {'issue0_0': 0.0, 'issue0_1': 1.0, 'issue0_2': 0.0,
+             'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
+             'issue2_0': 0.0, 'issue2_1': 1.0, 'issue2_2': 0.0}))
 
         _ = self.generator.generate_offer()
         second = self.generator.generate_offer()
@@ -51,7 +54,7 @@ class TestConstrainedEnumGenerator(TestCase):
         next_next_best_offer = Offer(nested_dict_from_atom_dict(
             {'issue0_0': 1.0, 'issue0_1': 0.0, 'issue0_2': 0.0,
              'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
-             'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
+             'issue2_0': 0.0, 'issue2_1': 1.0, 'issue2_2': 0.0}
         ))
 
         _ = self.generator.generate_offer()
@@ -63,7 +66,7 @@ class TestConstrainedEnumGenerator(TestCase):
         expected_offer = Offer(nested_dict_from_atom_dict(
             {'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
              'issue1_0': 0.0, 'issue1_1': 1.0, 'issue1_2': 0.0,
-             'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
+             'issue2_0': 0.0, 'issue2_1': 1.0, 'issue2_2': 0.0}
         ))
 
         _ = self.generator.generate_offer()
@@ -74,9 +77,9 @@ class TestConstrainedEnumGenerator(TestCase):
 
     def test_generates_expected_offer_fith_time(self):
         expected_offer = Offer(nested_dict_from_atom_dict(
-            {'issue0_0': 1.0, 'issue0_1': 0.0, 'issue0_2': 0.0,
-             'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
-             'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
+            {'issue0_0': 0.0, 'issue0_1': 1.0, 'issue0_2': 0.0,
+             'issue1_0': 0.0, 'issue1_1': 1.0, 'issue1_2': 0.0,
+             'issue2_0': 0.0, 'issue2_1': 1.0, 'issue2_2': 0.0}
         ))
 
         _ = self.generator.generate_offer()
@@ -90,7 +93,7 @@ class TestConstrainedEnumGenerator(TestCase):
 
     def test_terminates_after_options_become_unacceptable(self):
         self.generator = ConstrainedEnumGenerator(
-            self.issues, self.utilities, self.evaluator, 100, None)
+            self.neg_space, self.utilities, self.evaluator, 100, None)
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
@@ -102,9 +105,9 @@ class TestConstrainedEnumGenerator(TestCase):
             self.generator.satisfies_all_constraints(generated_offer))
 
     def test_generates_valid_offers_when_constraints_are_present(self):
-        self.generator.add_constraint(AtomicConstraint("issue0", "2"))
-        self.generator.add_constraint(AtomicConstraint("issue1", "2"))
-        self.generator.add_constraint(AtomicConstraint("issue2", "2"))
+        self.generator.add_constraints({AtomicConstraint("issue0", "2"),
+                                        AtomicConstraint("issue1", "2"),
+                                        AtomicConstraint("issue2", "2")})
         generated_offer = self.generator.generate_offer()
         self.generator.satisfies_all_constraints(generated_offer)
 
@@ -116,20 +119,21 @@ class TestConstrainedEnumGenerator(TestCase):
 
     def test_all_values_can_get_constrained(self):
         low_util_dict = {"issue2_{i}".format(
-            i=i): -100000 for i in range(len(self.generator.neg_space['issue2']))}
+            i=i): -100000 for i in range(len(self.neg_space['issue2']))}
         self.generator.add_utilities(low_util_dict)
         constraints = self.generator.constraints
-        self.assertTrue(
-            all([constr.issue == "issue2" for constr in constraints]))
+        snd_issue_constraints = set([constr for constr in constraints if constr.issue ==
+                                     "issue2"])
+        self.assertEqual(constraints, snd_issue_constraints, constraints)
         self.assertEqual(
-            len([constr.issue == "issue2" for constr in constraints]),
-            len(self.generator.neg_space['issue2']))
+            len(snd_issue_constraints),
+            len(self.neg_space['issue2']), constraints)
 
     def test_multiple_issues_can_get_constrained(self):
         low_util_dict = {"issue2_0": -1000, "issue0_1": -1000}
-        self.evaluator.add_utilities(low_util_dict)
+        self.generator.add_utilities(low_util_dict)
         self.assertTrue({AtomicConstraint("issue2", "0"), AtomicConstraint(
-            "issue0", "1")}.issubset(self.evaluator.constraints))
+            "issue0", "1")}.issubset(self.generator.constraints))
 
     def test_terminates_after_constrains_become_unsatisfiable(self):
         self.generator.add_constraints({

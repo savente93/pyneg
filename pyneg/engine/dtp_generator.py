@@ -42,6 +42,10 @@ class DTPGenerator(Generator):
             **new_utils
         }
 
+    def accepts(self, offer: Offer) -> bool:
+        util = self.evaluator.calc_offer_utility(offer)
+        return util >= self.acceptability_threshold
+
     def compile_dtproblog_model(self):
         dtp_decision_vars = ""
         for issue in self.neg_space.keys():

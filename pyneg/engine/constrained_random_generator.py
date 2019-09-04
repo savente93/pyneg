@@ -32,7 +32,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
             self.add_constraints(initial_constraints)
         self.index_max_utilities()
         if self.auto_constraints:
-            self.add_constraints(self.generate_constraints())
+            self.add_constraints(self.discover_constraints())
 
     def add_utilities(self, new_utils):
         self.utilities = {
@@ -41,11 +41,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
         }
 
         if self.auto_constraints:
-            self.add_constraints(self.generate_constraints())
-
-    def init_uniform_strategy(self, neg_space: NegSpace) -> None:
-        super().init_uniform_strategy(neg_space)
-        self.make_strat_constraint_compliant()
+            self.add_constraints(self.discover_constraints())
 
     def generate_offer(self) -> Offer:
         if not self.constraints_satisfiable:
@@ -61,14 +57,12 @@ class ConstrainedRandomGenerator(RandomGenerator):
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
-        self.make_strat_constraint_compliant()
 
     def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
         self.constraints.update(constraints)
         self.evaluator.add_constraints(self.constraints)
-        self.make_strat_constraint_compliant()
 
-    def generate_constraints(self) -> Offer:
+    def discover_constraints(self) -> Offer:
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(

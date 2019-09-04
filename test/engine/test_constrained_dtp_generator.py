@@ -50,20 +50,25 @@ class TestConstrainedDTPGenerator(TestCase):
         self.optimal_offer['float']["0.1"] = 1.0
         self.optimal_offer = Offer(self.optimal_offer)
 
-        self.violating_offer = Offer({
-            "issue0": {"0": 0.0, "1": 0.0, "2": 1.0},
-            "issue1": {"0": 0.0, "1": 0.0, "2": 1.0},
-            "issue2": {"0": 0.0, "1": 0.0, "2": 1.0}
-        })
+        self.violating_offer = {
+            "boolean": {"True": 1.0, "False": 0.0},
+            "integer": {str(i): 0.0 for i in range(10)},
+            "float": {"{0:.1f}".format(i * 0.1): 0.0 for i in range(10)}
+        }
+        self.violating_offer["integer"]["2"] = 1.0
+        self.violating_offer['float']["0.1"] = 1.0
+
+        self.violating_offer = Offer(self.violating_offer)
 
         self.generator = ConstrainedDTPGenerator(self.neg_space, self.utilities,
                                                  self.non_agreement_cost, self.reservation_value,
                                                  self.kb, None)
 
     def test_responds_to_violating_offer_with_constraint(self):
-        self.generator.add_constraint(AtomicConstraint("issue2", "2"))
-        constr = self.generator.generate_constraints(self.violating_offer)
-        self.assertEqual(constr, AtomicConstraint("issue2", "2"))
+        self.generator.add_constraint(AtomicConstraint("boolean", "True"))
+        constr = self.generator.find_violated_constraint(self.violating_offer)
+        self.assertTrue(constr in {AtomicConstraint(
+            "boolean", "True"), AtomicConstraint("integer", "5")})
 
     def test_dtp_generates_optimal_bid_in_simple_negotiation_setting(self):
         result = self.generator.generate_offer()
@@ -81,7 +86,7 @@ class TestConstrainedDTPGenerator(TestCase):
     def test_generating_offer_records_it(self):
         _ = self.generator.generate_offer()
         self.assertTrue(Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
-                               'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_str_repr() in self.generator.generated_offers.keys())
+                               'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_repr() in self.generator.generated_offers.keys())
 
     def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
         arbitrary_utilities = {
@@ -106,29 +111,30 @@ class TestConstrainedDTPGenerator(TestCase):
 
     def test_ends_negotiation_if_offers_generated_are_not_acceptable(self):
         # simply a set of impossible utilities to check that we exit immediately
-        arbitrary_utilities = {
-            "boolean_True": -100,
-            "boolean_False": -10,
-            "integer_9": -100,
-            "integer_3": -10,
-            "integer_1": -0.1,
+        self.arbitrary_utilities = {
+            "boolean_True": 100,
+            "boolean_False": 10,
+            "integer_9": 100,
+            "integer_3": 10,
+            "integer_1": 0.1,
             "integer_4": -10,
             "integer_5": -100,
         }
         self.generator = ConstrainedDTPGenerator(
             self.neg_space,
-            arbitrary_utilities,
+            self.arbitrary_utilities,
             self.non_agreement_cost,
-            1.1,
-            self.kb, None)
+            500,
+            self.kb, set())
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
 
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("boolean", "True"))
-        generated_message = self.generator.generate_offer()
-        self.assertAlmostEqual(generated_message.offer["boolean"]['True'], 0.0)
+        generated_offer = self.generator.generate_offer()
+        self.assertTrue(
+            self.generator.satisfies_all_constraints(generated_offer))
 
     def test_getting_utility_below_threshold_creates_constraint(self):
         low_util_dict = {"integer_4": -10000}
@@ -148,7 +154,7 @@ class TestConstrainedDTPGenerator(TestCase):
             len(self.neg_space['integer']))
 
     def test_multiple_issues_can_get_constrained(self):
-        low_util_dict = {"eger_4": -1000, "'float_0.9'": -1000}
+        low_util_dict = {"integer_4": -100000, "'float_0.9'": -100000}
         self.generator.add_utilities(low_util_dict)
         self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint(
             "float", "0.9")}.issubset(self.generator.constraints))
@@ -169,45 +175,25 @@ class TestConstrainedDTPGenerator(TestCase):
         temp_utils = {
             "boolean1_True": -100000,
             "boolean1_False": 0,
-            "boolean2_True": 1000,
-            "boolean2_False": 1000
-
+            "boolean2_True": 10,
+            "boolean2_False": 10
         }
-        self.evaluator = ConstrainedProblogEvaluator(
-            temp_issues, temp_utils, self.non_agreement_cost, [], None)
-        self.evaluator.add_utilities(temp_utils)
-        self.assertEqual(len(self.evaluator.constraints), 1)
-
-    def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
-        temp_issues = {
-            "boolean1": [True, False],
-            "boolean2": [True, False]
-        }
-        temp_utils = {
-            "boolean1_True": -100000,
-            "boolean1_False": 0,
-            "boolean2_True": 1000,
-            "boolean2_False": 1000
-
-        }
-        uniform_weights = {
-            issue: 1/len(temp_issues.keys()) for issue in temp_issues.keys()}
-        self.evaluator = ConstrainedLinearEvaluator(
-            temp_utils, uniform_weights, self.non_agreement_cost, None)
-        self.evaluator.add_utilities(temp_utils)
-        self.assertEqual(len(self.evaluator.constraints), 1)
+        self.generator = ConstrainedDTPGenerator(temp_issues, temp_utils,
+                                                 self.non_agreement_cost, self.reservation_value,
+                                                 self.kb, None)
+        self.assertEqual(len(self.generator.constraints), 1)
 
     def test_getting_utility_below_threshold_creates_constraint(self):
         low_util_dict = {"integer_4": -100000}
-        self.evaluator.add_utilities(low_util_dict)
+        self.generator.add_utilities(low_util_dict)
         self.assertTrue(AtomicConstraint("integer", "4")
-                        in self.evaluator.constraints)
+                        in self.generator.constraints)
 
     def test_all_values_can_get_constrained(self):
         low_util_dict = {"integer_{i}".format(
             i=i): -100000 for i in range(len(self.neg_space['integer']))}
-        self.evaluator.add_utilities(low_util_dict)
-        constraints = self.evaluator.constraints
+        self.generator.add_utilities(low_util_dict)
+        constraints = self.generator.constraints
         self.assertTrue(
             all([constr.issue == "integer" for constr in constraints]))
         self.assertEqual(

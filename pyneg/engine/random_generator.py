@@ -46,8 +46,8 @@ class RandomGenerator(Generator):
         self.strategy = Strategy(strat_dict)
 
     def generate_offer(self) -> Offer:
+        return_offer = None
         for _ in range(self.max_generation_tries):
-
             offer: Dict[str, Dict[str, float]] = {}
             for issue in self.neg_space.keys():
                 # convert to two lists so we can use numpy's choice
@@ -61,4 +61,10 @@ class RandomGenerator(Generator):
             possible_offer = Offer(offer)
             util = self.evaluator.calc_offer_utility(possible_offer)
             if util >= self.acceptability_threshold:
-                return possible_offer
+                return_offer = possible_offer
+                break
+
+        if not return_offer:
+            raise StopIteration()
+
+        return return_offer

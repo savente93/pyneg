@@ -67,3 +67,10 @@ class ProblogEvaluator(Evaluator):
                     score += self.utilities[atom] * prob
 
         return score
+
+    def calc_assignment_util(self, issue: str, value: str) -> float:
+        atom = atom_from_issue_value(issue, value)
+        if atom in self.utilities.keys():
+            return self.utilities[atom]
+        else:
+            return 0.0

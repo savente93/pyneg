@@ -70,8 +70,8 @@ class TestConstrainedRandomGenerator(TestCase):
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("boolean", "True"))
         generated_offer = self.generator.generate_offer()
-        chosen_offer_value = generated_offer.get_chosen_value("boolean")
-        self.assertNotEqual(chosen_offer_value, "True")
+        self.assertTrue(
+            self.generator.satisfies_all_constraints(generated_offer))
 
     def test_getting_utility_below_threshold_creates_constraint(self):
         low_util_dict = {"integer_4": -10000}

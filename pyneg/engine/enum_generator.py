@@ -36,6 +36,7 @@ class EnumGenerator(Generator):
         }
 
     def init_generator(self) -> None:
+        self.assignement_frontier = PriorityQueue()
         nested_utils: NestedDict = nested_dict_from_atom_dict(self.utilities)
 
         # function to sort a list of tuples according to the second tuple field
@@ -58,15 +59,20 @@ class EnumGenerator(Generator):
         best_offer_indices = {issue: 0 for issue in self.neg_space.keys()}
         self.offer_counter = 0
         self.generated_offers = set()
-        util = self.evaluator.calc_offer_utility(
-            self.offer_from_index_dict(best_offer_indices))
-        if util >= self.acceptability_threshold:
+
+        offer = self.offer_from_index_dict(best_offer_indices)
+        if self.accepts(offer):
+            util = self.evaluator.calc_offer_utility(offer)
             # index by -util to get a max priority queue instead of the standard min
             # use offer_counter to break ties
             self.assignement_frontier.put(
                 (-util, self.offer_counter, best_offer_indices))
             self.generated_offers.add(
                 self.offer_from_index_dict(best_offer_indices))
+
+    def accepts(self, offer: Offer) -> bool:
+        util = self.evaluator.calc_offer_utility(offer)
+        return util >= self.acceptability_threshold
 
     def expland_assignment(self, sorted_offer_indices):
         for issue in self.neg_space.keys():

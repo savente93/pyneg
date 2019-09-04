@@ -48,3 +48,10 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
 
     def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
         self.constraints.update(constraints)
+
+    def calc_assignment_util(self, issue: str, value: str) -> float:
+        for constr in self.constraints:
+            if not constr.is_satisfied_by_assignment(issue, value):
+                return self.non_agreement_cost
+
+        return super().calc_assignment_util(issue, value)
