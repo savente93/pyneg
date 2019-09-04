@@ -1,9 +1,10 @@
-from typing import Dict, Tuple, Union, cast, Iterable, List
-from re import sub, search
+from typing import Dict, Union, cast, Iterable
+
 from numpy import isclose
+
 from pyneg.comms import Offer
 from pyneg.types import AtomicDict, Verbosity, NestedDict
-from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value
+from pyneg.utils import nested_dict_from_atom_dict
 
 
 class Strategy(Offer):

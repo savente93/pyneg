@@ -1,7 +1,7 @@
 from pyneg.comms import Offer
 from pyneg.types import AtomicDict
-from .generator import Generator
 from .evaluator import Evaluator
+from .generator import Generator
 
 
 class Engine():
@@ -26,7 +26,7 @@ class Engine():
 
 class AbstractEngine(Engine):
     def __init__(self):
-        raise NotImplementedError()
+        pass
 
     def generate_offer(self) -> Offer:
         raise NotImplementedError()

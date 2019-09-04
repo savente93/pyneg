@@ -1,14 +1,13 @@
-from typing import Optional, Set, Dict, List, Iterable
-from pyneg.comms import Offer
-from pyneg.types import NegSpace, NestedDict, AtomicDict
-from .evaluator import Evaluator
-from .strategy import Strategy
-from numpy.random import choice
-from pyneg.comms import AtomicConstraint
-from .generator import Generator
-from .random_generator import RandomGenerator
-from pyneg.utils import atom_from_issue_value
+from typing import Optional, Set, List, Iterable
+
 from numpy import isclose
+
+from pyneg.comms import AtomicConstraint
+from pyneg.comms import Offer
+from pyneg.types import NegSpace, AtomicDict
+from pyneg.utils import atom_from_issue_value
+from .evaluator import Evaluator
+from .random_generator import RandomGenerator
 
 
 class ConstrainedRandomGenerator(RandomGenerator):
@@ -37,7 +36,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
     def add_utilities(self, new_utils):
         self.utilities = {
             **self.utilities,
-            ** new_utils
+            **new_utils
         }
 
         if self.auto_constraints:
@@ -75,7 +74,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
                 else:
                     value_util = 0
 
-                if best_case+value_util < self.acceptability_threshold:
+                if best_case + value_util < self.acceptability_threshold:
                     new_constraints.add(AtomicConstraint(issue, value))
 
         return new_constraints
@@ -91,7 +90,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
         self.max_utility_by_issue = {
             issue: 0 for issue in self.neg_space.keys()}
         for issue in self.neg_space.keys():
-            max_issue_util = -(2**31)
+            max_issue_util = -(2 ** 31)
             for value in self.neg_space[issue]:
                 util = self.evaluator.calc_assignment_util(issue, value)
                 if util > max_issue_util:

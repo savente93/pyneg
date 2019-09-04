@@ -1,7 +1,7 @@
 from unittest import TestCase
-from pyneg.engine import LinearEvaluator, Strategy
+
 from pyneg.comms import Offer
-from math import pi
+from pyneg.engine import LinearEvaluator, Strategy
 
 
 class TestLinearEvaluator(TestCase):
@@ -53,25 +53,27 @@ class TestLinearEvaluator(TestCase):
         })
 
         self.uniform_weights = {
-            issue: 1/len(self.neg_space.keys()) for issue in self.neg_space.keys()}
+            issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
 
         self.evaluator = LinearEvaluator(
             self.utilities, self.uniform_weights, self.non_agreement_cost)
 
     def test_calc_offer_utility(self):
-        expected_offer_utility = 100/3
+        expected_offer_utility = 100 / 3
 
         self.assertAlmostEqual(self.evaluator.calc_offer_utility(
             self.nested_test_offer), expected_offer_utility)
 
     def test_calc_optimal_offer_utility(self):
-        expected_offer_utility = 100/3 + 100/3 + 1/3
+        expected_offer_utility = 100 / 3 + 100 / 3 + 1 / 3
 
         self.assertAlmostEqual(self.evaluator.calc_offer_utility(
             self.optimal_offer), expected_offer_utility)
 
     def test_calc_strat_utility_python(self):
         expected_uniform_strat_util = (
-            100*0.5+0.5*10) / 3 + (100*0.1+10*0.1+0.1*0.1-10*0.1-100*0.1)/3 + (1*0.1)/3
+                                              100 * 0.5 + 0.5 * 10) / 3 + (
+                                                  100 * 0.1 + 10 * 0.1 + 0.1 * 0.1 - 10 * 0.1 - 100 * 0.1) / 3 + (
+                                                  1 * 0.1) / 3
         self.assertAlmostEqual(self.evaluator.calc_strat_utility(
             self.uniform_strat), expected_uniform_strat_util)

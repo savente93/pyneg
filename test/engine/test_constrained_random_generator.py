@@ -1,5 +1,6 @@
 from unittest import TestCase
-from pyneg.comms import Offer, AtomicConstraint, MessageType, Message
+
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.engine import ConstrainedRandomGenerator, ConstrainedLinearEvaluator
 
 
@@ -58,7 +59,7 @@ class TestConstrainedRandomGenerator(TestCase):
         self.violating_offer = Offer(self.violating_offer)
 
         self.uniform_weights = {
-            issue: 1/len(self.neg_space.keys()) for issue in self.neg_space.keys()}
+            issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
 
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities, self.uniform_weights, self.non_agreement_cost, None)
@@ -140,7 +141,7 @@ class TestConstrainedRandomGenerator(TestCase):
             "boolean2_False": 1000
         }
         uniform_weights = {
-            issue: 1/len(temp_issues.keys()) for issue in temp_issues.keys()}
+            issue: 1 / len(temp_issues.keys()) for issue in temp_issues.keys()}
 
         temp_evaluator = ConstrainedLinearEvaluator(
             temp_utils, uniform_weights, self.non_agreement_cost, None)

@@ -1,5 +1,7 @@
 import unittest
+
 import numpy as np
+
 from pyneg.utils import generate_binary_utility_matrices, count_acceptable_offers, neg_scenario_from_util_matrices
 
 

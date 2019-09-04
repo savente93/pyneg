@@ -1,13 +1,13 @@
 from typing import Dict, Optional, Union, List, Set
-from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator, DTPGenerator
-from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
-from pyneg.engine import ConstrainedLinearEvaluator, ConstrainedProblogEvaluator, ConstrainedDTPGenerator
-from pyneg.engine import ConstrainedEnumGenerator, ConstrainedRandomGenerator
-from pyneg.utils import atom_dict_from_nested_dict
-from pyneg.agent import Agent, ConstrainedAgent
-from pyneg.types import NegSpace
-from pyneg.comms import AtomicConstraint
 
+from pyneg.agent import Agent, ConstrainedAgent
+from pyneg.comms import AtomicConstraint
+from pyneg.engine import ConstrainedEnumGenerator
+from pyneg.engine import ConstrainedLinearEvaluator
+from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator
+from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
+from pyneg.types import NegSpace
+from pyneg.utils import atom_dict_from_nested_dict
 
 STANDARD_MAX_ROUNDS = 200
 
@@ -32,7 +32,7 @@ class AgentFactory():
 
         if not issue_weights:
             issue_weights = {
-                issue: 1/len(neg_space[issue])
+                issue: 1 / len(neg_space[issue])
                 for issue in neg_space.keys()}
 
         # convert to atomic dict if we are given a nested dict
@@ -70,7 +70,7 @@ class AgentFactory():
 
         if not issue_weights:
             issue_weights = {
-                issue: 1/len(neg_space[issue])
+                issue: 1 / len(neg_space[issue])
                 for issue in neg_space.keys()}
 
         # convert to atomic dict if we are given a nested dict
@@ -137,7 +137,7 @@ class AgentFactory():
 
         if not issue_weights:
             issue_weights = {
-                issue: 1/len(neg_space[issue])
+                issue: 1 / len(neg_space[issue])
                 for issue in neg_space.keys()}
 
         # convert to atomic dict if we are given a nested dict

@@ -1,6 +1,7 @@
 from unittest import TestCase
-from pyneg.engine import RandomGenerator, ProblogEvaluator
+
 from pyneg.comms import Offer
+from pyneg.engine import RandomGenerator, ProblogEvaluator
 
 
 class TestRandomGenerator(TestCase):

@@ -1,5 +1,5 @@
-from .agent import Agent
 from pyneg.comms import AtomicConstraint
+from .agent import Agent
 
 
 class ConstrainedAgent(Agent):

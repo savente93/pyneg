@@ -1,5 +1,6 @@
 import traceback
 from os import environ
+
 import requests
 
 
@@ -10,6 +11,7 @@ def try_except_notify(func):
     raised. The second function is the path to a file containing the tokens
     used for the push notifications
     """
+
     def try_except_function(num_tries, *args, **kwargs):
         """Modified version of func - see docstring for try_except().
         """
@@ -26,6 +28,7 @@ def try_except_notify(func):
                 else:
                     pass
         return results
+
     return try_except_function
 
 

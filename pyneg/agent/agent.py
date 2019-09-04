@@ -1,7 +1,8 @@
-from typing import Dict, Tuple, List, Optional, cast
-from pyneg.types import NegSpace, Verbosity
+from typing import Dict, List, Optional
+
 from pyneg.comms import Message, MessageType, Offer
-from pyneg.engine import Engine, AbstractEngine
+from pyneg.engine import Engine
+from pyneg.types import NegSpace
 
 
 class Agent:
@@ -12,7 +13,7 @@ class Agent:
         self.transcript: List[Message] = []
         self.max_rounds: int = 0
         self.neg_space: NegSpace = {}
-        self.engine: Engine = AbstractEngine()
+        self.engine: Engine = Engine()
         self.absolute_reservation_value: float = -(2.0 ** 31)
         self.opponent: Optional[Agent] = None
         self._type = ""

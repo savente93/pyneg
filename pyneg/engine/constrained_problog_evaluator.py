@@ -1,14 +1,10 @@
+from typing import Optional, List, Set, Iterable
+
 from pyneg.comms import Offer, AtomicConstraint
-from typing import Dict, Union, Optional, List, Set, Iterable
-from pyneg.utils import atom_from_issue_value
 from pyneg.types import AtomicDict
-from .strategy import Strategy
-from .linear_evaluator import LinearEvaluator
-from .problog_evaluator import ProblogEvaluator
 from pyneg.types import NegSpace
-from problog.program import PrologString
-from problog import get_evaluatable
-from problog.tasks.dtproblog import dtproblog
+from .problog_evaluator import ProblogEvaluator
+from .strategy import Strategy
 
 
 class ConstrainedProblogEvaluator(ProblogEvaluator):

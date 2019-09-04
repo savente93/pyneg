@@ -1,9 +1,11 @@
-import numpy as np
 from itertools import product
-from pyneg.types import NestedDict
-from typing import Tuple
 from re import search, sub
 from typing import List, Dict
+from typing import Tuple
+
+import numpy as np
+
+from pyneg.types import NestedDict
 
 
 def nested_dict_from_atom_dict(atom_dict) -> NestedDict:
@@ -36,7 +38,7 @@ def atom_from_issue_value(issue: str, value: str) -> str:
     if "." in str(value):
         return "'{issue}_{val}'".format(issue=issue, val=value)
     else:
-        return"{issue}_{val}".format(issue=issue, val=value)
+        return "{issue}_{val}".format(issue=issue, val=value)
 
 
 def atom_dict_from_nested_dict(nested_dict):
@@ -78,8 +80,8 @@ def generate_gradient_utility_matrices(shape, tau_a, tau_b=None):
 
 def generate_lex_utility_matrices(shape, order):
     n, m = shape
-    u_a = np.arange(n*m).reshape(n, m) ** order
-    u_b = np.flip(np.arange(n*m)).reshape(n, m) ** order
+    u_a = np.arange(n * m).reshape(n, m) ** order
+    u_b = np.flip(np.arange(n * m)).reshape(n, m) ** order
 
     return u_a, u_b
 

@@ -1,11 +1,9 @@
+from typing import Dict, Optional, Set
+
 from pyneg.comms import Offer, AtomicConstraint
-from typing import Dict, Union, Optional, List, Set
-from pyneg.utils import atom_from_issue_value
 from pyneg.types import AtomicDict
-from .strategy import Strategy
 from .linear_evaluator import LinearEvaluator
-from .problog_evaluator import ProblogEvaluator
-from pyneg.types import NegSpace
+from .strategy import Strategy
 
 
 class ConstrainedLinearEvaluator(LinearEvaluator):

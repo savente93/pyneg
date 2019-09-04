@@ -1,6 +1,7 @@
 from unittest import TestCase
-from pyneg.engine import ProblogEvaluator
+
 from pyneg.comms import Offer
+from pyneg.engine import ProblogEvaluator
 from pyneg.engine import Strategy
 
 
@@ -72,7 +73,8 @@ class TestProblogEvaluator(TestCase):
 
     def test_calc_strat_utility(self):
         expected_uniform_strat_util = (
-            100*0.5+0.5*10) + (100*0.1+10*0.1+0.1*0.1-10*0.1-100*0.1)
+                                              100 * 0.5 + 0.5 * 10) + (
+                                                  100 * 0.1 + 10 * 0.1 + 0.1 * 0.1 - 10 * 0.1 - 100 * 0.1)
         self.assertAlmostEqual(self.evaluator.calc_strat_utility(
             self.uniform_strat), expected_uniform_strat_util)
 

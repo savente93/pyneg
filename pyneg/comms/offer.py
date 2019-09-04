@@ -1,5 +1,7 @@
 from typing import Dict, Union, cast, List
+
 from numpy import isclose
+
 from pyneg.types import NestedDict, AtomicDict
 from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value
 

@@ -1,20 +1,21 @@
 from unittest import TestCase
-from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
-from pyneg.engine import ConstrainedEnumGenerator, ConstrainedLinearEvaluator
-from pyneg.comms import Offer, AtomicConstraint
+
 from numpy import arange
-from math import pi
+
+from pyneg.comms import Offer, AtomicConstraint
+from pyneg.engine import ConstrainedEnumGenerator, ConstrainedLinearEvaluator
+from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
 
 
 class TestConstrainedEnumGenerator(TestCase):
 
     def setUp(self):
         self.neg_space, self.utilities, _ = neg_scenario_from_util_matrices(
-            arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
+            arange(9).reshape((3, 3)) ** 2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0
         self.arbitrary_non_agreement_cost = -1000
         self.uniform_weights = {
-            issue: 1/len(values) for issue, values in self.neg_space.items()}
+            issue: 1 / len(values) for issue, values in self.neg_space.items()}
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities, self.uniform_weights, self.arbitrary_non_agreement_cost, None)
         self.violating_offer = Offer({
@@ -88,7 +89,7 @@ class TestConstrainedEnumGenerator(TestCase):
         _ = self.generator.generate_offer()
         offer = self.generator.generate_offer()
         offer_diff = self.evaluator.calc_offer_utility(
-            expected_offer)-self.evaluator.calc_offer_utility(offer)
+            expected_offer) - self.evaluator.calc_offer_utility(offer)
         self.assertEqual(expected_offer, offer, offer_diff)
 
     def test_terminates_after_options_become_unacceptable(self):

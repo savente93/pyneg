@@ -1,4 +1,5 @@
 from typing import Optional
+
 from pyneg.types import MessageType
 from .atomic_constraint import AtomicConstraint
 from .offer import Offer

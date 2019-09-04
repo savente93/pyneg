@@ -1,7 +1,8 @@
-from unittest import TestCase
-from pyneg.comms import Offer, AtomicConstraint, Message, MessageType
-from pyneg.engine import ConstrainedProblogEvaluator
 from math import pi
+from unittest import TestCase
+
+from pyneg.comms import Offer, AtomicConstraint
+from pyneg.engine import ConstrainedProblogEvaluator
 
 
 class TestConstrainedProblogEvaluator(TestCase):

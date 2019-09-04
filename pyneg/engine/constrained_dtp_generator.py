@@ -1,19 +1,11 @@
-from typing import Optional, Set, Dict, List, Iterable
-from pyneg.comms import Offer
-from pyneg.types import NegSpace, NestedDict, AtomicDict
-from .evaluator import Evaluator
-from .strategy import Strategy
-from numpy.random import choice
+from typing import Optional, Set, List, Iterable
+
 from pyneg.comms import AtomicConstraint
-from .generator import Generator
-from .dtp_generator import DTPGenerator
+from pyneg.comms import Offer
+from pyneg.types import NegSpace, AtomicDict
+from pyneg.utils import atom_from_issue_value
 from .constrained_problog_evaluator import ConstrainedProblogEvaluator
-from pyneg.utils import atom_from_issue_value, nested_dict_from_atom_dict, atom_dict_from_nested_dict
-from numpy import isclose
-from copy import deepcopy
-from problog.program import PrologString
-from problog import get_evaluatable
-from problog.tasks.dtproblog import dtproblog
+from .dtp_generator import DTPGenerator
 
 
 # TODO At the moment this class still assumes a lot of linearity
@@ -104,7 +96,7 @@ class ConstrainedDTPGenerator(DTPGenerator):
                 else:
                     value_util = 0
 
-                if best_case+value_util < self.acceptability_threshold:
+                if best_case + value_util < self.acceptability_threshold:
                     new_constraints.add(AtomicConstraint(issue, value))
 
         return new_constraints
@@ -153,7 +145,7 @@ class ConstrainedDTPGenerator(DTPGenerator):
                 self.constraints_satisfiable = False
                 return
 
-            max_issue_util = -(2**31)
+            max_issue_util = -(2 ** 31)
             for value in self.neg_space[issue]:
                 util = self.evaluator.calc_assignment_util(issue, value)
                 if util > max_issue_util:

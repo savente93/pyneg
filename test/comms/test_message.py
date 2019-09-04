@@ -1,4 +1,5 @@
 import unittest
+
 from pyneg.comms import AtomicConstraint, Message, MessageType, Offer
 
 

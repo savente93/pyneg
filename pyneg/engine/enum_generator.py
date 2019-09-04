@@ -1,17 +1,11 @@
-from typing import List, Tuple, cast, Dict, Union, Set
 from copy import deepcopy
-from problog.program import PrologString
-from problog import get_evaluatable
-from problog.tasks.dtproblog import dtproblog
+from queue import PriorityQueue
+from typing import List, Tuple, cast, Dict
+
 from pyneg.comms import Offer
 from pyneg.types import NegSpace, NestedDict, AtomicDict
-from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value, atom_dict_from_nested_dict
+from pyneg.utils import nested_dict_from_atom_dict
 from .evaluator import Evaluator
-from .strategy import Strategy
-from numpy.random import choice
-from re import search
-from queue import PriorityQueue
-from numpy import isclose
 from .generator import Generator
 
 
@@ -52,9 +46,9 @@ class EnumGenerator(Generator):
         # by utility in dec order
         # example: {"boolean_True":10,"boolean_False":100} => {"boolean": ["False","True"]}
         self.sorted_utils: Dict[str, List[str]] = {issue:
-                                                   list(
-                                                       map(lambda tup: tup[0], sorter(issue)))
-                                                   for issue in self.neg_space.keys()}
+            list(
+                map(lambda tup: tup[0], sorter(issue)))
+            for issue in self.neg_space.keys()}
 
         best_offer_indices = {issue: 0 for issue in self.neg_space.keys()}
         self.offer_counter = 0
@@ -82,7 +76,8 @@ class EnumGenerator(Generator):
             copied_offer_indices[issue] += 1
             offer = self.offer_from_index_dict(copied_offer_indices)
             util = self.evaluator.calc_offer_utility(offer)
-            if util >= self.acceptability_threshold and self.offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
+            if util >= self.acceptability_threshold and self.offer_from_index_dict(
+                    copied_offer_indices) not in self.generated_offers:
                 self.assignement_frontier.put(
                     (-util, self.offer_counter, copied_offer_indices))
                 self.generated_offers.add(

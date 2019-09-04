@@ -1,12 +1,14 @@
-from pyneg.comms import Offer
-from typing import Dict, Union, Optional, List
-from pyneg.utils import atom_from_issue_value
-from pyneg.types import AtomicDict
-from .strategy import Strategy
-from pyneg.types import NegSpace
-from problog.program import PrologString
+from typing import Dict, List
+
 from problog import get_evaluatable
+from problog.program import PrologString
+
+from pyneg.comms import Offer
+from pyneg.types import AtomicDict
+from pyneg.types import NegSpace
+from pyneg.utils import atom_from_issue_value
 from .engine import Evaluator
+from .strategy import Strategy
 
 
 class ProblogEvaluator(Evaluator):
@@ -31,7 +33,7 @@ class ProblogEvaluator(Evaluator):
         model = self.compile_problog_model(offer)
         probability_of_facts = {str(atom): util for atom, util in
                                 get_evaluatable("sdd").create_from(
-                                PrologString(model)).evaluate().items()}
+                                    PrologString(model)).evaluate().items()}
 
         return probability_of_facts
 
@@ -40,8 +42,8 @@ class ProblogEvaluator(Evaluator):
 
         query_string = ""
         for util_atom in self.utilities.keys():
-                # we shouldn't ask problog for facts that we currently have no rules for
-                # like we might not have after new issues are set so we'll skip those
+            # we shouldn't ask problog for facts that we currently have no rules for
+            # like we might not have after new issues are set so we'll skip those
             if any([util_atom in rule for rule in self.kb]) or any(
                     [util_atom in atom for atom in self.utilities.keys()]):
                 query_string += "query({utilFact}).\n".format(utilFact=util_atom)

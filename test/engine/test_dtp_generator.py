@@ -1,6 +1,7 @@
 from unittest import TestCase
-from pyneg.engine import DTPGenerator
+
 from pyneg.comms import Offer
+from pyneg.engine import DTPGenerator
 
 
 class TestDTPGenerator(TestCase):
@@ -112,8 +113,10 @@ class TestDTPGenerator(TestCase):
 
     def test_generatingOfferRecordsItInUtilities(self):
         _ = self.generator.generate_offer()
-        offer = Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
-                       'integer_5': 0.0, 'integer_9': 1.0})
+        offer = Offer(
+            {"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0,
+             'integer_4': 0.0,
+             'integer_5': 0.0, 'integer_9': 1.0})
         self.assertTrue(offer.get_sparse_repr()
                         in self.generator.generated_offers.keys())
 

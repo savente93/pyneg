@@ -1,15 +1,13 @@
-from typing import Optional, Set, Dict, List, Iterable
-from pyneg.comms import Offer
-from pyneg.types import NegSpace, NestedDict, AtomicDict
-from .evaluator import Evaluator
-from .strategy import Strategy
-from numpy.random import choice
-from pyneg.comms import AtomicConstraint
-from .generator import Generator
-from .enum_generator import EnumGenerator
-from pyneg.utils import atom_from_issue_value
 from copy import deepcopy
+from typing import Optional, Set, List, Iterable
 from uuid import uuid4
+
+from pyneg.comms import AtomicConstraint
+from pyneg.comms import Offer
+from pyneg.types import NegSpace, AtomicDict
+from pyneg.utils import atom_from_issue_value
+from .enum_generator import EnumGenerator
+from .evaluator import Evaluator
 
 
 class ConstrainedEnumGenerator(EnumGenerator):
@@ -130,7 +128,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
                 else:
                     value_util = 0
 
-                if best_case+value_util < self.acceptance_threshold:
+                if best_case + value_util < self.acceptance_threshold:
                     new_constraints.add(AtomicConstraint(issue, value))
 
         return new_constraints

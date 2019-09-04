@@ -9,3 +9,4 @@ coverage_report
 .pytest_cache
 *.pytest_cache
 .venv
+.idea

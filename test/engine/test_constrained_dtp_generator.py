@@ -1,9 +1,7 @@
 from unittest import TestCase
-from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
-from pyneg.engine import ConstrainedDTPGenerator
+
 from pyneg.comms import Offer, AtomicConstraint
-from numpy import arange
-from math import pi
+from pyneg.engine import ConstrainedDTPGenerator
 
 
 class TestConstrainedDTPGenerator(TestCase):
@@ -85,8 +83,10 @@ class TestConstrainedDTPGenerator(TestCase):
 
     def test_generating_offer_records_it(self):
         _ = self.generator.generate_offer()
-        self.assertTrue(Offer({"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0, 'integer_4': 0.0,
-                               'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_repr() in self.generator.generated_offers.keys())
+        self.assertTrue(Offer(
+            {"'float_0.1'": 1.0, 'boolean_True': 1.0, 'boolean_False': 0.0, 'integer_1': 0.0, 'integer_3': 0.0,
+             'integer_4': 0.0,
+             'integer_5': 0.0, 'integer_9': 1.0}).get_sparse_repr() in self.generator.generated_offers.keys())
 
     def test_generatesValidOffersWhenNoUtilitiesArePresent(self):
         arbitrary_utilities = {

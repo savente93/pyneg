@@ -1,8 +1,9 @@
-from pyneg.comms import Offer
-from pyneg.utils import atom_from_issue_value
-from pyneg.types import AtomicDict
-from .engine import Evaluator
 from typing import Dict
+
+from pyneg.comms import Offer
+from pyneg.types import AtomicDict
+from pyneg.utils import atom_from_issue_value
+from .engine import Evaluator
 from .strategy import Strategy
 
 
@@ -25,7 +26,7 @@ class LinearEvaluator(Evaluator):
         chosen_atom = atom_from_issue_value(issue, value)
         if chosen_atom in self.utilities.keys():
             return self.issue_weights[issue] * \
-                self.utilities[chosen_atom]
+                   self.utilities[chosen_atom]
         else:
             return 0
 
@@ -43,6 +44,6 @@ class LinearEvaluator(Evaluator):
                 atom = atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
                     score += self.issue_weights[issue] * \
-                        self.utilities[atom] * prob
+                             self.utilities[atom] * prob
 
         return score

@@ -1,7 +1,7 @@
 from unittest import TestCase
+
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.engine import ConstrainedLinearEvaluator, Strategy
-from pyneg.comms import Offer, Message, MessageType, AtomicConstraint
-from math import pi
 
 
 class TestConstrainedLinearEvaluator(TestCase):
@@ -65,7 +65,7 @@ class TestConstrainedLinearEvaluator(TestCase):
         })
 
         self.uniform_weights = {
-            issue: 1/len(self.neg_space.keys()) for issue in self.neg_space.keys()}
+            issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
 
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities,
@@ -77,20 +77,22 @@ class TestConstrainedLinearEvaluator(TestCase):
         self.integer_constraint = AtomicConstraint("integer", "2")
 
     def test_calc_offer_utility(self):
-        expected_offer_utility = 100/3
+        expected_offer_utility = 100 / 3
 
         self.assertAlmostEqual(self.evaluator.calc_offer_utility(
             self.nested_test_offer), expected_offer_utility)
 
     def test_calc_optimal_offer_utility(self):
-        expected_offer_utility = 100/3 + 100/3 + 1/3
+        expected_offer_utility = 100 / 3 + 100 / 3 + 1 / 3
 
         self.assertAlmostEqual(self.evaluator.calc_offer_utility(
             self.optimal_offer), expected_offer_utility)
 
     def test_calc_strat_utility(self):
         expected_uniform_strat_util = (
-            100*0.5+0.5*10) / 3 + (100*0.1+10*0.1+0.1*0.1-10*0.1-100*0.1)/3 + (1*0.1)/3
+                                              100 * 0.5 + 0.5 * 10) / 3 + (
+                                                  100 * 0.1 + 10 * 0.1 + 0.1 * 0.1 - 10 * 0.1 - 100 * 0.1) / 3 + (
+                                                  1 * 0.1) / 3
         self.assertAlmostEqual(self.evaluator.calc_strat_utility(
             self.uniform_strat), expected_uniform_strat_util)
 

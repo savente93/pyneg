@@ -1,20 +1,22 @@
 from unittest import TestCase
-from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
-from pyneg.engine import EnumGenerator, LinearEvaluator
-from pyneg.comms import Offer
+
 from numpy import arange
+
+from pyneg.comms import Offer
+from pyneg.engine import EnumGenerator, LinearEvaluator
+from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
 
 
 class TestEnumGenerator(TestCase):
 
     def setUp(self):
         self.issues, self.utilities, _ = neg_scenario_from_util_matrices(
-            arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
+            arange(9).reshape((3, 3)) ** 2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0
         self.max_util = 93
         self.arbitrary_non_agreement_cost = -1000
         uniform_weights = {
-            issue: 1/len(values) for issue, values in self.issues.items()}
+            issue: 1 / len(values) for issue, values in self.issues.items()}
         self.evaluator = LinearEvaluator(
             self.utilities, uniform_weights, self.arbitrary_non_agreement_cost)
 
@@ -111,4 +113,4 @@ class TestEnumGenerator(TestCase):
         util_list = [self.evaluator.calc_offer_utility(
             offer) for offer in offer_list]
         self.assertTrue(all(util_list[i] >= util_list[i + 1]
-                            for i in range(len(util_list)-1)), util_list)
+                            for i in range(len(util_list) - 1)), util_list)

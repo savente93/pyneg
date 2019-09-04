@@ -1,8 +1,7 @@
 from unittest import TestCase
-from pyneg.utils import atom_dict_from_nested_dict, nested_dict_from_atom_dict
+
 from pyneg.engine import Strategy
-from pyneg.comms import Offer
-from numpy import arange
+from pyneg.utils import atom_dict_from_nested_dict
 
 
 class TestStrategy(TestCase):
