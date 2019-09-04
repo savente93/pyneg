@@ -20,17 +20,14 @@ class EnumGenerator(Generator):
                  utilities: AtomicDict,
                  evaluator: Evaluator,
                  acceptability_threshold: float) -> None:
-        self.neg_space = neg_space
+        self.neg_space = {issue: list(map(str, values))
+                          for issue, values in neg_space.items()}
         self.utilities = utilities
         self.evaluator = evaluator
         self.acceptability_threshold = acceptability_threshold
         self.assignement_frontier = PriorityQueue()
         self.init_generator()
         # self.last_offer_util = 2**32
-
-        # convert to strings for callers' convinience
-        for issue in self.neg_space.keys():
-            self.neg_space[issue] = list(map(str, self.neg_space[issue]))
 
     def add_utilities(self, new_utils: AtomicDict) -> None:
         self.utilities = {

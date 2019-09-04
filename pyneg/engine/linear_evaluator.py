@@ -21,17 +21,19 @@ class LinearEvaluator(Evaluator):
             **new_utils
         }
 
+    def calc_assignment_util(self, issue: str, value: str) -> float:
+        chosen_atom = atom_from_issue_value(issue, value)
+        if chosen_atom in self.utilities.keys():
+            return self.issue_weights[issue] * \
+                self.utilities[chosen_atom]
+        else:
+            return 0
+
     def calc_offer_utility(self, offer: Offer) -> float:
         score = 0
         for issue in offer.get_issues():
             chosen_value = offer.get_chosen_value(issue)
-            chosen_atom = atom_from_issue_value(issue, chosen_value)
-            if chosen_atom in self.utilities.keys():
-                score += self.issue_weights[issue] * \
-                    self.utilities[chosen_atom]
-            else:
-                continue
-
+            score += self.calc_assignment_util(issue, chosen_value)
         return score
 
     def calc_strat_utility(self, strat: Strategy) -> float:

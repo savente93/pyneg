@@ -58,12 +58,14 @@ class TestConstrainedProblogEvaluator(TestCase):
         }
 
         self.violating_offer = {
-            "boolean": {"True": 0, "False": 1},
+            "boolean": {"True": 1, "False": 0},
             "integer": {str(i): 0 for i in range(10)},
             "float": {"{0:.1f}".format(i * 0.1): 0 for i in range(10)}
         }
-        self.violating_offer["integer"]["3"] = 1
+        self.violating_offer["integer"]["2"] = 1
         self.violating_offer['float']["0.6"] = 1
+
+        self.violating_offer = Offer(self.violating_offer)
 
         self.evaluator = ConstrainedProblogEvaluator(
             self.neg_space,
@@ -88,20 +90,3 @@ class TestConstrainedProblogEvaluator(TestCase):
         self.evaluator.add_constraint(self.boolean_constraint)
         self.assertEqual(self.evaluator.calc_offer_utility(
             self.violating_offer), self.non_agreement_cost)
-
-    def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
-        temp_issues = {
-            "boolean1": [True, False],
-            "boolean2": [True, False]
-        }
-        temp_utils = {
-            "boolean1_True": -100000,
-            "boolean1_False": 0,
-            "boolean2_True": 1000,
-            "boolean2_False": 1000
-
-        }
-        self.evaluator = ConstrainedProblogEvaluator(
-            temp_issues, temp_utils, self.non_agreement_cost, [], None)
-        self.evaluator.add_utilities(temp_utils)
-        self.assertEqual(len(self.evaluator.constraints), 1)

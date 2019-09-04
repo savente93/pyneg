@@ -27,7 +27,8 @@ class RandomGenerator(Generator):
 
         self.utilities = utilities
         self.kb = kb
-        self.neg_space = neg_space
+        self.neg_space = {issue: list(map(str, values))
+                          for issue, values in neg_space.items()}
         self.non_agreement_cost = non_agreement_cost
         self.evaluator = evaluator
         self.init_uniform_strategy(neg_space)

@@ -9,5 +9,8 @@ class Evaluator():
     def calc_offer_utility(self, offer: Offer) -> float:
         raise NotImplementedError()
 
+    def calc_assignment_util(self, issue: str, value: str) -> float:
+        raise NotImplementedError()
+
     def add_utilities(self, new_utils: AtomicDict) -> None:
         raise NotImplementedError()

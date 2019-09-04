@@ -160,3 +160,56 @@ class TestConstrainedDTPGenerator(TestCase):
 
         with self.assertRaises(StopIteration):
             _ = self.generator.generate_offer()
+
+    def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
+        temp_issues = {
+            "boolean1": [True, False],
+            "boolean2": [True, False]
+        }
+        temp_utils = {
+            "boolean1_True": -100000,
+            "boolean1_False": 0,
+            "boolean2_True": 1000,
+            "boolean2_False": 1000
+
+        }
+        self.evaluator = ConstrainedProblogEvaluator(
+            temp_issues, temp_utils, self.non_agreement_cost, [], None)
+        self.evaluator.add_utilities(temp_utils)
+        self.assertEqual(len(self.evaluator.constraints), 1)
+
+    def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
+        temp_issues = {
+            "boolean1": [True, False],
+            "boolean2": [True, False]
+        }
+        temp_utils = {
+            "boolean1_True": -100000,
+            "boolean1_False": 0,
+            "boolean2_True": 1000,
+            "boolean2_False": 1000
+
+        }
+        uniform_weights = {
+            issue: 1/len(temp_issues.keys()) for issue in temp_issues.keys()}
+        self.evaluator = ConstrainedLinearEvaluator(
+            temp_utils, uniform_weights, self.non_agreement_cost, None)
+        self.evaluator.add_utilities(temp_utils)
+        self.assertEqual(len(self.evaluator.constraints), 1)
+
+    def test_getting_utility_below_threshold_creates_constraint(self):
+        low_util_dict = {"integer_4": -100000}
+        self.evaluator.add_utilities(low_util_dict)
+        self.assertTrue(AtomicConstraint("integer", "4")
+                        in self.evaluator.constraints)
+
+    def test_all_values_can_get_constrained(self):
+        low_util_dict = {"integer_{i}".format(
+            i=i): -100000 for i in range(len(self.neg_space['integer']))}
+        self.evaluator.add_utilities(low_util_dict)
+        constraints = self.evaluator.constraints
+        self.assertTrue(
+            all([constr.issue == "integer" for constr in constraints]))
+        self.assertEqual(
+            len([constr.issue == "integer" for constr in constraints]),
+            len(self.neg_space['integer']))

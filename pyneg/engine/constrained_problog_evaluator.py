@@ -1,5 +1,5 @@
 from pyneg.comms import Offer, AtomicConstraint
-from typing import Dict, Union, Optional, List, Set
+from typing import Dict, Union, Optional, List, Set, Iterable
 from pyneg.utils import atom_from_issue_value
 from pyneg.types import AtomicDict
 from .strategy import Strategy
@@ -28,20 +28,23 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
         if not self.satisfies_all_constraints(offer):
             return self.non_agreement_cost
         else:
-            super().calc_offer_utility(offer)
+            return super().calc_offer_utility(offer)
 
     def calc_strat_utility(self, strat: Strategy) -> float:
         if not self.satisfies_all_constraints(strat):
             return self.non_agreement_cost
         else:
-            super().calc_strat_utility(strat)
+            return super().calc_strat_utility(strat)
 
     def satisfies_all_constraints(self, offer: Offer) -> bool:
         for constr in self.constraints:
-            if not constr.is_satisfied_by_strat(offer):
+            if not constr.is_satisfied_by_offer(offer):
                 return False
 
         return True
 
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)
+
+    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
+        self.constraints.update(constraints)

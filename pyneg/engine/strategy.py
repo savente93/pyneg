@@ -44,3 +44,8 @@ class Strategy(Offer):
 
     def set_prob(self, issue: str, value: str, prob: float) -> None:
         self.values_by_issue[issue][value] = prob
+
+    def normalise_issue(self, issue: str) -> None:
+        value_dist_sum = sum(self.get_value_dist(issue).values())
+        self.values_by_issue[issue] = {
+            key: prob / value_dist_sum for key, prob in self.values_by_issue[issue].items()}

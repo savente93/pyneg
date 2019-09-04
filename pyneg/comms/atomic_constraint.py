@@ -23,12 +23,17 @@ class AtomicConstraint():
         return not (issue == self.issue and value == self.value)
 
     def is_satisfied_by_offer(self, offer: Offer) -> bool:
-        for issue in offer.keys():
-            for value in offer[issue]:
-                if not isclose(offer[issue][value], 0) and not self.is_satisfied_by_assignment(issue, value):
-                    return False
 
-        return True
+        chosen_value = offer.get_chosen_value(self.issue)
+        if chosen_value == self.value:
+            return False
+        else:
+            return True
+
+    # def is_satisfied_by_strat(self, strat: Strategy) -> bool:
+
+    #     constrainted_prob = stratagy.get_prob(self.issue, self.value)
+    #     return isclose(constrainted_prob, 0)
 
     def __hash__(self) -> int:
         return hash((self.issue, self.value))

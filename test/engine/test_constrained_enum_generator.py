@@ -11,7 +11,7 @@ class TestConstrainedEnumGenerator(TestCase):
     def setUp(self):
         self.issues, self.utilities, _ = neg_scenario_from_util_matrices(
             arange(9).reshape((3, 3))**2, arange(9).reshape((3, 3)))
-        self.arbitrary_reservation_value = 0.1000
+        self.arbitrary_reservation_value = 0
         self.arbitrary_non_agreement_cost = -1000
         self.uniform_weights = {
             issue: 1/len(values) for issue, values in self.issues.items()}
@@ -35,7 +35,7 @@ class TestConstrainedEnumGenerator(TestCase):
         best_offer = Offer(nested_dict_from_atom_dict({'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
                                                        'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                        'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
-        generated_offer = self.gen.generate_offer()
+        generated_offer = self.generator.generate_offer()
         self.assertEqual(best_offer, generated_offer)
 
     def test_generates_next_best_offer_second_time(self):
@@ -43,8 +43,8 @@ class TestConstrainedEnumGenerator(TestCase):
                                                             'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
                                                             'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}))
 
-        _ = self.gen.generate_offer()
-        second = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        second = self.generator.generate_offer()
         self.assertEqual(next_best_offer, second)
 
     def test_generates_next_next_best_offer_third_time(self):
@@ -54,9 +54,9 @@ class TestConstrainedEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        thrid = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        thrid = self.generator.generate_offer()
         self.assertEqual(next_next_best_offer, thrid)
 
     def test_generates_expected_offer_forth_time(self):
@@ -66,10 +66,10 @@ class TestConstrainedEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        offer = self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        offer = self.generator.generate_offer()
         self.assertEqual(expected_offer, offer)
 
     def test_generates_expected_offer_fith_time(self):
@@ -79,28 +79,21 @@ class TestConstrainedEnumGenerator(TestCase):
              'issue2_0': 0.0, 'issue2_1': 0.0, 'issue2_2': 1.0}
         ))
 
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        _ = self.gen.generate_offer()
-        offer = self.gen.generate_offer()
-        self.assertEqual(expected_offer, offer)
-
-    def test_terminates_first_time_if_no_options_are_acceptable(self):
-        self.gen = ConstrainedEnumGenerator(
-            self.issues, self.utilities, self.evaluator, 1, None)
-
-        _ = self.gen.generate_offer()
-
-        with self.assertRaises(StopIteration):
-            self.gen.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        _ = self.generator.generate_offer()
+        offer = self.generator.generate_offer()
+        offer_diff = self.evaluator.calc_offer_utility(
+            expected_offer)-self.evaluator.calc_offer_utility(offer)
+        self.assertEqual(expected_offer, offer, offer_diff)
 
     def test_terminates_after_options_become_unacceptable(self):
-        self.gen = ConstrainedEnumGenerator(
-            self.issues, self.utilities, self.evaluator, 1.1, None)
+        self.generator = ConstrainedEnumGenerator(
+            self.issues, self.utilities, self.evaluator, 100, None)
 
         with self.assertRaises(StopIteration):
-            _ = self.gen.generate_offer()
+            self.generator.generate_offer()
 
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("issue1", "2"))
