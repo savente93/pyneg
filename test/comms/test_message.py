@@ -1,6 +1,7 @@
 import unittest
 
-from pyneg.comms import AtomicConstraint, Message, MessageType, Offer
+from pyneg.comms import Offer, AtomicConstraint, Message
+from pyneg.types import MessageType
 
 
 class TestMessage(unittest.TestCase):

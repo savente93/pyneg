@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from pyneg.agent import AgentFactory
-from pyneg.comms import Offer, MessageType, Message
+from pyneg.comms import Offer, AtomicConstraint, Message
+from pyneg.types import MessageType
 
 
 class TestAgent(TestCase):

@@ -2,10 +2,9 @@ from typing import Dict, List, Optional
 
 from pyneg.comms import Message, Offer
 from pyneg.types import NegSpace
-from pyneg.agent.agent import Agent
 
 
-class AbstractAgent(Agent):
+class AbstractAgent:
     def __init__(self):
         pass
 

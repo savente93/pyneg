@@ -6,7 +6,7 @@ from pyneg.types import NegSpace, MessageType
 from pyneg.agent.abstract_agent import AbstractAgent
 
 
-class Agent:
+class Agent(AbstractAgent):
     def __init__(self):
         # setup all the attributes but don't init them
         # All of that is done by the factory
