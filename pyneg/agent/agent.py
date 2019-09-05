@@ -1,8 +1,9 @@
 from typing import Dict, List, Optional
 
-from pyneg.comms import Message, MessageType, Offer
-from pyneg.engine import Engine
-from pyneg.types import NegSpace
+from pyneg.comms import Message, Offer, AtomicConstraint
+from pyneg.engine import AbstractEngine, Engine
+from pyneg.types import NegSpace, MessageType
+from pyneg.agent.abstract_agent import AbstractAgent
 
 
 class Agent:
@@ -10,26 +11,31 @@ class Agent:
         # setup all the attributes but don't init them
         # All of that is done by the factory
         self.name: str = ""
-        self.transcript: List[Message] = []
-        self.max_rounds: int = 0
-        self.neg_space: NegSpace = {}
-        self.engine: Engine = Engine()
-        self.absolute_reservation_value: float = -(2.0 ** 31)
-        self.opponent: Optional[Agent] = None
+        self._transcript: List[Message] = []
+        self._max_rounds: int = 0
+        self._neg_space: NegSpace = {}
+        self._engine: Engine = AbstractEngine()
+        self._absolute_reservation_value: float = -(2.0 ** 31)
+        self.opponent: Agent = AbstractAgent()
         self._type = ""
         self.successful: bool = False
         self.negotiation_active: bool = False
+        self._last_offer_was_acceptable = False
+        self._next_constraint: Optional[AtomicConstraint] = None
 
     # for string annotation reason see
     # https://www.python.org/dev/peps/pep-0484/#the-problem-of-forward-declarations
     def receive_negotiation_request(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
         # allows others to initiate negotiations with us
         # only accept if we're talking about the same things
-        if self.neg_space == neg_space:
+        if self._accepts_negotiation_proposal(neg_space):
             self.opponent = opponent
             return True
         else:
             return False
+
+    def _accepts_negotiation_proposal(self, neg_space) -> bool:
+        return self._neg_space == neg_space
 
     def _call_for_negotiation(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
         # allows us to initiate negotiations with others
@@ -38,21 +44,49 @@ class Agent:
             self.opponent = opponent
         return response
 
-    def _should_terminate(self) -> bool:
-        return len(self.transcript) > self.max_rounds
+    # to be set by the factory
+    def _should_exit(self) -> bool:
+        raise NotImplementedError()
 
     def negotiate(self, opponent: 'Agent') -> bool:
         # self is assumed to have setup the negotiation (including issues) beforehand
         self.negotiation_active = self._call_for_negotiation(
-            opponent, self.neg_space)
+            opponent, self._neg_space)
 
+        next_message_to_send = Message(self.name, self.opponent.name, MessageType.empty, None)
         while self.negotiation_active:
-            next_message_to_send = self.generate_next_message()
-            if next_message_to_send:
-                self.send_message(opponent, next_message_to_send)
-                self.wait_for_response(opponent)
+            try:
+                next_message_to_send = self._generate_next_message()
+            except StopIteration:
+                # raised when no acceptable offers can be found
+                self.send_message(opponent, self._terminate(False))
+                break
+
+            self.send_message(opponent, next_message_to_send)
+            self.wait_for_response(opponent)
 
         return self.successful
+
+    def _terminate(self, successful: bool) -> Message:
+        if not self.negotiation_active:
+            raise RuntimeError("no negotiation to terminate")
+
+        if successful:
+            self.successful = True
+            self.negotiation_active = False
+            return Message(self.name,
+                           self.opponent.name,
+                           MessageType.accept,
+                           self._transcript[-1].offer)
+            # self.send_message(self.opponent, acceptance_message)
+        else:
+            self.successful = False
+            self.negotiation_active = False
+            return Message(self.name,
+                           self.opponent.name,
+                           MessageType.terminate,
+                           None)
+            # self.send_message(self.opponent, termination_message)
 
     def send_message(self, opponent: 'Agent', msg: Message) -> None:
         self._record_message(msg)
@@ -64,71 +98,50 @@ class Agent:
             self.receive_message(response)
 
     def _record_message(self, msg: Message) -> None:
-        self.transcript.append(msg)
+        self._transcript.append(msg)
 
     def receive_message(self, msg: Message) -> None:
         self._record_message(msg)
+        self._parse_response(msg)
 
-    def generate_next_message(self) -> Optional[Message]:
+    def _parse_response(self, response):
+        if response.is_acceptance():
+            self.negotiation_active = False
+            self.successful = True
+
+        if response.is_termination():
+            self.negotiation_active = False
+            self.successful = False
+
+        if response.constraint:
+            self._constraints_satisfiable = self._engine.add_constraint(response.constraint)
+
+        if self._accepts(response.offer):
+            self._last_offer_was_acceptable = True
+
+        self._next_constraint = self._engine.find_violated_constraint(response.offer)
+
+
+    def _generate_next_message(self) -> Message:
         # this check is only for the type lining
         # we should never get here if we don't have an opponent
-        if not self.opponent:
-            return None
+        if not self.opponent or not self.negotiation_active:
+            return Message(self.name, self.opponent.name, MessageType.empty, None)
 
-        try:
-            last_message: Message = self.transcript[-1]
-        except IndexError:
-            # if our transcript is empty, we should make the initial offer
-            return self._generate_offer_message(self.opponent)
+        if self._should_exit():
+            return self._terminate(False)
 
-        if last_message.is_acceptance():
-            self.negotiation_active = False
-            self.successful = True
-            return None
+        if self._last_offer_was_acceptable:
+            return self._terminate(True)
 
-        if last_message.is_termination():
-            self.negotiation_active = False
-            self.successful = False
-            return None
-
-        if self._should_terminate():
-            self.negotiation_active = False
-            self.successful = False
-            return Message(self.name, self.opponent.name, MessageType.terminate, last_message.offer)
-
-        if last_message.offer is None:
-            raise RuntimeError(
-                "Message that was supposed to be an offer message is empty")
-
-        if self._accepts(last_message.offer):
-            self.negotiation_active = False
-            self.successful = True
-            return Message(self.name, self.opponent.name, MessageType.accept, last_message.offer)
-
-        return self._generate_offer_message(self.opponent)
+        return Message(self.name, self.opponent.name, MessageType.offer, self._engine.generate_offer(),
+                       self._next_constraint)
 
     def _accepts(self, offer: Offer) -> bool:
-        return self._calc_offer_utility(offer) >= self.absolute_reservation_value
+        return self._engine.calc_offer_utility(offer) >= self._absolute_reservation_value and self._constraints_satisfiable
 
-    def _generate_offer_message(self, recipient: 'Agent') -> Message:
-        try:
-            offer: Offer = self._generate_offer()
-        except StopIteration:
-            termination_message: Message = Message(
-                self.name, recipient.name, MessageType.terminate, None)
-            self._record_message(termination_message)
-            return termination_message
+    def add_utilities(self, new_utils: Dict[str, float]) -> bool:
+        return self._engine.add_utilities(new_utils)
 
-        return Message(self.name, recipient.name, type_=MessageType.offer, offer=offer)
-
-    def add_utilities(self, new_utils: Dict[str, float]) -> None:
-        self.engine.add_utilities(new_utils)
-
-    def set_utilities(self, new_utils: Dict[str, float]) -> None:
-        self.engine.set_utilities(new_utils)
-
-    def _generate_offer(self) -> Offer:
-        return self.engine.generate_offer()
-
-    def _calc_offer_utility(self, offer: Offer) -> float:
-        return self.engine.calc_offer_utility(offer)
+    def set_utilities(self, new_utils: Dict[str, float]) -> bool:
+        return self._engine.set_utilities(new_utils)

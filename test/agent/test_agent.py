@@ -73,10 +73,10 @@ class TestAgent(TestCase):
         self.uniform_weights = {
             issue: 1 / len(values) for issue, values in self.neg_space.items()}
 
-        self.agent = AgentFactory.make_linear_consession_agent(
+        self.agent = AgentFactory.make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
             self.uniform_weights)
-        self.opponent = AgentFactory.make_linear_consession_agent(
+        self.opponent = AgentFactory.make_linear_concession_agent(
             "opponent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
             self.uniform_weights)
 

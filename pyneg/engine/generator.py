@@ -1,8 +1,9 @@
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import AtomicDict
+from typing import Set
 
 
-class Generator():
+class Generator:
     '''
     Generator empty class that is used soley for type annotations
 
@@ -16,8 +17,14 @@ class Generator():
     def generate_offer(self) -> Offer:
         raise NotImplementedError()
 
-    def add_utilities(self, new_utils: AtomicDict) -> None:
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
         raise NotImplementedError()
 
-    def set_utilities(self, new_utils: AtomicDict) -> None:
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
+        raise NotImplementedError()
+
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
+        raise NotImplementedError()
+
+    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         raise NotImplementedError()
