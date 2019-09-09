@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from pyneg.comms import Offer
-from pyneg.engine import DTPGenerator
+from pyneg.engine import DTPGenerator, ProblogEvaluator
 
 
 class TestDTPGenerator(TestCase):
@@ -160,3 +160,25 @@ class TestDTPGenerator(TestCase):
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
+
+    def test_generates_all_possible_offers(self):
+        neg_space_size = 2*10*10
+        offer_list = []
+        for _ in range(neg_space_size):
+            offer_list.append(self.generator.generate_offer())
+        self.assertEqual(len(offer_list), neg_space_size)
+
+    def test_all_offers_are_generated_in_dec_order_of_util(self):
+        neg_space_size = 2*10*10
+        evaluator = ProblogEvaluator(self.neg_space, self.utilities, self.non_agreement_cost, self.kb)
+        offer_list = [self.generator.generate_offer()]
+        util_list = [evaluator.calc_offer_utility(offer_list[-1])]
+        for _ in range(neg_space_size):
+            offer = self.generator.generate_offer()
+            util = evaluator.calc_offer_utility(offer)
+            self.assertTrue(util <= util_list[-1], offer_list)
+            offer_list.append(offer)
+            util_list.append(util)
+
+        self.assertTrue(all(util_list[i] >= util_list[i + 1]
+                            for i in range(len(util_list) - 1)), util_list)

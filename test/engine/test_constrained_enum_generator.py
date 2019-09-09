@@ -13,11 +13,11 @@ class TestConstrainedEnumGenerator(TestCase):
         self.neg_space, self.utilities, _ = neg_scenario_from_util_matrices(
             arange(9).reshape((3, 3)) ** 2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0
-        self.arbitrary_non_agreement_cost = -1000
+        self.non_agreement_cost = -1000
         self.uniform_weights = {
             issue: 1 / len(values) for issue, values in self.neg_space.items()}
         self.evaluator = ConstrainedLinearEvaluator(
-            self.utilities, self.uniform_weights, self.arbitrary_non_agreement_cost, None)
+            self.utilities, self.uniform_weights, self.non_agreement_cost, None)
         self.violating_offer = Offer({
             "issue0": {"0": 0.0, "1": 0.0, "2": 1.0},
             "issue1": {"0": 0.0, "1": 0.0, "2": 1.0},
@@ -144,3 +144,50 @@ class TestConstrainedEnumGenerator(TestCase):
 
         with self.assertRaises(StopIteration):
             _ = self.generator.generate_offer()
+
+
+    def test_generates_all_possible_offers(self):
+        neg_space_size = 2*10*10
+        offer_list = []
+        for _ in range(neg_space_size):
+            offer_list.append(self.generator.generate_offer())
+        self.assertEqual(len(offer_list), neg_space_size)
+
+    def test_all_offers_are_generated_in_dec_order_of_util(self):
+        neg_space_size = 2*10*9
+        temp_neg_space = {
+            "boolean": ["True", "False"],
+            "integer": list(map(str, range(10))),
+            "float": ["{0:.1f}".format(0.1 * i) for i in range(10)]
+        }
+        temp_utilities = {
+            "boolean_True": 1000.0,
+            "boolean_False": 10.0,
+            "integer_9": 100.0,
+            "integer_3": 10.0,
+            "integer_1": 0.1,
+            "integer_4": -10.0,
+            "integer_5": -100.0,
+            "'float_0.1'": 1.0
+        }
+        temp_reservation_value = -(10 ** 10) + 1
+        temp_non_agreement_cost = -(10 ** 10)
+        temp_contr = AtomicConstraint("integer","8")
+        evaluator = ConstrainedLinearEvaluator(temp_utilities,{issue: 1 for issue in temp_neg_space.keys()},temp_non_agreement_cost, {temp_contr})
+        generator = ConstrainedEnumGenerator(temp_neg_space, temp_utilities,evaluator,temp_reservation_value,{temp_contr},False)
+        offer = generator.generate_offer()
+        util = evaluator.calc_offer_utility(offer)
+        transcript = [(offer, util)]
+        # offer_list = [generator.generate_offer()]
+        # util_list = [evaluator.calc_offer_utility(offer_list[-1])]
+        for i in range(neg_space_size):
+            offer = generator.generate_offer()
+            util = evaluator.calc_offer_utility(offer)
+            transcript.append((offer, util))
+            # offer_list.append(offer)
+            # util_list.append(util)
+            self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript[-5:])
+
+
+        self.assertTrue(all(util_list[i][1] >= util_list[i + 1][1]
+                            for i in range(len(util_list) - 1)), util_list)

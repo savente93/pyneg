@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from pyneg.comms import Offer, AtomicConstraint
-from pyneg.engine import ConstrainedDTPGenerator
+from pyneg.engine import ConstrainedDTPGenerator, ConstrainedProblogEvaluator
 
 
 class TestConstrainedDTPGenerator(TestCase):
@@ -26,8 +26,8 @@ class TestConstrainedDTPGenerator(TestCase):
         self.kb = [
             "boolean_True :- integer_2, 'float_0.1'."
         ]
-        self.reservation_value = 0
-        self.non_agreement_cost = -1000
+        self.reservation_value = -(10**10) + 1
+        self.non_agreement_cost = -(10**10)
 
         # should have a utility of 100
         self.nested_test_offer = {
@@ -169,8 +169,8 @@ class TestConstrainedDTPGenerator(TestCase):
 
     def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
         temp_issues = {
-            "boolean1": [True, False],
-            "boolean2": [True, False]
+            "boolean1": ["True", "False"],
+            "boolean2": ["True", "False"]
         }
         temp_utils = {
             "boolean1_True": -100000,
@@ -183,19 +183,27 @@ class TestConstrainedDTPGenerator(TestCase):
                                                  self.kb, None)
         self.assertEqual(len(self.generator.constraints), 1)
 
-    def test_getting_utility_below_threshold_creates_constraint(self):
-        low_util_dict = {"integer_4": -100000}
-        self.generator.add_utilities(low_util_dict)
-        self.assertTrue(AtomicConstraint("integer", "4")
-                        in self.generator.constraints)
+    def test_generates_all_possible_offers(self):
+        neg_space_size = 2*10*9
+        self.generator.add_constraint(AtomicConstraint("integer", "9"))
+        offer_list = []
+        for _ in range(neg_space_size):
+            offer_list.append(self.generator.generate_offer())
+        self.assertEqual(len(offer_list), neg_space_size)
 
-    def test_all_values_can_get_constrained(self):
-        low_util_dict = {"integer_{i}".format(
-            i=i): -100000 for i in range(len(self.neg_space['integer']))}
-        self.generator.add_utilities(low_util_dict)
-        constraints = self.generator.constraints
-        self.assertTrue(
-            all([constr.issue == "integer" for constr in constraints]))
-        self.assertEqual(
-            len([constr.issue == "integer" for constr in constraints]),
-            len(self.neg_space['integer']))
+    def test_all_offers_are_generated_in_dec_order_of_util(self):
+        neg_space_size = 2*10*9
+        self.generator.add_constraint(AtomicConstraint("integer", "9"))
+        evaluator = ConstrainedProblogEvaluator(self.neg_space, self.utilities, self.non_agreement_cost, self.kb, {AtomicConstraint("integer", "9")})
+        offer_list = [self.generator.generate_offer()]
+        util_list = [evaluator.calc_offer_utility(offer_list[-1])]
+        for i in range(neg_space_size):
+            offer = self.generator.generate_offer()
+            util = evaluator.calc_offer_utility(offer)
+            offer_list.append(offer)
+            util_list.append(util)
+            self.assertTrue(util_list[-1] <= util_list[-2], list(zip(offer_list, util_list)))
+
+
+        self.assertTrue(all(util_list[i] >= util_list[i + 1]
+                            for i in range(len(util_list) - 1)), util_list)
