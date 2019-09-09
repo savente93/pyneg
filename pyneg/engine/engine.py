@@ -5,8 +5,32 @@ from pyneg.engine.generator import Generator
 from typing import Set, Optional
 
 
-class Engine:
+class AbstractEngine:
+    def __init__(self):
+        pass
+
+    def generate_offer(self) -> Offer:
+        raise NotImplementedError()
+
+    def calc_offer_utility(self, offer: Offer) -> float:
+        raise NotImplementedError()
+
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
+        raise NotImplementedError()
+
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
+        raise NotImplementedError()
+
+    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
+        raise NotImplementedError()
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        raise NotImplementedError()
+
+
+class Engine(AbstractEngine):
     def __init__(self, generator: Generator, evaluator: Evaluator):
+        super().__init__()
         self.generator: Generator = generator
         self.evaluator: Evaluator = evaluator
 
@@ -32,26 +56,3 @@ class Engine:
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
         return None
-
-
-class AbstractEngine(Engine):
-    def __init__(self):
-        pass
-
-    def generate_offer(self) -> Offer:
-        raise NotImplementedError()
-
-    def calc_offer_utility(self, offer: Offer) -> float:
-        raise NotImplementedError()
-
-    def add_utilities(self, new_utils: AtomicDict) -> bool:
-        raise NotImplementedError()
-
-    def add_constraint(self, constraint: AtomicConstraint) -> bool:
-        raise NotImplementedError()
-
-    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
-        raise NotImplementedError()
-
-    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
-        raise NotImplementedError()

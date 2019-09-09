@@ -19,7 +19,7 @@ class EnumGenerator(Generator):
         self.utilities = utilities
         self.evaluator = evaluator
         self.acceptability_threshold = acceptability_threshold
-        self.assignement_frontier = PriorityQueue()
+        self.assignement_frontier: PriorityQueue = PriorityQueue()
         self.init_generator()
         # self.last_offer_util = 2**32
 
@@ -31,7 +31,16 @@ class EnumGenerator(Generator):
 
     def init_generator(self) -> None:
         self.assignement_frontier = PriorityQueue()
-        nested_utils: NestedDict = nested_dict_from_atom_dict(self.utilities)
+        nested_utils = nested_dict_from_atom_dict(self.utilities)
+        for issue in self.neg_space.keys():
+            if issue not in nested_utils.keys():
+                nested_utils[issue] = {value:0.0 for value in self.neg_space[issue]}
+                continue
+            for value in self.neg_space[issue]:
+                if value not in nested_utils[issue].keys():
+                    nested_utils[issue][value] = 0.0
+
+
 
         # function to sort a list of tuples according to the second tuple field
         # in decreasing order so we can quickly identify candidates for the next offer
@@ -48,7 +57,13 @@ class EnumGenerator(Generator):
         self.sorted_utils: Dict[str, List[str]] = {issue:
             list(
                 map(lambda tup: tup[0], sorter(issue)))
-            for issue in self.neg_space.keys()}
+            for issue in nested_utils.keys()}
+        # for issue in self.neg_space.keys():
+        #     if issue not in self.sorted_utils.keys():
+        #         self.sorted_utils[issue] = self.neg_space[issue]
+        #     for value in self.neg_space[issue]:
+        #         if not value in self.sorted_utils[issue]:
+        #             self.sorted_utils[issue].append(value)
 
         best_offer_indices = {issue: 0 for issue in self.neg_space.keys()}
         self.offer_counter = 0

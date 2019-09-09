@@ -15,7 +15,7 @@ class ConstrainedLinearEvaluator(LinearEvaluator):
         super().__init__(utilities, issue_weights, non_agreement_cost)
         self.constraints = set()
         if initial_constraints:
-            self.constraints.add(initial_constraints)
+            self.constraints.update(initial_constraints)
 
     def add_constraint(self, constraint: AtomicConstraint) -> None:
         self.constraints.add(constraint)

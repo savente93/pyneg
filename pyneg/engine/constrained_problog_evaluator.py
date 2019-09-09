@@ -18,7 +18,7 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
         super().__init__(neg_space, utilities, non_agreement_cost, kb)
         self.constraints = set()
         if initial_constraints:
-            self.constraints.add(initial_constraints)
+            self.constraints.update(initial_constraints)
 
     def calc_offer_utility(self, offer: Offer) -> float:
         if not self.satisfies_all_constraints(offer):

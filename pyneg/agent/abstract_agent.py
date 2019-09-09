@@ -1,12 +1,24 @@
 from typing import Dict, List, Optional
 
-from pyneg.comms import Message, Offer
+from pyneg.comms import Message, Offer, AtomicConstraint
 from pyneg.types import NegSpace
-
+from pyneg.engine import AbstractEngine
 
 class AbstractAgent:
     def __init__(self):
-        pass
+        self.name: str = ""
+        self._transcript: List[Message] = []
+        self._max_rounds: int = 0
+        self._neg_space: NegSpace = {}
+        self._engine: AbstractEngine = AbstractEngine()
+        self._absolute_reservation_value: float = -(2.0 ** 31)
+        self.opponent: Optional[AbstractAgent] = None
+        self._type = ""
+        self.successful: bool = False
+        self.negotiation_active: bool = False
+        self._last_offer_received_was_acceptable = False
+        self._next_constraint: Optional[AtomicConstraint] = None
+        self._constraints_satisfiable = True
 
     def receive_negotiation_request(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
         raise NotImplementedError()

@@ -10,18 +10,7 @@ class Agent(AbstractAgent):
     def __init__(self):
         # setup all the attributes but don't init them
         # All of that is done by the factory
-        self.name: str = ""
-        self._transcript: List[Message] = []
-        self._max_rounds: int = 0
-        self._neg_space: NegSpace = {}
-        self._engine: Engine = AbstractEngine()
-        self._absolute_reservation_value: float = -(2.0 ** 31)
-        self.opponent: Agent = AbstractAgent()
-        self._type = ""
-        self.successful: bool = False
-        self.negotiation_active: bool = False
-        self._last_offer_was_acceptable = False
-        self._next_constraint: Optional[AtomicConstraint] = None
+        super().__init__()
 
     # for string annotation reason see
     # https://www.python.org/dev/peps/pep-0484/#the-problem-of-forward-declarations
@@ -30,6 +19,7 @@ class Agent(AbstractAgent):
         # only accept if we're talking about the same things
         if self._accepts_negotiation_proposal(neg_space):
             self.opponent = opponent
+            self.negotiation_active = True
             return True
         else:
             return False
@@ -42,16 +32,16 @@ class Agent(AbstractAgent):
         response: bool = opponent.receive_negotiation_request(self, neg_space)
         if response:
             self.opponent = opponent
+        self.negotiation_active = response
         return response
-
-    # to be set by the factory
-    def _should_exit(self) -> bool:
-        raise NotImplementedError()
 
     def negotiate(self, opponent: 'Agent') -> bool:
         # self is assumed to have setup the negotiation (including issues) beforehand
         self.negotiation_active = self._call_for_negotiation(
             opponent, self._neg_space)
+
+        if not self.negotiation_active or not self.opponent:
+            return self.successful
 
         next_message_to_send = Message(self.name, self.opponent.name, MessageType.empty, None)
         while self.negotiation_active:
@@ -63,7 +53,7 @@ class Agent(AbstractAgent):
                 break
 
             self.send_message(opponent, next_message_to_send)
-            self.wait_for_response(opponent)
+            self._wait_for_response(self.opponent)
 
         return self.successful
 
@@ -92,10 +82,10 @@ class Agent(AbstractAgent):
         self._record_message(msg)
         opponent.receive_message(msg)
 
-    def wait_for_response(self, sender: 'Agent') -> None:
-        response = sender._generate_next_message()
-        if response:
-            self.receive_message(response)
+    def _wait_for_response(self, sender: 'Agent') -> None:
+        if not self.negotiation_active:
+            return
+        sender.send_message(self,sender._generate_next_message())
 
     def _record_message(self, msg: Message) -> None:
         self._transcript.append(msg)
@@ -108,19 +98,34 @@ class Agent(AbstractAgent):
         if response.is_acceptance():
             self.negotiation_active = False
             self.successful = True
+            return
 
         if response.is_termination():
             self.negotiation_active = False
             self.successful = False
+            return
 
         if response.constraint:
             self._constraints_satisfiable = self._engine.add_constraint(response.constraint)
 
         if self._accepts(response.offer):
-            self._last_offer_was_acceptable = True
+            self._last_offer_received_was_acceptable = True
 
         self._next_constraint = self._engine.find_violated_constraint(response.offer)
 
+    def _should_exit(self) -> bool:
+        try:
+            if not self._constraints_satisfiable:
+                return True
+            # if we didn't initiate every second message is ours
+            if self._transcript[-1].sender_name != self.name:
+                util = self._engine.calc_offer_utility(self._transcript[-2].offer)
+            else:
+                util = self._engine.calc_offer_utility(self._transcript[-1].offer)
+            return util >= self._absolute_reservation_value
+        except IndexError:
+            # shouldn't terminate if we haven't generated any offers
+            return False
 
     def _generate_next_message(self) -> Message:
         # this check is only for the type lining
@@ -128,14 +133,19 @@ class Agent(AbstractAgent):
         if not self.opponent or not self.negotiation_active:
             return Message(self.name, self.opponent.name, MessageType.empty, None)
 
+        if self._last_offer_received_was_acceptable:
+            return self._terminate(True)
+
         if self._should_exit():
             return self._terminate(False)
 
-        if self._last_offer_was_acceptable:
-            return self._terminate(True)
 
-        return Message(self.name, self.opponent.name, MessageType.offer, self._engine.generate_offer(),
+        try:
+            return Message(self.name, self.opponent.name, MessageType.offer, self._engine.generate_offer(),
                        self._next_constraint)
+        except StopIteration:
+            # weren't able to come up with acceptable offer so terminate anyway
+            return self._terminate(False)
 
     def _accepts(self, offer: Offer) -> bool:
         return self._engine.calc_offer_utility(offer) >= self._absolute_reservation_value and self._constraints_satisfiable

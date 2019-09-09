@@ -8,6 +8,7 @@ from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator
 from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
 from pyneg.types import NegSpace
 from pyneg.utils import nested_dict_from_atom_dict
+from types import MethodType
 STANDARD_MAX_ROUNDS = 200
 
 
@@ -41,11 +42,13 @@ class AgentFactory:
             estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
             reservation_value = reservation_value * estimate_max_utility
 
+        agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
         generator: Generator = EnumGenerator(neg_space, utilities, evaluator, reservation_value)
 
         engine: Engine = Engine(generator, evaluator)
         agent._engine = engine
+
         return agent
 
     @staticmethod
@@ -72,6 +75,7 @@ class AgentFactory:
             estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
             reservation_value = reservation_value * estimate_max_utility
 
+        agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
         generator: Generator = RandomGenerator(
             neg_space,
@@ -107,6 +111,7 @@ class AgentFactory:
             estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
             reservation_value = reservation_value * estimate_max_utility
 
+        agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = ConstrainedLinearEvaluator(
             utilities, issue_weights, non_agreement_cost, initial_constraints)
         generator: Generator = ConstrainedEnumGenerator(
@@ -138,6 +143,7 @@ class AgentFactory:
             estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
             reservation_value = reservation_value * estimate_max_utility
 
+        agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = ProblogEvaluator(neg_space,
                                                 utilities, non_agreement_cost, kb)
         generator: Generator = RandomGenerator(

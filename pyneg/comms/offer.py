@@ -79,7 +79,7 @@ class Offer:
         return True
 
     def __repr__(self) -> str:
-        return_string = ""
+        return_string = "\n"
         for issue in self.values_by_issue.keys():
             return_string += " " * self.indent_level * 4 + '{}: '.format(issue)
             for key in self.values_by_issue[issue].keys():

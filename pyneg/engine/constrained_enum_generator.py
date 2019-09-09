@@ -21,7 +21,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
         self.constraints = set()
         super().__init__(neg_space, utilities, evaluator, acceptance_threshold)
         if initial_constraints:
-            self.constraints.add(initial_constraints)
+            self.constraints.update(initial_constraints)
         self.auto_constraints = auto_constraints
         self.max_utility_by_issue = {}
         self.constraints_satisfiable = True
@@ -85,7 +85,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
                 # might seem stratge but if we hit a constraint we still need to keep searching in this direction
                 if util >= self.acceptability_threshold or not self.satisfies_all_constraints(offer):
                     self.assignement_frontier.put(
-                        (-util, uuid4(), copied_offer_indices))
+                        (-util, str(uuid4())[-8:], copied_offer_indices))
                     self.generated_offers.add(
                         self.offer_from_index_dict(copied_offer_indices))
 
