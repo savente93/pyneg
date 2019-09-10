@@ -1,8 +1,8 @@
 from typing import Optional, List, Set, Iterable
 
 from pyneg.comms import Offer, AtomicConstraint
-from pyneg.types import AtomicDict
-from pyneg.types import NegSpace
+from pyneg.types import AtomicDict, NegSpace
+from pyneg.utils import atom_from_issue_value
 from .problog_evaluator import ProblogEvaluator
 from .strategy import Strategy
 
@@ -13,10 +13,11 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
                  utilities: AtomicDict,
                  non_agreement_cost: float,
                  kb: List[str],
+                 constr_value: float,
                  initial_constraints: Optional[Set[AtomicConstraint]]):
-
+        self.constr_value = constr_value
         super().__init__(neg_space, utilities, non_agreement_cost, kb)
-        self.constraints = set()
+        self.constraints: Set[AtomicConstraint] = set()
         if initial_constraints:
             self.constraints.update(initial_constraints)
 
@@ -39,11 +40,40 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
 
         return True
 
-    def add_constraint(self, constraint: AtomicConstraint) -> None:
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
+        constraint_atom = atom_from_issue_value(constraint.issue, constraint.value)
+        self._add_utilities({constraint_atom: self.constr_value})
+        for issue in self.neg_space.keys():
+            if len(self.get_unconstrained_values_by_issue(issue)) <= 0:
+                self.constraints_satisfiable = False
+                return False
 
-    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
+        return True
+
+    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
+        self._add_utilities({atom_from_issue_value(constraint.issue, constraint.value) : self.constr_value
+                             for constraint in self.constraints})
+        for issue in self.neg_space.keys():
+            if len(self.get_unconstrained_values_by_issue(issue)) <= 0:
+                self.constraints_satisfiable = False
+                return False
+
+        return True
+
+    def get_unconstrained_values_by_issue(self, issue):
+        issue_constrained_values = set(
+            constr.value for constr in self.constraints if constr.issue == issue)
+        issue_unconstrained_values = set(
+            self.neg_space[issue]) - issue_constrained_values
+        return issue_unconstrained_values
+
+    def _add_utilities(self, new_utils: AtomicDict) -> None:
+        self.utilities = {
+            **self.utilities,
+            **new_utils
+        }
 
     def calc_assignment_util(self, issue: str, value: str) -> float:
         for constr in self.constraints:

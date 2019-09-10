@@ -1,11 +1,11 @@
 from unittest import TestCase
-
+from functools import reduce
 from numpy import arange
 
 from pyneg.comms import Offer, AtomicConstraint
 from pyneg.engine import ConstrainedEnumGenerator, ConstrainedLinearEvaluator
 from pyneg.utils import neg_scenario_from_util_matrices, nested_dict_from_atom_dict
-
+from copy import deepcopy
 
 class TestConstrainedEnumGenerator(TestCase):
 
@@ -14,17 +14,19 @@ class TestConstrainedEnumGenerator(TestCase):
             arange(9).reshape((3, 3)) ** 2, arange(9).reshape((3, 3)))
         self.arbitrary_reservation_value = 0
         self.non_agreement_cost = -1000
+        self.max_util = 4+25+64
+        self.constr_value = -2 * self.max_util
         self.uniform_weights = {
             issue: 1 / len(values) for issue, values in self.neg_space.items()}
         self.evaluator = ConstrainedLinearEvaluator(
-            self.utilities, self.uniform_weights, self.non_agreement_cost, None)
+            self.utilities, self.uniform_weights, self.non_agreement_cost, self.constr_value,set())
         self.violating_offer = Offer({
             "issue0": {"0": 0.0, "1": 0.0, "2": 1.0},
             "issue1": {"0": 0.0, "1": 0.0, "2": 1.0},
             "issue2": {"0": 0.0, "1": 0.0, "2": 1.0}
         })
         self.generator = ConstrainedEnumGenerator(
-            self.neg_space, self.utilities, self.evaluator, self.arbitrary_reservation_value, None)
+            self.neg_space, self.utilities, self.evaluator, self.arbitrary_reservation_value, self.constr_value,set())
         self.difficult_constraint = AtomicConstraint("issue2", "2")
         self.generator.add_constraint(self.difficult_constraint)
 
@@ -94,7 +96,7 @@ class TestConstrainedEnumGenerator(TestCase):
 
     def test_terminates_after_options_become_unacceptable(self):
         self.generator = ConstrainedEnumGenerator(
-            self.neg_space, self.utilities, self.evaluator, 100, None)
+            self.neg_space, self.utilities, self.evaluator, self.max_util * 10, self.constr_value, set())
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
@@ -147,14 +149,19 @@ class TestConstrainedEnumGenerator(TestCase):
 
 
     def test_generates_all_possible_offers(self):
-        neg_space_size = 2*10*10
+        unconstrained_neg_space = deepcopy(self.neg_space)
+        for constr in self.generator.constraints:
+            del unconstrained_neg_space[constr.issue][
+                unconstrained_neg_space[constr.issue].index(constr.value)]
+
+        neg_space_size = reduce(lambda x, y: x * y, [len(unconstrained_neg_space[issue]) for issue in
+                                                     unconstrained_neg_space.keys()])
         offer_list = []
-        for _ in range(neg_space_size):
+        for i in range(neg_space_size):
             offer_list.append(self.generator.generate_offer())
         self.assertEqual(len(offer_list), neg_space_size)
 
     def test_all_offers_are_generated_in_dec_order_of_util(self):
-        neg_space_size = 2*10*9
         temp_neg_space = {
             "boolean": ["True", "False"],
             "integer": list(map(str, range(10))),
@@ -170,24 +177,25 @@ class TestConstrainedEnumGenerator(TestCase):
             "integer_5": -100.0,
             "'float_0.1'": 1.0
         }
-        temp_reservation_value = -(10 ** 10) + 1
-        temp_non_agreement_cost = -(10 ** 10)
-        temp_contr = AtomicConstraint("integer","8")
-        evaluator = ConstrainedLinearEvaluator(temp_utilities,{issue: 1 for issue in temp_neg_space.keys()},temp_non_agreement_cost, {temp_contr})
-        generator = ConstrainedEnumGenerator(temp_neg_space, temp_utilities,evaluator,temp_reservation_value,{temp_contr},False)
+        temp_reservation_value = -(10 ** 10.0) + 1
+        temp_non_agreement_cost = -(10 ** 10.0)
+        temp_contr = AtomicConstraint("integer", "8")
+        evaluator = ConstrainedLinearEvaluator(temp_utilities,{issue: 1 for issue in temp_neg_space.keys()},temp_non_agreement_cost,self.constr_value,set())
+        generator = ConstrainedEnumGenerator(temp_neg_space, temp_utilities,evaluator,temp_reservation_value,self.constr_value,set(),False)
+        generator.add_constraint(temp_contr)
+        temp_unconstrained_neg_space = deepcopy(temp_neg_space)
+        for constr in generator.constraints:
+            del temp_unconstrained_neg_space[constr.issue][temp_unconstrained_neg_space[constr.issue].index(constr.value)]
+        neg_space_size = reduce(lambda x, y: x * y, [len(temp_unconstrained_neg_space[issue]) for issue in
+                                                     temp_unconstrained_neg_space.keys()])
+
+
         offer = generator.generate_offer()
         util = evaluator.calc_offer_utility(offer)
         transcript = [(offer, util)]
-        # offer_list = [generator.generate_offer()]
-        # util_list = [evaluator.calc_offer_utility(offer_list[-1])]
-        for i in range(neg_space_size):
+        for i in range(neg_space_size-1):
             offer = generator.generate_offer()
             util = evaluator.calc_offer_utility(offer)
             transcript.append((offer, util))
-            # offer_list.append(offer)
-            # util_list.append(util)
-            self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript[-5:])
+            self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript)
 
-
-        self.assertTrue(all(util_list[i][1] >= util_list[i + 1][1]
-                            for i in range(len(util_list) - 1)), util_list)

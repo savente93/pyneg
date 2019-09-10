@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+from functools import reduce
 from numpy import arange
 
 from pyneg.comms import Offer
@@ -86,7 +86,7 @@ class TestEnumGenerator(TestCase):
             self.generator.generate_offer()
 
     def test_terminates_after_all_offers_are_generated(self):
-        neg_space_size = 3 ** 3
+        neg_space_size = reduce(lambda x, y: x * y, [len(self.issues[issue]) for issue in self.issues.keys()])
         offer_list = []
         for i in range(neg_space_size):
             offer = self.generator.generate_offer()
@@ -98,19 +98,43 @@ class TestEnumGenerator(TestCase):
             self.generator.generate_offer()
 
     def test_generates_all_possible_offers(self):
-        neg_space_size = 3 ** 3
+        neg_space_size = reduce(lambda x, y: x * y, [len(self.issues[issue]) for issue in self.issues.keys()])
         offer_list = []
         for _ in range(neg_space_size):
             offer_list.append(self.generator.generate_offer())
         self.assertEqual(len(offer_list), neg_space_size)
 
     def test_all_offers_are_generated_in_dec_order_of_util(self):
-        neg_space_size = 3 ** 3
-        offer_list = []
-        for _ in range(neg_space_size):
-            offer_list.append(self.generator.generate_offer())
 
-        util_list = [self.evaluator.calc_offer_utility(
-            offer) for offer in offer_list]
-        self.assertTrue(all(util_list[i] >= util_list[i + 1]
-                            for i in range(len(util_list) - 1)), util_list)
+        temp_neg_space = {
+            "boolean": ["True", "False"],
+            "integer": list(map(str, range(10))),
+            "float": ["{0:.1f}".format(0.1 * i) for i in range(10)]
+        }
+        neg_space_size = reduce(lambda x, y: x * y, [len(temp_neg_space[issue]) for issue in temp_neg_space.keys()])
+        print(neg_space_size)
+        temp_utilities = {
+            "boolean_True": 1000.0,
+            "boolean_False": 10.0,
+            "integer_9": 100.0,
+            "integer_3": 10.0,
+            "integer_1": 0.1,
+            "integer_4": -10.0,
+            "integer_5": -100.0,
+            "'float_0.1'": 1.0
+        }
+        temp_reservation_value = -(10 ** 10) + 1
+        temp_non_agreement_cost = -(10 ** 10)
+        evaluator = LinearEvaluator(temp_utilities, {issue: 1 for issue in temp_neg_space.keys()},
+                                               temp_non_agreement_cost)
+        generator = EnumGenerator(temp_neg_space, temp_utilities, evaluator, temp_reservation_value)
+        offer = generator.generate_offer()
+        util = evaluator.calc_offer_utility(offer)
+        transcript = [(offer, util)]
+        for i in range(neg_space_size-1):
+            offer = generator.generate_offer()
+            util = evaluator.calc_offer_utility(offer)
+            transcript.append((offer, util))
+            self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript[-5:])
+
+

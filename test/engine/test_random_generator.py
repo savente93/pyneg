@@ -59,4 +59,4 @@ class TestRandomGenerator(TestCase):
         offer_list = []
         for _ in range(20):
             offer_list.append(self.generator.generate_offer())
-            self.assertFalse(all([offer_list[i] == offer_list[i + 1] for i in range(len(offer_list))]))
+        self.assertFalse(all([offer_list[i] == offer_list[i + 1] for i in range(len(offer_list)-1)]))

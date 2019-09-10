@@ -47,6 +47,8 @@ class TestConstrainedRandomGenerator(TestCase):
         self.optimal_offer['float']["0.1"] = 1.0
 
         self.optimal_offer = Offer(self.optimal_offer)
+        self.max_util = 100 + 100 + 1
+        self.constr_value = -2 * self.max_util
 
         self.violating_offer = {
             "boolean": {"True": 1.0, "False": 0.0},
@@ -62,11 +64,11 @@ class TestConstrainedRandomGenerator(TestCase):
             issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
 
         self.evaluator = ConstrainedLinearEvaluator(
-            self.utilities, self.uniform_weights, self.non_agreement_cost, None)
+            self.utilities, self.uniform_weights, self.non_agreement_cost, self.constr_value, set())
 
         self.generator = ConstrainedRandomGenerator(self.neg_space, self.utilities,
                                                     self.evaluator, self.non_agreement_cost,
-                                                    self.kb, self.reservation_value, set())
+                                                    self.kb, self.reservation_value,self.constr_value, set())
 
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("boolean", "True"))
@@ -109,9 +111,9 @@ class TestConstrainedRandomGenerator(TestCase):
         # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
         # shouldn't keep happening so we'll try it a couple of times
         last_offer = self.generator.generate_offer()
-        for _ in range(5):
+        for i in range(20):
             new_offer = self.generator.generate_offer()
-            self.assertNotEqual(last_offer, new_offer)
+            self.assertNotEqual(last_offer, new_offer,i)
             last_offer = new_offer
 
     def test_terminates_after_constrains_become_unsatisfiable(self):
@@ -131,8 +133,8 @@ class TestConstrainedRandomGenerator(TestCase):
 
     def test_doesnt_create_unessecary_constraints_when_setting_multiple_utils(self):
         temp_issues = {
-            "boolean1": [True, False],
-            "boolean2": [True, False]
+            "boolean1": ["True", "False"],
+            "boolean2": ["True", "False"]
         }
         temp_utils = {
             "boolean1_True": -10000000,
@@ -144,13 +146,13 @@ class TestConstrainedRandomGenerator(TestCase):
             issue: 1 / len(temp_issues.keys()) for issue in temp_issues.keys()}
 
         temp_evaluator = ConstrainedLinearEvaluator(
-            temp_utils, uniform_weights, self.non_agreement_cost, None)
+            temp_utils, uniform_weights, self.non_agreement_cost, self.constr_value, set())
 
         temp_generator = ConstrainedRandomGenerator(temp_issues, temp_utils,
                                                     temp_evaluator, self.non_agreement_cost,
-                                                    [], 0, set())
-        self.assertEqual(len(self.generator.constraints),
-                         1, self.generator.constraints)
+                                                    [], 0,self.constr_value, set())
+        self.assertEqual(len(temp_generator.constraints),
+                         1, temp_generator.constraints)
 
     def test_getting_utility_below_threshold_creates_constraint(self):
         low_util_dict = {"integer_4": -100000}

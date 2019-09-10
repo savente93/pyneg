@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Optional, Set, List, Iterable
+from typing import Optional, Set, Dict
 from uuid import uuid4
 
 from pyneg.comms import AtomicConstraint
@@ -15,27 +15,43 @@ class ConstrainedEnumGenerator(EnumGenerator):
                  utilities: AtomicDict,
                  evaluator: Evaluator,
                  acceptance_threshold: float,
+                 constr_value: float,
                  initial_constraints: Optional[Set[AtomicConstraint]],
                  auto_constraints=True) -> None:
+        self.constr_value = constr_value
         self.acceptance_threshold = acceptance_threshold
-        self.constraints = set()
+        self.constraints: Set[AtomicConstraint] = set()
+        self.constraints_satisfiable = True
+        self.max_util = 0.0
         super().__init__(neg_space, utilities, evaluator, acceptance_threshold)
         if initial_constraints:
             self.constraints.update(initial_constraints)
         self.auto_constraints = auto_constraints
-        self.max_utility_by_issue = {}
-        self.constraints_satisfiable = True
+        self.max_utility_by_issue: Dict[str, int] = {}
         self.index_max_utilities()
 
-    def add_constraint(self, constraint: AtomicConstraint) -> None:
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
+        self._add_utilities({atom_from_issue_value(constraint.issue,constraint.value): -2*self.max_util})
         self.index_max_utilities()
+        self.init_generator()
+        return self.constraints_satisfiable
 
-    def add_constraints(self, constraints: List[AtomicConstraint]) -> None:
+    def add_constraints(self, constraints: Set[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
         self.evaluator.add_constraints(constraints)
+        self._add_utilities({atom_from_issue_value(constr.issue,constr.value): -2*self.max_util for constr in constraints})
         self.index_max_utilities()
+        self.init_generator()
+        return self.constraints_satisfiable
+
+    #for internal use only, doest the same as the other one but never generates extra constraintes
+    def _add_utilities(self, new_utils: AtomicDict) -> None:
+        self.utilities = {
+            **self.utilities,
+            **new_utils
+        }
 
     def satisfies_all_constraints(self, offer: Offer) -> bool:
         for constr in self.constraints:
@@ -59,6 +75,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
                 if best_val in unconstrained_values:
                     self.max_utility_by_issue[issue] = self.utilities[atom_from_issue_value(
                         issue, best_val)]
+        self.max_util = sum(self.max_utility_by_issue.values())
 
     def get_unconstrained_values_by_issue(self, issue):
         issue_constrained_values = set(
@@ -101,21 +118,11 @@ class ConstrainedEnumGenerator(EnumGenerator):
         else:
             return self.generate_offer()
 
-    # def generate_offer(self) -> Offer:
-
-    #     try:
-    #         offer = super().generate_offer()
-    #         while not self.satisfies_all_constraints(offer):
-    #             offer = super().generate_offer()
-    #     except StopIteration:
-    #         raise StopIteration()
-    #     return offer
-
     def accepts(self, offer: Offer) -> bool:
         util = self.evaluator.calc_offer_utility(offer)
         return util >= self.acceptability_threshold and self.satisfies_all_constraints(offer)
 
-    def discover_constraints(self) -> Iterable[AtomicConstraint]:
+    def discover_constraints(self) -> Set[AtomicConstraint]:
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(

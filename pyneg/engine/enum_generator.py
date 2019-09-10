@@ -23,11 +23,13 @@ class EnumGenerator(Generator):
         self.init_generator()
         # self.last_offer_util = 2**32
 
-    def add_utilities(self, new_utils: AtomicDict) -> None:
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
             **new_utils
         }
+
+        return True
 
     def init_generator(self) -> None:
         self.assignement_frontier = PriorityQueue()

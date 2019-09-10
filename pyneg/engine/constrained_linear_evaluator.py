@@ -2,42 +2,44 @@ from typing import Dict, Optional, Set
 
 from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import AtomicDict
-from .linear_evaluator import LinearEvaluator
-from .strategy import Strategy
+from pyneg.engine.linear_evaluator import LinearEvaluator, Strategy
 
 
 class ConstrainedLinearEvaluator(LinearEvaluator):
     def __init__(self, utilities: AtomicDict,
                  issue_weights: Dict[str, float],
                  non_agreement_cost: float,
-                 initial_constraints: Optional[Set[AtomicConstraint]]):
-
+                 constr_value: float,
+                 initial_constraints: Set[AtomicConstraint]):
+        self.constr_value = constr_value
         super().__init__(utilities, issue_weights, non_agreement_cost)
-        self.constraints = set()
+        self.constraints: Set[AtomicConstraint]= set()
         if initial_constraints:
             self.constraints.update(initial_constraints)
 
-    def add_constraint(self, constraint: AtomicConstraint) -> None:
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
+        return True
 
-    def add_constraints(self, constraints: AtomicConstraint) -> None:
+    def add_constraints(self, constraints: Set[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
+        return True
 
     def calc_assignment_util(self, issue: str, value: str) -> float:
         if not all([constr.is_satisfied_by_assignment(issue, value) for constr in self.constraints]):
-            return self.non_agreement_cost
+            return self.constr_value
         else:
             return super().calc_assignment_util(issue, value)
 
     def calc_offer_utility(self, offer: Offer) -> float:
         if not self.satisfies_all_constraints(offer):
-            return self.non_agreement_cost
+            return self.constr_value
         else:
             return super().calc_offer_utility(offer)
 
     def calc_strat_utility(self, strat: Strategy) -> float:
         if not self.satisfies_all_constraints(strat):
-            return self.non_agreement_cost
+            return self.constr_value
         else:
             return super().calc_strat_utility(strat)
 

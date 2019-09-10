@@ -31,7 +31,7 @@ class Message():
 
         if not offer and type_ != MessageType.terminate:
             raise ValueError("Non empty message must have an offer")
-        self.type_: MessageType = type_
+        self.type_ = type_
         self.offer = offer
         self.constraint = constraint
         return
@@ -89,14 +89,14 @@ class Message():
                 type_=self.type_.name)
 
         if self.constraint:
-            return "Message({sender}, {recip}, {type_}, \n{offer}, \n{constraint}\n)".format(
+            return "Message({sender}, {recip}, {type_}, {offer}, \n{constraint}\n)".format(
                 sender=self.sender_name,
                 recip=self.recipient_name,
                 type_=self.type_.name,
                 offer=self.offer,
                 constraint=self.constraint)
         else:
-            return "Message({sender}, {recip}, {type_}, \n{offer}\n)".format(
+            return "Message({sender}, {recip}, {type_}, {offer}\n)".format(
                 sender=self.sender_name,
                 recip=self.recipient_name,
                 type_=self.type_.name,

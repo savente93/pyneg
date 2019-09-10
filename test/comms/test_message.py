@@ -35,15 +35,15 @@ class TestMessage(unittest.TestCase):
 
     def test_empty_message_cant_have_content(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.empty, "content")
+            Message("A", "B", MessageType.empty, "content")  # type: ignore
 
     def test_invalid_message_kind_raises_value_error(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", "Unknown type", "random content")
+            Message("A", "B", "Unknown type", "random content")  # type: ignore
 
     def test_constraint_message_with_wrong_data_type_raises_value_error(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.offer, "wrong data type")
+            Message("A", "B", MessageType.offer, "wrong data type")  # type: ignore
 
     def test_get_constraint_from_non_constraint_message_raises_error(self):
         with self.assertRaises(ValueError):
@@ -148,7 +148,7 @@ class TestMessage(unittest.TestCase):
     def test_non_dict_offer_raises_error(self):
         with self.assertRaises(ValueError):
             Message("A", "B", MessageType.offer, Message(
-                "A", "B", "offer", {"dummy1": {"True": 1}}))
+                "A", "B", "offer", {"dummy1": {"True": 1}}))  # type: ignore
 
     def test_non_empty_message_without_offer_raises_error(self):
         with self.assertRaises(ValueError):

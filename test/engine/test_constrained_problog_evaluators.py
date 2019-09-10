@@ -50,6 +50,8 @@ class TestConstrainedProblogEvaluator(TestCase):
         self.optimal_offer["integer"]["9"] = 1.0
         self.optimal_offer['float']["0.1"] = 1.0
         self.optimal_offer = Offer(self.optimal_offer)
+        self.max_util = 100 + 100 + 1
+        self.constr_value = -2 * self.max_util
 
         self.arbitrary_utilities = {
             "boolean_True": 100,
@@ -73,7 +75,8 @@ class TestConstrainedProblogEvaluator(TestCase):
             self.utilities,
             self.non_agreement_cost,
             self.kb,
-            None)
+            self.constr_value,
+            set([]))
 
         self.boolean_constraint = AtomicConstraint("boolean", "True")
         self.integer_constraint = AtomicConstraint("integer", "2")

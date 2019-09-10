@@ -47,6 +47,8 @@ class TestConstrainedLinearEvaluator(TestCase):
         self.optimal_offer['float']["0.1"] = 1.0
 
         self.optimal_offer = Offer(self.optimal_offer)
+        self.max_util = 100 + 100 + 1
+        self.constr_value = -2 * self.max_util
 
         self.violating_offer = {
             "boolean": {"True": 1.0, "False": 0.0},
@@ -71,7 +73,7 @@ class TestConstrainedLinearEvaluator(TestCase):
             self.utilities,
             self.uniform_weights,
             self.non_agreement_cost,
-            None)
+            self.constr_value, set([]))
 
         self.boolean_constraint = AtomicConstraint("boolean", "True")
         self.integer_constraint = AtomicConstraint("integer", "2")
@@ -105,7 +107,7 @@ class TestConstrainedLinearEvaluator(TestCase):
                          {self.boolean_constraint,
                           self.integer_constraint})
 
-    def test_worth_of_violating_offer_is_non_agreement_cost(self):
+    def test_worth_of_violating_offer_is_constr_value(self):
         self.evaluator.add_constraint(self.boolean_constraint)
         self.assertEqual(self.evaluator.calc_offer_utility(
-            self.violating_offer), self.non_agreement_cost)
+            self.violating_offer), self.constr_value)

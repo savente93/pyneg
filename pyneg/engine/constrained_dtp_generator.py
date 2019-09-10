@@ -20,13 +20,16 @@ class ConstrainedDTPGenerator(DTPGenerator):
                  non_agreement_cost: float,
                  acceptance_threshold: float,
                  kb: List[str],
+                 constr_value: float,
                  initial_constraints: Optional[Set[AtomicConstraint]],
                  auto_constraints=True):
+        self.constr_value = constr_value
         self.evaluator = ConstrainedProblogEvaluator(
-            neg_space, utilities, non_agreement_cost, kb, set())
-        self.constraints = set()
+            neg_space, utilities, non_agreement_cost, kb,constr_value, set())
+        self.constr_value = constr_value
+        self.constraints: Set[AtomicConstraint] = set([])
         if initial_constraints:
-            self.constraints.add(initial_constraints)
+            self.constraints.update(initial_constraints)
         self.auto_constraints = auto_constraints
         super().__init__(neg_space, utilities, non_agreement_cost, acceptance_threshold, kb)
         self.index_max_utilities()
@@ -38,18 +41,26 @@ class ConstrainedDTPGenerator(DTPGenerator):
         self.constraints = set()
         self.index_max_utilities()
 
-    def add_constraint(self, constraint: AtomicConstraint) -> None:
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
+        self.index_max_utilities()
         if len(self.get_unconstrained_values_by_issue(constraint.issue)) == 0:
             self.constraints_satisfiable = False
+            return False
 
-    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
+        return True
+
+    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
         self.evaluator.add_constraints(self.constraints)
+        self.index_max_utilities()
         for issue in self.neg_space.keys():
             if len(self.get_unconstrained_values_by_issue(issue)) == 0:
                 self.constraints_satisfiable = False
+                return False
+
+        return True
 
     def satisfies_all_constraints(self, offer: Offer) -> bool:
         for constr in self.constraints:
@@ -57,6 +68,9 @@ class ConstrainedDTPGenerator(DTPGenerator):
                 return False
 
         return True
+
+    def _add_utilities(self, new_utils):
+        super().add_utilities(new_utils)
 
     def add_utilities(self, new_utils):
         super().add_utilities(new_utils)
@@ -83,7 +97,7 @@ class ConstrainedDTPGenerator(DTPGenerator):
         return model_string + constr_string
 
     # TODO figure out a way to do non-linear constraint discovery
-    def discover_constraints(self) -> Offer:
+    def discover_constraints(self) -> Set[AtomicConstraint]:
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(
@@ -101,14 +115,7 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
         return new_constraints
 
-    def satisfies_all_constraints(self, offer: Offer) -> bool:
-        for constr in self.constraints:
-            if not constr.is_satisfied_by_offer(offer):
-                return False
-
-        return True
-
-    def get_unconstrained_values_by_issue(self, issue):
+    def get_unconstrained_values_by_issue(self, issue: str):
         issue_constrained_values = set(
             constr.value for constr in self.constraints if constr.issue == issue)
         issue_unconstrained_values = set(

@@ -2,15 +2,14 @@ from typing import Optional, Set, List, Iterable
 
 from numpy import isclose
 
-from pyneg.comms import AtomicConstraint
-from pyneg.comms import Offer
+from pyneg.comms import AtomicConstraint, Offer
 from pyneg.types import NegSpace, AtomicDict
 from pyneg.utils import atom_from_issue_value
-from .evaluator import Evaluator
-from .random_generator import RandomGenerator
+from pyneg.engine import Evaluator, RandomGenerator
 
 
 class ConstrainedRandomGenerator(RandomGenerator):
+
     def __init__(self,
                  neg_space: NegSpace,
                  utilities: AtomicDict,
@@ -18,9 +17,11 @@ class ConstrainedRandomGenerator(RandomGenerator):
                  non_agreement_cost: float,
                  kb: List[str],
                  acceptability_threshold: float,
+                 constr_value: float,
                  initial_constraints: Set[AtomicConstraint],
                  auto_constraints=True,
                  max_generation_tries: int = 500):
+        self.constr_value = constr_value
         self.constraints: Set[AtomicConstraint] = set()
         super().__init__(neg_space, utilities, evaluator,
                          non_agreement_cost, kb, acceptability_threshold, max_generation_tries=max_generation_tries)
@@ -53,15 +54,18 @@ class ConstrainedRandomGenerator(RandomGenerator):
             raise RuntimeError()
         return offer
 
-    def add_constraint(self, constraint: AtomicConstraint) -> None:
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
+        return self.make_strat_constraint_compliant()
 
-    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> None:
+
+    def add_constraints(self, constraints: Iterable[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
         self.evaluator.add_constraints(self.constraints)
+        return self.make_strat_constraint_compliant()
 
-    def discover_constraints(self) -> Offer:
+    def discover_constraints(self) -> Set[AtomicConstraint]:
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(
@@ -78,6 +82,13 @@ class ConstrainedRandomGenerator(RandomGenerator):
                     new_constraints.add(AtomicConstraint(issue, value))
 
         return new_constraints
+
+    def get_unconstrained_values_by_issue(self, issue):
+        issue_constrained_values = set(
+            constr.value for constr in self.constraints if constr.issue == issue)
+        issue_unconstrained_values = set(
+            self.neg_space[issue]) - issue_constrained_values
+        return issue_unconstrained_values
 
     def satisfies_all_constraints(self, offer: Offer) -> bool:
         for constr in self.constraints:
@@ -97,14 +108,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
                     max_issue_util = util
                     self.max_utility_by_issue[issue] = max_issue_util
 
-    def get_unconstrained_values_by_issue(self, issue):
-        issue_constrained_values = set(
-            constr.value for constr in self.constraints if constr.issue == issue)
-        issue_unconstrained_values = set(
-            self.neg_space[issue]) - issue_constrained_values
-        return issue_unconstrained_values
-
-    def make_strat_constraint_compliant(self) -> None:
+    def make_strat_constraint_compliant(self) -> bool:
         for constr in self.constraints:
             # if constr.is_satisfied_by_strat(self.strategy):
             #     continue
@@ -115,7 +119,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
             if len(unconstrained_values) == 0:
                 self.constraints_satisfiable = False
                 # Unsatisfiable constraint so we're terminating on the next message so we won't need to update the strat
-                return
+                return False
 
             for value in self.neg_space[issue]:
                 if not constr.is_satisfied_by_assignment(issue, value):
@@ -131,6 +135,8 @@ class ConstrainedRandomGenerator(RandomGenerator):
             else:
                 self.strategy.normalise_issue(issue)
 
+        return True
+
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
         for constr in self.constraints:
             for issue in offer.get_issues():
@@ -139,3 +145,4 @@ class ConstrainedRandomGenerator(RandomGenerator):
                     return AtomicConstraint(issue, chosen_value)
 
         return None
+
