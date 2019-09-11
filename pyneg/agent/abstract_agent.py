@@ -1,3 +1,4 @@
+# type: ignore
 from typing import Dict, List, Optional
 
 from pyneg.comms import Message, Offer, AtomicConstraint
@@ -20,29 +21,29 @@ class AbstractAgent:
         self._next_constraint: Optional[AtomicConstraint] = None
         self._constraints_satisfiable = True
 
-    def receive_negotiation_request(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
+    def receive_negotiation_request(self, opponent: 'AbstractAgent', neg_space: NegSpace) -> bool:
         raise NotImplementedError()
 
     def _accepts_negotiation_proposal(self, neg_space) -> bool:
         raise NotImplementedError()
 
-    def _call_for_negotiation(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
+    def _call_for_negotiation(self, opponent: 'AbstractAgent', neg_space: NegSpace) -> bool:
         raise NotImplementedError()
 
     # to be set by the factory
     def _should_exit(self) -> bool:
         raise NotImplementedError()
 
-    def negotiate(self, opponent: 'Agent') -> bool:
+    def negotiate(self, opponent: 'AbstractAgent') -> bool:
         raise NotImplementedError()
 
     def _terminate(self, successful: bool) -> Message:
         raise NotImplementedError()
 
-    def send_message(self, opponent: 'Agent', msg: Message) -> None:
+    def send_message(self, opponent: 'AbstractAgent', msg: Message) -> None:
         raise NotImplementedError()
 
-    def wait_for_response(self, sender: 'Agent') -> None:
+    def wait_for_response(self, sender: 'AbstractAgent') -> None:
         raise NotImplementedError()
 
     def _record_message(self, msg: Message) -> None:

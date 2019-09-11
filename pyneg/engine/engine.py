@@ -18,6 +18,9 @@ class AbstractEngine:
     def add_utilities(self, new_utils: AtomicDict) -> bool:
         raise NotImplementedError()
 
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        raise NotImplementedError()
+
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         raise NotImplementedError()
 
@@ -25,6 +28,12 @@ class AbstractEngine:
         raise NotImplementedError()
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        raise NotImplementedError()
+
+    def get_unconstrained_values_by_issue(self, issue):
+        raise NotImplementedError()
+
+    def get_constraints(self):
         raise NotImplementedError()
 
 
@@ -55,4 +64,10 @@ class Engine(AbstractEngine):
         return self.generator.add_constraints(new_constraints)
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
-        return None
+        return self.generator.find_violated_constraint(offer)
+
+    def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
+        return self.generator.get_unconstrained_values_by_issue(issue)
+
+    def get_constraints(self):
+        return self.generator.get_constraints()

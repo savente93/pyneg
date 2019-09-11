@@ -105,8 +105,8 @@ class TestAgent(TestCase):
             "integer_5": -100,
         }
         self.agent.set_utilities(arbitrary_utilities)
-        self.agent.negotiate(self.opponent)
-        self.assertEqual(len(self.agent._transcript), 2)
+        self.opponent.negotiate(self.agent)
+        self.assertEqual(len(self.agent._transcript), 2, self.agent._transcript)
 
     def test_after_negotiation_both_agents_have_same_transcript(self):
         self.agent.negotiate(self.opponent)

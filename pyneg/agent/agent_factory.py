@@ -6,6 +6,7 @@ from pyneg.engine import ConstrainedEnumGenerator
 from pyneg.engine import ConstrainedLinearEvaluator
 from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator
 from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
+from pyneg.engine import ConstrainedRandomGenerator
 from pyneg.types import NegSpace
 from pyneg.utils import nested_dict_from_atom_dict
 from types import MethodType
@@ -14,7 +15,7 @@ STANDARD_MAX_ROUNDS = 200
 
 class AgentFactory:
     @staticmethod
-    def estimate_max_utility(utilities: Dict[str, float]) -> float:
+    def estimate_max_linear_utility(utilities: Dict[str, float]) -> float:
         nested_utilities = nested_dict_from_atom_dict(utilities)
         max_utility_by_issue = {issue: -(10.0**10) for issue in nested_utilities.keys()}
         for issue in nested_utilities.keys():
@@ -28,20 +29,19 @@ class AgentFactory:
     def make_linear_concession_agent(name: str,
                                      neg_space: NegSpace,
                                      utilities: Dict[str, float],
-                                     reservation_value: Union[float, int],
+                                     reservation_value: float,
                                      non_agreement_cost: float,
                                      issue_weights: Optional[Dict[str, float]]) -> Agent:
         agent = Agent()
         agent.name = name
         agent._type = "Linear Concession"
+        agent._neg_space = neg_space
 
         if not issue_weights:
             issue_weights = {issue: 1 / len(neg_space[issue]) for issue in neg_space.keys()}
 
-        if isinstance(reservation_value, float):
-            estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
-            reservation_value = reservation_value * estimate_max_utility
-
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        reservation_value = reservation_value * estimate_max_utility
         agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
         generator: Generator = EnumGenerator(neg_space, utilities, evaluator, reservation_value)
@@ -55,7 +55,7 @@ class AgentFactory:
     def make_linear_random_agent(name: str,
                                  neg_space: NegSpace,
                                  utilities: Dict[str, float],
-                                 reservation_value: Union[float, int],
+                                 reservation_value: float,
                                  non_agreement_cost: float,
                                  issue_weights: Optional[Dict[str, float]] = None,
                                  max_rounds: int = None) -> Agent:
@@ -63,17 +63,16 @@ class AgentFactory:
         agent = Agent()
         agent.name = name
         agent._type = "Linear Random"
-        if not max_rounds:
-            agent._max_rounds = STANDARD_MAX_ROUNDS
-        else:
-            agent._max_rounds = max_rounds
+        agent._neg_space = neg_space
 
         if not issue_weights:
             issue_weights = {issue: 1 / len(neg_space[issue]) for issue in neg_space.keys()}
 
-        if isinstance(reservation_value, float):
-            estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
-            reservation_value = reservation_value * estimate_max_utility
+        if not max_rounds:
+            max_rounds = STANDARD_MAX_ROUNDS
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        reservation_value = reservation_value * estimate_max_utility
 
         agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
@@ -81,43 +80,12 @@ class AgentFactory:
             neg_space,
             utilities,
             evaluator,
-            non_agreement_cost, [],
-            reservation_value)
+            non_agreement_cost,
+            [],
+            reservation_value,
+            max_rounds)
 
         engine = Engine(generator, evaluator)
-        agent._engine = engine
-
-        return agent
-
-    @staticmethod
-    def make_constrained_linear_concession_agent(name: str,
-                                                 neg_space: NegSpace,
-                                                 utilities: Dict[str, float],
-                                                 reservation_value: Union[float, int],
-                                                 non_agreement_cost: float,
-                                                 issue_weights: Optional[Dict[str, float]],
-                                                 initial_constraints: Optional[Set[AtomicConstraint]],
-                                                 auto_constraints=True) -> ConstrainedAgent:
-        agent = ConstrainedAgent()
-        agent.name = name
-        agent._type = "Constrained Linear Concession"
-
-        if not issue_weights:
-            issue_weights = {
-                issue: 1 / len(neg_space[issue])
-                for issue in neg_space.keys()}
-
-        if isinstance(reservation_value, float):
-            estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
-            reservation_value = reservation_value * estimate_max_utility
-
-        agent._absolute_reservation_value = reservation_value
-        evaluator: Evaluator = ConstrainedLinearEvaluator(
-            utilities, issue_weights, non_agreement_cost, initial_constraints)
-        generator: Generator = ConstrainedEnumGenerator(
-            neg_space, utilities, evaluator, reservation_value, initial_constraints, auto_constraints=auto_constraints)
-
-        engine: Engine = Engine(generator, evaluator)
         agent._engine = engine
 
         return agent
@@ -134,22 +102,102 @@ class AgentFactory:
         agent = Agent()
         agent.name = name
         agent._type = "Random"
-        if not max_rounds:
-            agent._max_rounds = STANDARD_MAX_ROUNDS
-        else:
-            agent._max_rounds = max_rounds
+        agent._neg_space = neg_space
 
-        if isinstance(reservation_value, float):
-            estimate_max_utility = AgentFactory.estimate_max_utility(utilities)
-            reservation_value = reservation_value * estimate_max_utility
+        if not max_rounds:
+            max_rounds = STANDARD_MAX_ROUNDS
+
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        reservation_value = reservation_value * estimate_max_utility
 
         agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = ProblogEvaluator(neg_space,
                                                 utilities, non_agreement_cost, kb)
         generator: Generator = RandomGenerator(
-            neg_space, utilities, evaluator, reservation_value, [], reservation_value)
+            neg_space, utilities, evaluator, reservation_value, [], reservation_value,max_rounds)
 
         engine = Engine(generator, evaluator)
         agent._engine = engine
 
         return agent
+
+    @staticmethod
+    def make_constrained_linear_concession_agent(name: str,
+                                                 neg_space: NegSpace,
+                                                 utilities: Dict[str, float],
+                                                 reservation_value: float,
+                                                 non_agreement_cost: float,
+                                                 issue_weights: Optional[Dict[str, float]],
+                                                 initial_constraints: Optional[Set[AtomicConstraint]],
+                                                 auto_constraints=True) -> ConstrainedAgent:
+        agent = ConstrainedAgent()
+        agent.name = name
+        agent._type = "Constrained Linear Concession"
+        agent._neg_space = neg_space
+
+        if not issue_weights:
+            issue_weights = {
+                issue: 1 / len(neg_space[issue])
+                for issue in neg_space.keys()}
+
+        if not initial_constraints:
+            initial_constraints = set()
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        reservation_value = reservation_value * estimate_max_utility
+        constr_value = -2 * estimate_max_utility
+        agent._absolute_reservation_value = reservation_value
+        evaluator: Evaluator = ConstrainedLinearEvaluator(
+            utilities, issue_weights, non_agreement_cost, constr_value, initial_constraints)
+        generator: Generator = ConstrainedEnumGenerator(
+            neg_space, utilities, evaluator, reservation_value,
+            constr_value, initial_constraints, auto_constraints=auto_constraints)
+
+        engine: Engine = Engine(generator, evaluator)
+        agent._engine = engine
+
+        return agent
+
+    @staticmethod
+    def make_constrained_linear_random_agent(name: str,
+                                             neg_space: NegSpace,
+                                             utilities: Dict[str, float],
+                                             reservation_value: float,
+                                             non_agreement_cost: float,
+                                             kb: List[str],
+                                             issue_weights: Optional[Dict[str, float]] = None,
+                                             initial_constraints: Optional[Set[AtomicConstraint]] = None,
+                                             max_rounds: int = None,
+                                             auto_constraints=True) -> ConstrainedAgent:
+        agent = ConstrainedAgent()
+        agent.name = name
+        agent._type = "Constrained Linear Concession"
+        agent._neg_space = neg_space
+
+        if not issue_weights:
+            issue_weights = {
+                issue: 1 / len(neg_space[issue])
+                for issue in neg_space.keys()}
+
+        if not initial_constraints:
+            initial_constraints = set()
+
+        if not max_rounds:
+            max_rounds = STANDARD_MAX_ROUNDS
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        reservation_value = reservation_value * estimate_max_utility
+        constr_value = -2 * estimate_max_utility
+        agent._absolute_reservation_value = reservation_value
+        evaluator: Evaluator = ConstrainedLinearEvaluator(
+            utilities, issue_weights, non_agreement_cost, constr_value, initial_constraints)
+        generator: Generator = ConstrainedRandomGenerator(
+            neg_space, utilities, evaluator, non_agreement_cost, kb, reservation_value,
+            max_rounds, constr_value, initial_constraints, auto_constraints=auto_constraints)
+
+        engine: Engine = Engine(generator, evaluator)
+        agent._engine = engine
+
+        return agent
+

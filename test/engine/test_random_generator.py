@@ -25,8 +25,9 @@ class TestRandomGenerator(TestCase):
         self.kb = [
             "boolean_True :- integer_2, 'float_0.1'."
         ]
-        self.reservation_value = 0
+        self.reservation_value = 50
         self.non_agreement_cost = -1000
+        self.max_rounds  = 20
 
         # should have a utility of 100
         self.nested_test_offer = {
@@ -51,7 +52,7 @@ class TestRandomGenerator(TestCase):
         self.evaluator = ProblogEvaluator(
             self.neg_space, self.utilities, self.non_agreement_cost, self.kb)
         self.generator = RandomGenerator(
-            self.neg_space, self.utilities, self.evaluator, self.non_agreement_cost, self.kb, 50)
+            self.neg_space, self.utilities, self.evaluator, self.non_agreement_cost, self.kb, self.reservation_value,self.max_rounds)
 
     def test_doesnt_generate_same_offer_five_times(self):
         # since some elements might be randomly picked it can sometimes happen that the elements are the same but it

@@ -72,9 +72,10 @@ class ConstrainedEnumGenerator(EnumGenerator):
                     return
 
                 best_val = self.sorted_utils[issue][0]
-                if best_val in unconstrained_values:
-                    self.max_utility_by_issue[issue] = self.utilities[atom_from_issue_value(
-                        issue, best_val)]
+                best_val_atom = atom_from_issue_value(
+                        issue, best_val)
+                if best_val in unconstrained_values and best_val_atom in self.utilities.keys():
+                    self.max_utility_by_issue[issue] = self.utilities[best_val_atom]
         self.max_util = sum(self.max_utility_by_issue.values())
 
     def get_unconstrained_values_by_issue(self, issue):
@@ -84,13 +85,22 @@ class ConstrainedEnumGenerator(EnumGenerator):
             self.neg_space[issue]) - issue_constrained_values
         return issue_unconstrained_values
 
-    def add_utilities(self, new_utils):
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         super().add_utilities(new_utils)
 
         if self.auto_constraints:
             self.add_constraints(self.discover_constraints())
 
-    def expland_assignment(self, sorted_offer_indices):
+        return self.constraints_satisfiable
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        if self.auto_constraints:
+            self.add_constraints(self.discover_constraints())
+
+        return self.constraints_satisfiable
+
+    def expand_assignment(self, sorted_offer_indices):
         for issue in self.neg_space.keys():
             copied_offer_indices = deepcopy(sorted_offer_indices)
             if copied_offer_indices[issue] + 1 >= len(self.sorted_utils[issue]):
@@ -111,7 +121,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
             raise StopIteration()
 
         negative_util, uuid, indices = self.assignement_frontier.get()
-        self.expland_assignment(indices)
+        self.expand_assignment(indices)
         offer = self.offer_from_index_dict(indices)
         if self.satisfies_all_constraints(offer):
             return offer
@@ -148,3 +158,6 @@ class ConstrainedEnumGenerator(EnumGenerator):
                     return AtomicConstraint(issue, chosen_value)
 
         return None
+
+    def get_constraints(self):
+        return self.constraints

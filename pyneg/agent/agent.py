@@ -14,7 +14,7 @@ class Agent(AbstractAgent):
 
     # for string annotation reason see
     # https://www.python.org/dev/peps/pep-0484/#the-problem-of-forward-declarations
-    def receive_negotiation_request(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
+    def receive_negotiation_request(self, opponent: AbstractAgent, neg_space: NegSpace) -> bool:
         # allows others to initiate negotiations with us
         # only accept if we're talking about the same things
         if self._accepts_negotiation_proposal(neg_space):
@@ -27,7 +27,7 @@ class Agent(AbstractAgent):
     def _accepts_negotiation_proposal(self, neg_space) -> bool:
         return self._neg_space == neg_space
 
-    def _call_for_negotiation(self, opponent: 'Agent', neg_space: NegSpace) -> bool:
+    def _call_for_negotiation(self, opponent: AbstractAgent, neg_space: NegSpace) -> bool:
         # allows us to initiate negotiations with others
         response: bool = opponent.receive_negotiation_request(self, neg_space)
         if response:
@@ -35,7 +35,7 @@ class Agent(AbstractAgent):
         self.negotiation_active = response
         return response
 
-    def negotiate(self, opponent: 'Agent') -> bool:
+    def negotiate(self, opponent: AbstractAgent) -> bool:
         # self is assumed to have setup the negotiation (including issues) beforehand
         self.negotiation_active = self._call_for_negotiation(
             opponent, self._neg_space)
@@ -78,11 +78,11 @@ class Agent(AbstractAgent):
                            None)
             # self.send_message(self.opponent, termination_message)
 
-    def send_message(self, opponent: 'Agent', msg: Message) -> None:
+    def send_message(self, opponent: AbstractAgent, msg: Message) -> None:
         self._record_message(msg)
         opponent.receive_message(msg)
 
-    def _wait_for_response(self, sender: 'Agent') -> None:
+    def _wait_for_response(self, sender: AbstractAgent) -> None:
         if not self.negotiation_active:
             return
         sender.send_message(self,sender._generate_next_message())
@@ -95,6 +95,9 @@ class Agent(AbstractAgent):
         self._parse_response(msg)
 
     def _parse_response(self, response):
+        if response.type_ == MessageType.empty:
+            return
+
         if response.is_acceptance():
             self.negotiation_active = False
             self.successful = True
@@ -107,6 +110,7 @@ class Agent(AbstractAgent):
 
         if response.constraint:
             self._constraints_satisfiable = self._engine.add_constraint(response.constraint)
+
 
         if self._accepts(response.offer):
             self._last_offer_received_was_acceptable = True
@@ -153,5 +157,8 @@ class Agent(AbstractAgent):
     def add_utilities(self, new_utils: Dict[str, float]) -> bool:
         return self._engine.add_utilities(new_utils)
 
-    def set_utilities(self, new_utils: Dict[str, float]) -> bool:
-        return self._engine.set_utilities(new_utils)
+    def set_utilities(self, new_utilities: Dict[str, float]) -> bool:
+        return self._engine.set_utilities(new_utilities)
+
+    def __repr__(self) -> str:
+        return self.name

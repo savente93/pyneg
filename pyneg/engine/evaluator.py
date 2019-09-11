@@ -5,7 +5,7 @@ from typing import Set
 
 class Evaluator():
     def __init__(self):
-        raise NotImplementedError()
+        pass
 
     def calc_offer_utility(self, offer: Offer) -> float:
         raise NotImplementedError()

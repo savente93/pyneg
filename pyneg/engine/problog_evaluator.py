@@ -17,17 +17,19 @@ class ProblogEvaluator(Evaluator):
                  utilities: AtomicDict,
                  non_agreement_cost: float,
                  kb: List[str]):
-
+        super().__init__()
         self.utilities = utilities
         self.kb = kb
         self.neg_space = neg_space
         self.non_agreement_cost = non_agreement_cost
 
-    def add_utilities(self, new_utils: AtomicDict) -> None:
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
             **new_utils
         }
+
+        return True
 
     def calc_probabilities_of_utilities(self, offer: Offer) -> Dict[str, float]:
         model = self.compile_problog_model(offer)

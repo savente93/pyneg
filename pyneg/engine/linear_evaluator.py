@@ -11,16 +11,22 @@ class LinearEvaluator(Evaluator):
     def __init__(self, utilities: AtomicDict,
                  issue_weights: Dict[str, float],
                  non_agreement_cost: float):
-
+        super().__init__()
         self.utilities = utilities
         self.issue_weights = issue_weights
         self.non_agreement_cost = non_agreement_cost
 
-    def add_utilities(self, new_utils: AtomicDict) -> None:
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
             **new_utils
         }
+
+        return True
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        return True
 
     def calc_assignment_util(self, issue: str, value: str) -> float:
         chosen_atom = atom_from_issue_value(issue, value)
@@ -31,7 +37,7 @@ class LinearEvaluator(Evaluator):
             return 0
 
     def calc_offer_utility(self, offer: Offer) -> float:
-        score = 0
+        score = 0.0
         for issue in offer.get_issues():
             chosen_value = offer.get_chosen_value(issue)
             score += self.calc_assignment_util(issue, chosen_value)

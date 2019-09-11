@@ -62,6 +62,12 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
 
         return True
 
+    def _add_utilities(self, new_utils):
+        self.utilities = {
+            **self.utilities,
+            **new_utils
+        }
+
     def get_unconstrained_values_by_issue(self, issue):
         issue_constrained_values = set(
             constr.value for constr in self.constraints if constr.issue == issue)
@@ -69,11 +75,10 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
             self.neg_space[issue]) - issue_constrained_values
         return issue_unconstrained_values
 
-    def _add_utilities(self, new_utils: AtomicDict) -> None:
-        self.utilities = {
-            **self.utilities,
-            **new_utils
-        }
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+
+        return self.constraints_satisfiable
 
     def calc_assignment_util(self, issue: str, value: str) -> float:
         for constr in self.constraints:

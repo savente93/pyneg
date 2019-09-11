@@ -1,12 +1,12 @@
 from copy import deepcopy
 from re import search
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional
 
 from numpy import isclose
 from problog.program import PrologString
 from problog.tasks.dtproblog import dtproblog
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import NegSpace, AtomicDict
 from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value, atom_dict_from_nested_dict
 from .generator import Generator
@@ -33,11 +33,17 @@ class DTPGenerator(Generator):
         self.generated_offers = {}
         self.offer_queue = []
 
-    def add_utilities(self, new_utils: AtomicDict) -> None:
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
             **new_utils
         }
+
+        return True
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        return True
 
     # def accepts(self, offer: Offer) -> bool:
     #     util = self.evaluator.calc_offer_utility(offer)
@@ -142,3 +148,6 @@ class DTPGenerator(Generator):
             raise RuntimeError()
 
         return self.offer_queue.pop()
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        return None

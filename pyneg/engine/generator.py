@@ -1,6 +1,6 @@
 from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import AtomicDict
-from typing import Set
+from typing import Set, Optional
 
 
 class Generator:
@@ -12,7 +12,7 @@ class Generator:
     '''
 
     def __init__(self):
-        raise NotImplementedError()
+        pass
 
     def generate_offer(self) -> Offer:
         raise NotImplementedError()
@@ -27,4 +27,13 @@ class Generator:
         raise NotImplementedError()
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
+        raise NotImplementedError()
+
+    def get_constraints(self):
+        raise NotImplementedError()
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        raise NotImplementedError()
+
+    def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
         raise NotImplementedError()

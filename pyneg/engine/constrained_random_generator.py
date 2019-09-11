@@ -17,6 +17,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
                  non_agreement_cost: float,
                  kb: List[str],
                  acceptability_threshold: float,
+                 max_rounds: int,
                  constr_value: float,
                  initial_constraints: Set[AtomicConstraint],
                  auto_constraints=True,
@@ -24,7 +25,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
         self.constr_value = constr_value
         self.constraints: Set[AtomicConstraint] = set()
         super().__init__(neg_space, utilities, evaluator,
-                         non_agreement_cost, kb, acceptability_threshold, max_generation_tries=max_generation_tries)
+                         non_agreement_cost, kb, acceptability_threshold, max_rounds, max_generation_tries=max_generation_tries)
 
         self.auto_constraints = auto_constraints
         self.constraints_satisfiable = True
@@ -34,14 +35,25 @@ class ConstrainedRandomGenerator(RandomGenerator):
         if self.auto_constraints:
             self.add_constraints(self.discover_constraints())
 
-    def add_utilities(self, new_utils):
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
             **new_utils
         }
+        self.evaluator.add_utilities(new_utils)
 
         if self.auto_constraints:
             self.add_constraints(self.discover_constraints())
+
+        return self.constraints_satisfiable
+
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        if self.auto_constraints:
+            self.add_constraints(self.discover_constraints())
+        self.evaluator.add_utilities(new_utils)
+        return self.constraints_satisfiable
 
     def generate_offer(self) -> Offer:
         if not self.constraints_satisfiable:
@@ -146,3 +158,5 @@ class ConstrainedRandomGenerator(RandomGenerator):
 
         return None
 
+    def get_constraints(self):
+        return self.constraints

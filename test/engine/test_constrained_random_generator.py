@@ -63,12 +63,14 @@ class TestConstrainedRandomGenerator(TestCase):
         self.uniform_weights = {
             issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
 
+        self.max_rounds = 20
+
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities, self.uniform_weights, self.non_agreement_cost, self.constr_value, set())
 
         self.generator = ConstrainedRandomGenerator(self.neg_space, self.utilities,
                                                     self.evaluator, self.non_agreement_cost,
-                                                    self.kb, self.reservation_value,self.constr_value, set())
+                                                    self.kb, self.reservation_value, self.max_rounds, self.constr_value, set())
 
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("boolean", "True"))
@@ -150,12 +152,7 @@ class TestConstrainedRandomGenerator(TestCase):
 
         temp_generator = ConstrainedRandomGenerator(temp_issues, temp_utils,
                                                     temp_evaluator, self.non_agreement_cost,
-                                                    [], 0,self.constr_value, set())
+                                                    [], 0,self.max_rounds,self.constr_value, set())
         self.assertEqual(len(temp_generator.constraints),
                          1, temp_generator.constraints)
 
-    def test_getting_utility_below_threshold_creates_constraint(self):
-        low_util_dict = {"integer_4": -100000}
-        self.generator.add_utilities(low_util_dict)
-        self.assertTrue(AtomicConstraint("integer", "4")
-                        in self.generator.constraints)

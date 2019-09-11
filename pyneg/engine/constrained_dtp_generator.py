@@ -72,11 +72,23 @@ class ConstrainedDTPGenerator(DTPGenerator):
     def _add_utilities(self, new_utils):
         super().add_utilities(new_utils)
 
-    def add_utilities(self, new_utils):
-        super().add_utilities(new_utils)
+    def add_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = {
+            **self.utilities,
+            **new_utils
+        }
 
         if self.auto_constraints:
             self.add_constraints(self.discover_constraints())
+
+        return self.constraints_satisfiable
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        if self.auto_constraints:
+            self.add_constraints(self.discover_constraints())
+
+        return self.constraints_satisfiable
 
     def accepts(self, offer: Offer) -> bool:
         if offer.get_sparse_repr() in self.generated_offers:
@@ -158,3 +170,6 @@ class ConstrainedDTPGenerator(DTPGenerator):
                 if util > max_issue_util:
                     max_issue_util = util
                     self.max_utility_by_issue[issue] = max_issue_util
+
+    def get_constraints(self):
+        return self.constraints

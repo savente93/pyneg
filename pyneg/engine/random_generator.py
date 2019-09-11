@@ -1,8 +1,8 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from numpy.random import choice
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import NegSpace, AtomicDict
 from .evaluator import Evaluator
 from .generator import Generator
@@ -17,8 +17,9 @@ class RandomGenerator(Generator):
                  non_agreement_cost: float,
                  kb: List[str],
                  acceptability_threshold: float,
+                 max_rounds: int,
                  max_generation_tries: int = 500):
-
+        super().__init__()
         self.utilities = utilities
         self.kb = kb
         self.neg_space = {issue: list(map(str, values))
@@ -26,6 +27,7 @@ class RandomGenerator(Generator):
         self.non_agreement_cost = non_agreement_cost
         self.evaluator = evaluator
         self.init_uniform_strategy(neg_space)
+        self.max_rounds = max_rounds
         self.max_generation_tries = max_generation_tries
         self.acceptability_threshold = acceptability_threshold
 
@@ -62,3 +64,6 @@ class RandomGenerator(Generator):
             raise StopIteration()
 
         return return_offer
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        return None

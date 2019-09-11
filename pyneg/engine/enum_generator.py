@@ -1,12 +1,12 @@
 from copy import deepcopy
 from queue import PriorityQueue
-from typing import List, Tuple, cast, Dict
+from typing import List, Tuple, cast, Dict, Set, Optional
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import NegSpace, NestedDict, AtomicDict
 from pyneg.utils import nested_dict_from_atom_dict
-from .evaluator import Evaluator
-from .generator import Generator
+from pyneg.engine.evaluator import Evaluator
+from pyneg.engine.generator import Generator
 
 
 class EnumGenerator(Generator):
@@ -14,12 +14,16 @@ class EnumGenerator(Generator):
                  utilities: AtomicDict,
                  evaluator: Evaluator,
                  acceptability_threshold: float) -> None:
+        super().__init__()
+        self.sorted_utils: Dict[str, List[str]] = {}
         self.neg_space = {issue: list(map(str, values))
                           for issue, values in neg_space.items()}
         self.utilities = utilities
         self.evaluator = evaluator
         self.acceptability_threshold = acceptability_threshold
         self.assignement_frontier: PriorityQueue = PriorityQueue()
+        self.offer_counter: int = 0
+        self.generated_offers: Set[Offer] = set()
         self.init_generator()
         # self.last_offer_util = 2**32
 
@@ -29,6 +33,14 @@ class EnumGenerator(Generator):
             **new_utils
         }
 
+        self.evaluator.add_utilities(new_utils)
+        self.init_generator()
+        return True
+
+    def set_utilities(self, new_utils: AtomicDict) -> bool:
+        self.utilities = new_utils
+        self.evaluator.set_utilities(new_utils)
+        self.init_generator()
         return True
 
     def init_generator(self) -> None:
@@ -42,10 +54,9 @@ class EnumGenerator(Generator):
                 if value not in nested_utils[issue].keys():
                     nested_utils[issue][value] = 0.0
 
-
-
         # function to sort a list of tuples according to the second tuple field
         # in decreasing order so we can quickly identify candidates for the next offer
+
         def sorter(issue: str) -> List[Tuple[str, int]]:
             return cast(List[Tuple[str, int]],
                         sorted(
@@ -53,10 +64,11 @@ class EnumGenerator(Generator):
                             reverse=True,
                             key=lambda tup: tup[1]))
 
-        # Create dictionary of lists of value assignements by issue sorted
+        # Create dictionary of lists of value assignments by issue sorted
         # by utility in dec order
         # example: {"boolean_True":10,"boolean_False":100} => {"boolean": ["False","True"]}
-        self.sorted_utils: Dict[str, List[str]] = {issue:
+
+        self.sorted_utils = {issue:
             list(
                 map(lambda tup: tup[0], sorter(issue)))
             for issue in nested_utils.keys()}
@@ -85,7 +97,7 @@ class EnumGenerator(Generator):
         util = self.evaluator.calc_offer_utility(offer)
         return util >= self.acceptability_threshold
 
-    def expland_assignment(self, sorted_offer_indices):
+    def expand_assignment(self, sorted_offer_indices):
         for issue in self.neg_space.keys():
             copied_offer_indices = deepcopy(sorted_offer_indices)
             if copied_offer_indices[issue] + 1 >= len(self.sorted_utils[issue]):
@@ -106,7 +118,9 @@ class EnumGenerator(Generator):
 
         self.offer_counter += 1
         negative_util, offer_counter, indices = self.assignement_frontier.get()
-        self.expland_assignment(indices)
+        if -negative_util <= self.acceptability_threshold:
+            raise StopIteration()
+        self.expand_assignment(indices)
         return self.offer_from_index_dict(indices)
 
     def offer_from_index_dict(self, index_dict: Dict[str, int]) -> Offer:
@@ -121,3 +135,6 @@ class EnumGenerator(Generator):
                     offer[issue][value] = 0
 
         return Offer(offer)
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        return None

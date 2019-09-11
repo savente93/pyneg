@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from pyneg.comms import Offer
+from pyneg.agent import AgentFactory
 
 class TestAgentFactory(TestCase):
 
@@ -53,8 +55,3 @@ class TestAgentFactory(TestCase):
         self.violating_offer["integer"]["2"] = 1.0
         self.violating_offer['float']["0.1"] = 1.0
 
-        self.violating_offer = Offer(self.violating_offer)
-
-        self.generator = ConstrainedDTPGenerator(self.neg_space, self.utilities,
-                                                 self.non_agreement_cost, self.reservation_value,
-                                                 self.kb, None)
