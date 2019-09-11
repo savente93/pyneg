@@ -152,7 +152,7 @@ class Agent(AbstractAgent):
             return self._terminate(False)
 
     def _accepts(self, offer: Offer) -> bool:
-        return self._engine.calc_offer_utility(offer) >= self._absolute_reservation_value and self._constraints_satisfiable
+        return self._engine.accepts(offer)
 
     def add_utilities(self, new_utils: Dict[str, float]) -> bool:
         return self._engine.add_utilities(new_utils)

@@ -36,12 +36,16 @@ class AbstractEngine:
     def get_constraints(self):
         raise NotImplementedError()
 
+    def accepts(self, offer: Offer) -> bool:
+        raise NotImplementedError()
+
 
 class Engine(AbstractEngine):
     def __init__(self, generator: Generator, evaluator: Evaluator):
         super().__init__()
         self.generator: Generator = generator
         self.evaluator: Evaluator = evaluator
+        self._accepts_all = False
 
     def generate_offer(self) -> Offer:
         return self.generator.generate_offer()
@@ -71,3 +75,16 @@ class Engine(AbstractEngine):
 
     def get_constraints(self):
         return self.generator.get_constraints()
+
+    def satisfies_all_constraints(self, offer: Offer) -> bool:
+        for constr in self.generator.get_constraints():
+            if not constr.is_satisfied_by_offer(offer):
+                return False
+
+        return True
+
+    def accepts(self, offer: Offer) -> bool:
+        if self._accepts_all:
+            return True
+
+        return self.evaluator.calc_offer_utility(offer) >= self.generator.acceptability_threshold

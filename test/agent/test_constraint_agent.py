@@ -246,3 +246,20 @@ class TestConstraintAgent(TestCase):
         self.agent.receive_message(self.termination_message)
         self.agent._generate_next_message()
         self.assertFalse(self.agent.successful)
+
+    def test_rho_of_0_still_rejects_violating_offers(self):
+        self.utilities = {
+            "boolean_True": -10000,
+            "boolean_False": -10000,
+            "integer_9": -10000,
+            "integer_3": -10000,
+            "integer_1": -10000,
+            "integer_4": -10000,
+            "integer_5": -10000,
+            "'float_0.1'": -10000
+        }
+        self.agent = AgentFactory.make_constrained_linear_concession_agent(
+            "agent", self.neg_space, self.utilities, 0.0, self.non_agreement_cost,
+            self.uniform_weights, None, 20)
+        self.agent.add_constraint(self.integer_constraint)
+        self.assertFalse(self.agent._accepts(self.optimal_offer))

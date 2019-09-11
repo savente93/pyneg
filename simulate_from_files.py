@@ -117,9 +117,9 @@ def main():
     n_scenarios = 10
     shape = (8, 7)
     rho_sample_rate = 10
-    scenario_dir = path.abspath("./src/scenarios")
-    configs_file = path.abspath("./results/rand_configs.csv")
-    results_file = path.abspath("./results/rand_results.csv")
+    scenario_dir = path.abspath("./results/outliers/")
+    configs_file = path.abspath("./results/outlier_configs.csv")
+    results_file = path.abspath("./results/outlier_results.csv")
     strats = ["rand", "enum", "constr_rand", "constr_enum"]
     setup_random_scenarios(scenario_dir, shape, n_scenarios)
     ids = map(lambda x: path.abspath(

@@ -10,6 +10,8 @@ from pyneg.engine import ConstrainedRandomGenerator
 from pyneg.types import NegSpace
 from pyneg.utils import nested_dict_from_atom_dict
 from types import MethodType
+from numpy import isclose
+
 STANDARD_MAX_ROUNDS = 200
 
 
@@ -47,6 +49,9 @@ class AgentFactory:
         generator: Generator = EnumGenerator(neg_space, utilities, evaluator, reservation_value)
 
         engine: Engine = Engine(generator, evaluator)
+        if isclose(reservation_value, 0):
+            engine._accepts_all = True
+
         agent._engine = engine
 
         return agent
@@ -86,6 +91,9 @@ class AgentFactory:
             max_rounds)
 
         engine = Engine(generator, evaluator)
+        if isclose(reservation_value, 0):
+            engine._accepts_all = True
+
         agent._engine = engine
 
         return agent
@@ -118,6 +126,8 @@ class AgentFactory:
             neg_space, utilities, evaluator, reservation_value, [], reservation_value,max_rounds)
 
         engine = Engine(generator, evaluator)
+        if isclose(reservation_value, 0):
+            engine._accepts_all = True
         agent._engine = engine
 
         return agent
@@ -155,6 +165,8 @@ class AgentFactory:
             constr_value, initial_constraints, auto_constraints=auto_constraints)
 
         engine: Engine = Engine(generator, evaluator)
+        if isclose(reservation_value, 0):
+            engine._accepts_all = True
         agent._engine = engine
 
         return agent
@@ -186,6 +198,7 @@ class AgentFactory:
         if not max_rounds:
             max_rounds = STANDARD_MAX_ROUNDS
 
+
         estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
         reservation_value = reservation_value * estimate_max_utility
         constr_value = -2 * estimate_max_utility
@@ -197,6 +210,8 @@ class AgentFactory:
             max_rounds, constr_value, initial_constraints, auto_constraints=auto_constraints)
 
         engine: Engine = Engine(generator, evaluator)
+        if isclose(reservation_value, 0):
+            engine._accepts_all = True
         agent._engine = engine
 
         return agent

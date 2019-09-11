@@ -12,7 +12,10 @@ class Generator:
     '''
 
     def __init__(self):
-        pass
+        self.utilities = {}
+        self.kb = []
+        self.neg_space = {}
+        self.acceptability_threshold = 0.0
 
     def generate_offer(self) -> Offer:
         raise NotImplementedError()
