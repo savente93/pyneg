@@ -56,7 +56,7 @@ class Offer:
         return self.values_by_issue[key]
 
     def is_assigned(self, issue: str, value: str) -> bool:
-        return isclose(self.values_by_issue[issue][value], 1)
+        return cast(bool, isclose(self.values_by_issue[issue][value], 1))
 
     def get_issues(self):
         return self.values_by_issue.keys()
@@ -79,14 +79,15 @@ class Offer:
         return True
 
     def __repr__(self) -> str:
-        return_string = "\n"
-        for issue in self.values_by_issue.keys():
-            return_string += " " * self.indent_level * 4 + '{}: '.format(issue)
-            for key in self.values_by_issue[issue].keys():
-                if self.values_by_issue[issue][key] == 1:
-                    return_string += "{}\n".format(key)
-                    break
-        return return_string[:-1]  # remove trailing newline
+        return self.get_sparse_str_repr()
+        # return_string = "\n"
+        # for issue in self.values_by_issue.keys():
+        #     return_string += " " * self.indent_level * 4 + '{}: '.format(issue)
+        #     for key in self.values_by_issue[issue].keys():
+        #         if self.values_by_issue[issue][key] == 1:
+        #             return_string += "{}\n".format(key)
+        #             break
+        # return return_string[:-1]  # remove trailing newline
 
     def get_problog_dists(self) -> str:
         return_string = ""
@@ -106,8 +107,8 @@ class Offer:
         return frozenset({(issue, self.get_chosen_value(issue)) for issue in self.values_by_issue.keys()})
 
     def get_sparse_str_repr(self):
-        return ",".join([atom_from_issue_value(issue, self.get_chosen_value(issue))
-                         for issue in self.values_by_issue.keys()]) + "."
+        return "[" + ", ".join(["{}->{}".format(issue, self.get_chosen_value(issue))
+                         for issue in self.values_by_issue.keys()]) + "]"
 
     def __hash__(self):
         return hash(self.get_sparse_repr())

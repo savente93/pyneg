@@ -9,33 +9,33 @@ class TestMessage(unittest.TestCase):
     def setUp(self):
         self.generic_offer = Offer({"first": {"True": 1}, "second": {
             "False": 1}, "third": {"-3": 1}, "forth": {"1.8": 1}})
-        self.empty_message = Message("A", "B", MessageType.empty, None)
+        self.empty_message = Message("A", "B", MessageType.EMPTY, None)
         self.accept_message = Message(
-            "A", "B", MessageType.accept, self.generic_offer)
+            "A", "B", MessageType.ACCEPT, self.generic_offer)
         self.termination_message = Message(
-            "A", "B", MessageType.terminate, None)
+            "A", "B", MessageType.EXIT, None)
         self.constraint_message = Message(
-            "A", "B", MessageType.offer, self.generic_offer, AtomicConstraint("dummy1", "True"))
+            "A", "B", MessageType.OFFER, self.generic_offer, AtomicConstraint("dummy1", "True"))
         self.offer_message = Message(
-            "A", "B", MessageType.offer, self.generic_offer)
-        self.offer_string = "    first: True\n    second: False\n    third: -3\n    forth: 1.8"
-        self.offer_message_string = "Message(A, B, offer, \n{offer}\n)".format(
+            "A", "B", MessageType.OFFER, self.generic_offer)
+        self.offer_string = "[first->True, second->False, third->-3, forth->1.8]"
+        self.offer_message_string = "(A=>B;OFFER;{offer})".format(
             offer=self.offer_string)
-        self.empty_message_string = "Message(A, B, empty)".format(
+        self.empty_message_string = "(A=>B;EMPTY)".format(
             offer=self.offer_string)
-        self.accept_message_string = "Message(A, B, accept, \n{}\n)".format(
+        self.accept_message_string = "(A=>B;ACCEPT;{})".format(
             self.offer_string)
-        self.constraint_message_string = "Message(A, B, offer, \n{offer}, \n{constraint}\n)".format(
+        self.constraint_message_string = "(A=>B;OFFER;{offer};{constraint})".format(
             offer=self.offer_string,
             constraint=AtomicConstraint("dummy1", "True"))
-        self.termination_message_string = "Message(A, B, terminate)"
+        self.termination_message_string = "(A=>B;EXIT)"
 
     def tearDown(self):
         pass
 
     def test_empty_message_cant_have_content(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.empty, "content")  # type: ignore
+            Message("A", "B", MessageType.EMPTY, "content")  # type: ignore
 
     def test_invalid_message_kind_raises_value_error(self):
         with self.assertRaises(ValueError):
@@ -43,7 +43,7 @@ class TestMessage(unittest.TestCase):
 
     def test_constraint_message_with_wrong_data_type_raises_value_error(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.offer, "wrong data type")  # type: ignore
+            Message("A", "B", MessageType.OFFER, "wrong data type")  # type: ignore
 
     def test_get_constraint_from_non_constraint_message_raises_error(self):
         with self.assertRaises(ValueError):
@@ -147,9 +147,9 @@ class TestMessage(unittest.TestCase):
 
     def test_non_dict_offer_raises_error(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.offer, Message(
+            Message("A", "B", MessageType.OFFER, Message(
                 "A", "B", "offer", {"dummy1": {"True": 1}}))  # type: ignore
 
     def test_non_empty_message_without_offer_raises_error(self):
         with self.assertRaises(ValueError):
-            Message("A", "B", MessageType.offer, None)
+            Message("A", "B", MessageType.OFFER, None)

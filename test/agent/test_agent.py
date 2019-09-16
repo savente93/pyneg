@@ -66,11 +66,11 @@ class TestAgent(TestCase):
         self.violating_offer = Offer(self.violating_offer)
 
         self.acceptance_message = Message(
-            self.agent_name, self.opponent_name, MessageType.accept, self.nested_test_offer)
+            self.agent_name, self.opponent_name, MessageType.ACCEPT, self.nested_test_offer)
         self.termination_message = Message(
-            self.agent_name, self.opponent_name, MessageType.terminate, None)
+            self.agent_name, self.opponent_name, MessageType.EXIT, None)
         self.offer_message = Message(
-            self.agent_name, self.opponent_name, MessageType.offer, self.nested_test_offer)
+            self.agent_name, self.opponent_name, MessageType.OFFER, self.nested_test_offer)
         self.uniform_weights = {
             issue: 1 / len(values) for issue, values in self.neg_space.items()}
 

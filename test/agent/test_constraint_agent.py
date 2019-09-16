@@ -71,14 +71,14 @@ class TestConstraintAgent(TestCase):
         self.boolean_constraint = AtomicConstraint("boolean", "True")
 
         self.acceptance_message = Message(
-            self.agent_name, self.opponent_name, MessageType.accept, self.nested_test_offer)
+            self.agent_name, self.opponent_name, MessageType.ACCEPT, self.nested_test_offer)
         self.termination_message = Message(
-            self.agent_name, self.opponent_name, MessageType.terminate, None)
+            self.agent_name, self.opponent_name, MessageType.EXIT, None)
         self.offer_message = Message(
-            self.agent_name, self.opponent_name, MessageType.offer, self.nested_test_offer)
+            self.agent_name, self.opponent_name, MessageType.OFFER, self.nested_test_offer)
         self.constraint_message = Message(
-            self.agent_name, self.opponent_name, MessageType.offer, self.nested_test_offer, self.boolean_constraint)
-        self.violating_offer_message = Message( self.agent_name, self.opponent_name, MessageType.offer, self.violating_offer)
+            self.agent_name, self.opponent_name, MessageType.OFFER, self.nested_test_offer, self.boolean_constraint)
+        self.violating_offer_message = Message( self.agent_name, self.opponent_name, MessageType.OFFER, self.violating_offer)
 
         self.uniform_weights = {
             issue: 1 / len(values) for issue, values in self.neg_space.items()}
@@ -115,7 +115,7 @@ class TestConstraintAgent(TestCase):
 
         self.agent.receive_message(Message(self.opponent_name,
                                            self.agent_name,
-                                           MessageType.offer,
+                                           MessageType.OFFER,
                                            self.violating_offer))
 
         response = self.agent._generate_next_message()
@@ -153,7 +153,7 @@ class TestConstraintAgent(TestCase):
 
     def test_sending_message_increments_message_count(self):
         self.agent.send_message(self.opponent, Message(
-            self.opponent_name, self.agent_name, MessageType.empty, None))
+            self.opponent_name, self.agent_name, MessageType.EMPTY, None))
         self.assertEqual(len(self.agent._transcript), 1)
 
     def test_easy_negotiation_ends_successfully(self):
@@ -212,10 +212,10 @@ class TestConstraintAgent(TestCase):
         temp_uniform_weights = {
             issue: 1 / len(values) for issue, values in temp_neg_space.items()}
         self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", temp_neg_space, temp_agent_utils, self.reservation_value, self.non_agreement_cost,
+            "agent", temp_neg_space, temp_agent_utils, 0.2, self.non_agreement_cost,
             temp_uniform_weights, None, 20)
         self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", temp_neg_space, temp_opponent_utils, self.reservation_value, self.non_agreement_cost,
+            "opponent", temp_neg_space, temp_opponent_utils, 0.2, self.non_agreement_cost,
             temp_uniform_weights, None, 20)
         self.agent.negotiate(self.opponent)
         self.assertTrue(

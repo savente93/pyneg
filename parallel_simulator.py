@@ -1,9 +1,6 @@
 import multiprocessing as mp
-from itertools import product
 from os.path import exists
 from os import remove
-from time import sleep
-
 
 class ParallelSimulator:
     def __init__(self, results_file=None, parameter_space=None, max_queue_size=None, max_pool_size=None):

@@ -43,7 +43,7 @@ class Agent(AbstractAgent):
         if not self.negotiation_active or not self.opponent:
             return self.successful
 
-        next_message_to_send = Message(self.name, self.opponent.name, MessageType.empty, None)
+        next_message_to_send = Message(self.name, self.opponent.name, MessageType.EMPTY, None)
         while self.negotiation_active:
             try:
                 next_message_to_send = self._generate_next_message()
@@ -66,7 +66,7 @@ class Agent(AbstractAgent):
             self.negotiation_active = False
             return Message(self.name,
                            self.opponent.name,
-                           MessageType.accept,
+                           MessageType.ACCEPT,
                            self._transcript[-1].offer)
             # self.send_message(self.opponent, acceptance_message)
         else:
@@ -74,7 +74,7 @@ class Agent(AbstractAgent):
             self.negotiation_active = False
             return Message(self.name,
                            self.opponent.name,
-                           MessageType.terminate,
+                           MessageType.EXIT,
                            None)
             # self.send_message(self.opponent, termination_message)
 
@@ -95,7 +95,7 @@ class Agent(AbstractAgent):
         self._parse_response(msg)
 
     def _parse_response(self, response):
-        if response.type_ == MessageType.empty:
+        if response.type_ == MessageType.EMPTY:
             return
 
         if response.is_acceptance():
@@ -135,7 +135,7 @@ class Agent(AbstractAgent):
         # this check is only for the type lining
         # we should never get here if we don't have an opponent
         if not self.opponent or not self.negotiation_active:
-            return Message(self.name, self.opponent.name, MessageType.empty, None)
+            return Message(self.name, self.opponent.name, MessageType.EMPTY, None)
 
         if self._last_offer_received_was_acceptable:
             return self._terminate(True)
@@ -145,7 +145,7 @@ class Agent(AbstractAgent):
 
 
         try:
-            return Message(self.name, self.opponent.name, MessageType.offer, self._engine.generate_offer(),
+            return Message(self.name, self.opponent.name, MessageType.OFFER, self._engine.generate_offer(),
                        self._next_constraint)
         except StopIteration:
             # weren't able to come up with acceptable offer so terminate anyway

@@ -41,3 +41,7 @@ class TestOffer(TestCase):
     def test_non_binary_offer_is_rejected(self):
         with self.assertRaises(ValueError):
             Offer(self.uniform_strat_dict)
+
+    def test_repr(self):
+        print(Offer(self.nested_test_offer).get_sparse_str_repr())
+

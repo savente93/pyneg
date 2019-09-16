@@ -10,3 +10,5 @@ coverage_report
 *.pytest_cache
 .venv
 .idea
+results/outliers
+*.npy

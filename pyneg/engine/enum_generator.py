@@ -7,7 +7,7 @@ from pyneg.types import NegSpace, NestedDict, AtomicDict
 from pyneg.utils import nested_dict_from_atom_dict
 from pyneg.engine.evaluator import Evaluator
 from pyneg.engine.generator import Generator
-
+from uuid import uuid4
 
 class EnumGenerator(Generator):
     def __init__(self, neg_space: NegSpace,
@@ -108,7 +108,7 @@ class EnumGenerator(Generator):
             if util >= self.acceptability_threshold and self.offer_from_index_dict(
                     copied_offer_indices) not in self.generated_offers:
                 self.assignement_frontier.put(
-                    (-util, self.offer_counter, copied_offer_indices))
+                    (-util, str(uuid4())[-8:], copied_offer_indices))
                 self.generated_offers.add(
                     self.offer_from_index_dict(copied_offer_indices))
 
@@ -117,7 +117,7 @@ class EnumGenerator(Generator):
             raise StopIteration()
 
         self.offer_counter += 1
-        negative_util, offer_counter, indices = self.assignement_frontier.get()
+        negative_util, uuid, indices = self.assignement_frontier.get()
         if -negative_util <= self.acceptability_threshold:
             raise StopIteration()
         self.expand_assignment(indices)

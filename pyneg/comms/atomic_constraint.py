@@ -38,4 +38,4 @@ class AtomicConstraint():
         return hash((self.issue, self.value))
 
     def __repr__(self) -> str:
-        return "AtomicConstraint({issue},{value})".format(issue=self.issue, value=self.value)
+        return "{issue}!={value}".format(issue=self.issue, value=self.value)
