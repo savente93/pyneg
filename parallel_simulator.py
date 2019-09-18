@@ -58,7 +58,7 @@ def do_work(arg, q):
 
 
 def record_results_as_csv(q, file, columns, chunksize=5):
-    from pandas import DataFrame, Series
+    from pandas import DataFrame, Series # type
     counter = 0
     results = DataFrame(columns=columns)
     while True:
