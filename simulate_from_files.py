@@ -36,7 +36,7 @@ def explore_scenarios(row, q):
     else:
         p_ap_b = p_a*p_b
 
-    if p_ap_b <= 0.5:
+    if p_ap_b <= 0.9:
         q.put({
             "id": _id,
             "constr_count": cntr,
@@ -55,9 +55,9 @@ def explore_scenarios(row, q):
 def simulate_negotiations(config, q):
     from os.path import join, abspath
     import numpy as np  # type: ignore
-    cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat, _id = config.values()
-    a = np.load(abspath(join("results", "outliers", _id, "a.npy")))
-    b = np.load(abspath(join("results", "outliers", _id, "b.npy")))
+    id_, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values()
+    a = np.load(abspath(join("results", "outliers", id_, "a.npy")))
+    b = np.load(abspath(join("results", "outliers", id_, "b.npy")))
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(a, b)
     non_agreement_cost = -(2 ** 24)  # just a really big number
     try:
@@ -99,7 +99,7 @@ def simulate_negotiations(config, q):
         util_a = non_agreement_cost
         util_b = non_agreement_cost
 
-    q.put({"id": _id,
+    q.put({"id": id_,
            "constr_count": cntr,
            "rho_a": rho_a,
            "rho_b": rho_b,
