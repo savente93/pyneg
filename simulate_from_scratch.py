@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd
-from os import remove
-from os.path import exists
-import multiprocessing as mp
 from itertools import product
 from functools import partial
 from notify import try_except_notify
-from rand_agent import RandAgent
 from parallel_simulator import ParallelSimulator, record_results_as_csv
 from utils import generate_lex_utility_matrices, count_acceptable_offers, neg_scenario_from_util_matrices
 
@@ -99,4 +95,4 @@ def main():
     simulator.shutdown()
 
 
-main(1, "tokens.pkl")
+main()

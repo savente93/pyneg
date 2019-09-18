@@ -8,3 +8,8 @@ coverage_report
 results
 .mypy_cache
 coverage.xml
+.pytest_cache
+.venv
+.idea
+*.npy
+
