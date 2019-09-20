@@ -8,7 +8,7 @@ from pyneg.engine import Evaluator, LinearEvaluator, ProblogEvaluator
 from pyneg.engine import Generator, EnumGenerator, Engine, RandomGenerator
 from pyneg.engine import ConstrainedRandomGenerator
 from pyneg.types import NegSpace
-from pyneg.utils import nested_dict_from_atom_dict
+from pyneg.utils import nested_dict_from_atom_dict, issue_value_tuple_from_atom
 from types import MethodType
 from numpy import isclose
 
@@ -42,7 +42,13 @@ class AgentFactory:
         if not issue_weights:
             issue_weights = {issue: 1 / len(neg_space[issue]) for issue in neg_space.keys()}
 
-        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        weight_adjusted_utilities = {}
+        for atom, util in utilities.items():
+            issue, value = issue_value_tuple_from_atom(atom)
+            weight_adjusted_utilities[atom] = util * issue_weights[issue]
+
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(weight_adjusted_utilities)
         reservation_value = reservation_value * estimate_max_utility
         agent._absolute_reservation_value = reservation_value
         evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
@@ -76,7 +82,12 @@ class AgentFactory:
         if not max_rounds:
             max_rounds = STANDARD_MAX_ROUNDS
 
-        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        weight_adjusted_utilities = {}
+        for atom, util in utilities.items():
+            issue, value = issue_value_tuple_from_atom(atom)
+            weight_adjusted_utilities[atom] = util * issue_weights[issue]
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(weight_adjusted_utilities)
         reservation_value = reservation_value * estimate_max_utility
 
         agent._absolute_reservation_value = reservation_value
@@ -154,7 +165,12 @@ class AgentFactory:
         if not initial_constraints:
             initial_constraints = set()
 
-        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+        weight_adjusted_utilities = {}
+        for atom, util in utilities.items():
+            issue, value = issue_value_tuple_from_atom(atom)
+            weight_adjusted_utilities[atom] = util * issue_weights[issue]
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(weight_adjusted_utilities)
         reservation_value = reservation_value * estimate_max_utility
         constr_value = -2 * estimate_max_utility
         agent._absolute_reservation_value = reservation_value
@@ -184,7 +200,7 @@ class AgentFactory:
                                              auto_constraints=True) -> ConstrainedAgent:
         agent = ConstrainedAgent()
         agent.name = name
-        agent._type = "Constrained Linear Concession"
+        agent._type = "Constrained Linear Random"
         agent._neg_space = neg_space
 
         if not issue_weights:
@@ -198,8 +214,13 @@ class AgentFactory:
         if not max_rounds:
             max_rounds = STANDARD_MAX_ROUNDS
 
+        weight_adjusted_utilities = {}
+        for atom, util in utilities.items():
+            issue, value = issue_value_tuple_from_atom(atom)
+            weight_adjusted_utilities[atom] = util * issue_weights[issue]
 
-        estimate_max_utility = AgentFactory.estimate_max_linear_utility(utilities)
+
+        estimate_max_utility = AgentFactory.estimate_max_linear_utility(weight_adjusted_utilities)
         reservation_value = reservation_value * estimate_max_utility
         constr_value = -2 * estimate_max_utility
         agent._absolute_reservation_value = reservation_value

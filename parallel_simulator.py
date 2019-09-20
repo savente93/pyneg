@@ -2,28 +2,16 @@ import multiprocessing as mp
 from os.path import exists
 from os import remove
 
-# TODO fail if can't find or create results file
-
 class ParallelSimulator:
-    def __init__(self, results_file=None, param_space=None, max_queue_size=None, max_pool_size=None, param_size=None):
+    def __init__(self, results_file=None, parameter_space=None, max_queue_size=None, max_pool_size=None):
         self.results_file = results_file
-        self.param_space = param_space
+        self.parameter_space = parameter_space
         self.manager = mp.Manager()
         self.max_queue_size = max_queue_size
         self.max_pool_size = max_pool_size
-        if param_size:
-            self.param_size = param_size
-        else:
-            self.param_size = len(param_space)
 
-
-    def set_parameter_space(self, param_space, param_size=None):
-        self.param_space = param_space
-        if param_size:
-            self.param_size = param_size
-        else:
-            self.param_size = len(param_space)
-
+    def set_parameter_space(self, param_space):
+        self.parameter_space = param_space
 
     def set_results_file(self, results_file):
         self.results_file = results_file
@@ -36,8 +24,8 @@ class ParallelSimulator:
         self.work_pool.join()
 
     def start_work(self, work_function, record_function):
-        if not self.param_space:
-            raise RuntimeError("cannot run without param_space")
+        if not self.parameter_space:
+            raise RuntimeError("cannot run without parameter_space")
 
         if not self.results_file:
             self.set_results_file("results/results.csv")
@@ -62,7 +50,7 @@ class ParallelSimulator:
 
         print("Starting workers")
         self.work_pool.starmap(
-            work_function, [(x, self.output_queue) for x in self.param_space])
+            work_function, [(x, self.output_queue) for x in self.parameter_space])
 
 
 def do_work(arg, q):
