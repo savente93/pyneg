@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.7"
+
+install:
+  - mkdir models
+  - pip install --upgrade --no-binary pysdd pysdd
+  - pip install -r requirements.txt
+
+script: python -m unittest discover test/

@@ -19,7 +19,7 @@ def try_except_notify(func):
             try:
                 results = func(*args, **kwargs)
                 send_message("Script executed sucessfully!")
-                break
+                return results
             except Exception:
                 if (i + 1) == num_tries:
                     send_message("Script crached with following exception: \n{}".format(
@@ -27,7 +27,6 @@ def try_except_notify(func):
                     raise
                 else:
                     pass
-        return results
 
     return try_except_function
 
