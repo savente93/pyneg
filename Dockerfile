@@ -16,6 +16,6 @@ RUN	cp -r /src/libsdd-2.0/ /src/PySDD/pysdd/lib/libsdd-2.0  && \
 	cp -r /src/sdd-2.0/ /src/PySDD/pysdd/lib/sdd-2.0  && \
 	cd PySDD && python setup.py install
 
-RUN python -m pip install pytest pytest-xdist pytest-cov mypy requests coverage
+RUN python -m pip install pytest pytest-xdist pytest-cov mypy requests coverage pandas
 
 COPY .coveragerc pytest.ini /src/

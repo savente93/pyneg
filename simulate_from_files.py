@@ -123,7 +123,6 @@ def simulate_negotiations(config, q):
            'opponent_utility': util_b,
            'transcript': "\n".join(map(str,agent_a._transcript))})
 
-@try_except_notify
 def main():
     n_scenarios = 10
     shape = (3, 3)

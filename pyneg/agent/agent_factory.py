@@ -216,7 +216,7 @@ class AgentFactory:
 
         weight_adjusted_utilities = {}
         for atom, util in utilities.items():
-            issue, value = issue_value_tuple_from_atom(atom)
+            issue, _ = issue_value_tuple_from_atom(atom)
             weight_adjusted_utilities[atom] = util * issue_weights[issue]
 
 
