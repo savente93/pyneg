@@ -4,6 +4,7 @@ from pyneg.comms import Offer, AtomicConstraint
 from pyneg.agent import *
 from pyneg.utils import generate_random_scenario, neg_scenario_from_util_matrices
 
+
 class TestAgentFactory(TestCase):
 
     def setUp(self):
@@ -61,6 +62,7 @@ class TestAgentFactory(TestCase):
                                                                         self.non_agreement_cost, set(), None)
         self.assertTrue(agent_a._absolute_reservation_value <= agent_a._engine.calc_offer_utility(self.optimal_offer))
 
+<<<<<<< HEAD
     def test_reservation_value_is_estimated_correctly_for_linear_utility_function(self):
         self.utilities = {
             "boolean_True": 100,
@@ -123,3 +125,12 @@ class TestAgentFactory(TestCase):
         self.assertTrue(constr_a._engine.satisfies_all_constraints(last_message.offer))
         self.assertTrue(constr_b._engine.satisfies_all_constraints(last_message.offer))
 
+=======
+
+    def test_factory_correctly_determines_constraints(self):
+        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+                                                                        self.non_agreement_cost, None, set())
+
+        self.assertTrue(AtomicConstraint("integer","5") in agent_a.get_constraints())
+
+>>>>>>> add constraint test form different branch
