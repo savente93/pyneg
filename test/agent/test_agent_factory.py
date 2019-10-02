@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.agent import AgentFactory
 
 class TestAgentFactory(TestCase):
@@ -18,7 +18,7 @@ class TestAgentFactory(TestCase):
             "integer_3": 10,
             "integer_1": 0.1,
             "integer_4": -10,
-            "integer_5": -100,
+            "integer_5": -10000,
             "'float_0.1'": 1
         }
 
@@ -59,4 +59,11 @@ class TestAgentFactory(TestCase):
         agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
                                                                             self.non_agreement_cost, None, set())
         self.assertTrue(agent_a._absolute_reservation_value <= agent_a._engine.calc_offer_utility(self.optimal_offer))
+
+
+    def test_factory_correctly_determines_constraints(self):
+        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+                                                                        self.non_agreement_cost, None, set())
+
+        self.assertTrue(AtomicConstraint("integer","5") in agent_a.get_constraints())
 
