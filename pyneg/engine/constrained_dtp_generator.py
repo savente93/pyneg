@@ -34,7 +34,8 @@ class ConstrainedDTPGenerator(DTPGenerator):
         super().__init__(neg_space, utilities, non_agreement_cost, acceptance_threshold, kb)
         self.index_max_utilities()
         self.constraints_satisfiable = True
-        self.add_constraints(self.discover_constraints())
+        if self.auto_constraints:
+            self.add_constraints(self.discover_constraints())
 
     def reset_generator(self):
         super().reset_generator()

@@ -29,11 +29,13 @@ class ConstrainedEnumGenerator(EnumGenerator):
         self.auto_constraints = auto_constraints
         self.max_utility_by_issue: Dict[str, int] = {}
         self.index_max_utilities()
+        if self.auto_constraints:
+            self.add_constraints(self.discover_constraints())
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
-        self._add_utilities({atom_from_issue_value(constraint.issue,constraint.value): -2*self.max_util})
+        self._add_utilities({atom_from_issue_value(constraint.issue,constraint.value): self.constr_value})
         self.index_max_utilities()
         self.init_generator()
         return self.constraints_satisfiable
@@ -41,7 +43,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def add_constraints(self, constraints: Set[AtomicConstraint]) -> bool:
         self.constraints.update(constraints)
         self.evaluator.add_constraints(constraints)
-        self._add_utilities({atom_from_issue_value(constr.issue,constr.value): -2*self.max_util for constr in constraints})
+        self._add_utilities({atom_from_issue_value(constr.issue,constr.value): self.constr_value for constr in constraints})
         self.index_max_utilities()
         self.init_generator()
         return self.constraints_satisfiable

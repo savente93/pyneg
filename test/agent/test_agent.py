@@ -89,6 +89,18 @@ class TestAgent(TestCase):
         self.assertTrue(self.opponent.negotiation_active)
         self.assertTrue(self.opponent.opponent == self.agent)
 
+    def test_both_agents_reject_cfn_if_issues_are_unequal(self):
+        neg_space = {
+            "booleasdfaan": [True, False],
+            "inasdfasdfteger": list(range(10)),
+            "asdfasdf": [float("{0:.2f}".format(0.1 * i)) for i in range(10)]
+        }
+        self.agent = AgentFactory.make_linear_concession_agent(
+            "agent", neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
+            self.uniform_weights)
+        self.assertFalse(self.agent._call_for_negotiation(self.opponent, self.agent._neg_space))
+        self.assertFalse(self.agent.negotiation_active)
+
     def test_counts_messages_correctly_in_successful_negotiation(self):
         self.agent.negotiate(self.opponent)
         # one offer and one acceptance message

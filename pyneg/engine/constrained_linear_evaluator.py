@@ -17,6 +17,8 @@ class ConstrainedLinearEvaluator(LinearEvaluator):
         if initial_constraints:
             self.constraints.update(initial_constraints)
 
+
+
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         return True
