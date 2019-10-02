@@ -12,6 +12,8 @@ from pyneg.types import MessageType
 from pyneg.utils import neg_scenario_from_util_matrices, setup_random_scenarios
 
 import numpy as np
+from multiprocessing import cpu_count
+from math import ceil
 
 
 
@@ -20,6 +22,10 @@ def explore_scenarios(row, q):
     from numpy import load, isclose
     from pyneg.utils import count_acceptable_offers
     _id, cntr, rho_a, rho_b, strat = row
+
+    if isclose(rho_a,0) or isclose(rho_b,0):
+        return
+
     a = load(abspath(join(_id, str(cntr), "a.npy")))
     b = load(abspath(join(_id, str(cntr), "b.npy")))
 
@@ -36,8 +42,8 @@ def explore_scenarios(row, q):
     else:
         p_ap_b = p_a*p_b
 
-    if p_ap_b <= 0.9:
-        q.put({
+
+    q.put({
             "id": _id,
             "constr_count": cntr,
             "rho_a": rho_a,
@@ -55,13 +61,14 @@ def explore_scenarios(row, q):
 def simulate_negotiations(config, q):
     from os.path import join, abspath
     import numpy as np  # type: ignore
-    id_, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values()
-    a = np.load(abspath(join("results", "outliers", id_, "a.npy")))
-    b = np.load(abspath(join("results", "outliers", id_, "b.npy")))
+    _id, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values()
+    a = np.load(abspath(join("results",_id, str(cntr), "a.npy")))
+    b = np.load(abspath(join("results",_id, str(cntr), "b.npy")))
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(a, b)
     non_agreement_cost = -(2 ** 24)  # just a really big number
     try:
         if strat == "Random":
+
             agent_a = AgentFactory.make_linear_random_agent("A", issues, utils_a, rho_a, non_agreement_cost)
             agent_b = AgentFactory.make_linear_random_agent("B", issues, utils_b, rho_b, non_agreement_cost)
         elif strat == "Enumeration":
@@ -74,7 +81,7 @@ def simulate_negotiations(config, q):
             agent_b = AgentFactory.make_constrained_linear_random_agent("B", issues, utils_b, rho_b, non_agreement_cost,
                                                                         [])
         elif strat == "Constrained Enumeration":
-
+            print("starting constrained random simulation")
             agent_a = AgentFactory.make_constrained_linear_concession_agent("A", issues, utils_a, rho_a,
                                                                             non_agreement_cost, None, set())
             agent_b = AgentFactory.make_constrained_linear_concession_agent("B", issues, utils_b, rho_b,
@@ -99,7 +106,7 @@ def simulate_negotiations(config, q):
         util_a = non_agreement_cost
         util_b = non_agreement_cost
 
-    q.put({"id": id_,
+    q.put({"id": _id,
            "constr_count": cntr,
            "rho_a": rho_a,
            "rho_b": rho_b,
@@ -119,12 +126,12 @@ def simulate_negotiations(config, q):
 @try_except_notify
 def main():
     n_scenarios = 10
-    shape = (5, 5)
+    shape = (3, 3)
     rho_sample_rate = 10
-    scenario_dir = path.abspath("./results/test/")
-    configs_file = path.abspath("./results/test/configs.csv")
-    results_file = path.abspath("./results/test/results.csv")
-    strats = ["Random", "Enumeration", "Constrained Random", "Constrained Enumeration"]
+    scenario_dir = path.abspath("./results/")
+    configs_file = path.abspath("./results/configs.csv")
+    results_file = path.abspath("./results/results.csv")
+    strats = reversed(["Random", "Enumeration", "Constrained Random", "Constrained Enumeration"])
     setup_random_scenarios(scenario_dir, shape, n_scenarios)
     ids = map(lambda x: path.abspath(
         path.join(scenario_dir, x)), listdir(scenario_dir))
@@ -141,12 +148,12 @@ def main():
           rho_b_range,
           strats])
 
-    # First explore the scenarios and calculate the probabilities
-    simulator = ParallelSimulator()
+    #First explore the scenarios and calculate the probabilities
+    simulator = ParallelSimulator(max_pool_size=cpu_count() - ceil(cpu_count()/10)) # leave some cpu for other things
     simulator.set_results_file(configs_file)
     simulator.set_parameter_space(param_space)
     simulator.start_work(explore_scenarios, record_func)
-    # simulator.shutdown()
+    #simulator.shutdown()
 
     csv_columns = ["id", "constr_count", "rho_a", "rho_b",
                    "a_accepts", "b_accepts", "both_accept",

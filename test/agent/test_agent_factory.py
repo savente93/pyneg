@@ -55,7 +55,6 @@ class TestAgentFactory(TestCase):
         self.violating_offer["integer"]["2"] = 1.0
         self.violating_offer['float']["0.1"] = 1.0
 
-
     def test_reservation_value_is_lower_than_estimated_max_utility(self):
         agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
                                                                             self.non_agreement_cost, None, set())

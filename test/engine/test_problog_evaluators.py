@@ -81,8 +81,8 @@ class TestProblogEvaluator(TestCase):
     # see https://dtai.cs.kuleuven.be/problog/tutorial/dtproblog/01_umbrella.html
     def test_umbrella_scenario(self):
         umbrella_neg_space = {
-            "umbrella": [True, False],
-            "raincoat": [True, False],
+            "umbrella": ["True", "False"],
+            "raincoat": ["True", "False"],
         }
         umbrella_utilities = {
             "broken_umbrella": -40,

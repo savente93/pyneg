@@ -5,10 +5,11 @@ __pycache__
 coverage_report
 .vscode
 .ipynb_checkpoints
+results
 .mypy_cache
+coverage.xml
 .pytest_cache
-*.pytest_cache
 .venv
 .idea
-results/outliers
 *.npy
+venv
