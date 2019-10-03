@@ -4,13 +4,12 @@ from typing import List, Dict
 from typing import Tuple
 
 import numpy as np
-from os import path, mkdir
-from shutil import rmtree
 
 from uuid import uuid4
 from numpy.random import randint
 
 from pyneg.types import NestedDict
+from os import path, mkdir
 
 
 def nested_dict_from_atom_dict(atom_dict) -> NestedDict:
@@ -130,10 +129,7 @@ def neg_scenario_from_util_matrices(u_a, u_b):
 
     return issues, utils_a, utils_b
 
-def setup_random_scenarios(root_dir, shape, numb_of_scenarios):
-    if path.exists(root_dir):
-        rmtree(root_dir)
-    mkdir(root_dir)
+def setup_random_scenarios(root_dir, shape, numb_of_scenarios, numb_constraints):
 
     lower = 0
     upper = 100
@@ -147,7 +143,7 @@ def setup_random_scenarios(root_dir, shape, numb_of_scenarios):
         scenario_dir = path.join(root_dir, str(uuid))
         mkdir(scenario_dir)
 
-        for cntr in range(3*shape[0]):
+        for cntr in range(numb_constraints):
             instance_dir = path.join(scenario_dir, str(cntr))
             mkdir(instance_dir)
             constr_a, constr_b = insert_difficult_constraints(

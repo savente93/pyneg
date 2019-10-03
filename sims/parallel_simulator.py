@@ -52,6 +52,10 @@ class ParallelSimulator:
         self.work_pool.starmap(
             work_function, [(x, self.output_queue) for x in self.parameter_space])
 
+    def await_results(self):
+        self.work_pool.join()
+
+
 
 def do_work(arg, q):
     q.put("Processed parameter set {}".format(arg))
@@ -59,8 +63,14 @@ def do_work(arg, q):
 
 def record_results_as_csv(q, file, columns, chunksize=5):
     from pandas import DataFrame, Series # type
+    from os.path import exists
+    from os import remove
     counter = 0
     results = DataFrame(columns=columns)
+
+    if exists(file):
+        remove(file)
+
     while True:
         m = q.get()
         if m == 'kill':
@@ -72,3 +82,4 @@ def record_results_as_csv(q, file, columns, chunksize=5):
             results.to_csv(file, index=False)
 
     results.to_csv(file, index=False)
+    print("recorder is dying....")
