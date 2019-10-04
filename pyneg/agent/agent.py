@@ -114,22 +114,27 @@ class Agent(AbstractAgent):
 
         if self._accepts(response.offer):
             self._last_offer_received_was_acceptable = True
+            return
 
         self._next_constraint = self._engine.find_violated_constraint(response.offer)
 
     def _should_exit(self) -> bool:
-        try:
-            if not self._constraints_satisfiable:
-                return True
-            # if we didn't initiate every second message is ours
-            if self._transcript[-1].sender_name != self.name:
-                util = self._engine.calc_offer_utility(self._transcript[-2].offer)
-            else:
-                util = self._engine.calc_offer_utility(self._transcript[-1].offer)
-            return util >= self._absolute_reservation_value
-        except IndexError:
-            # shouldn't terminate if we haven't generated any offers
-            return False
+        return not self._engine.can_continue()
+        # try:
+        #     if not self._constraints_satisfiable:
+        #         return True
+        #
+        #     if self._transcript[-1].is_termination():
+        #         return True
+        #
+        #     if self._transcript[-1].sender_name != self.name:
+        #         util = self._engine.calc_offer_utility(self._transcript[-2].offer)
+        #     else:
+        #         util = self._engine.calc_offer_utility(self._transcript[-1].offer)
+        #     return util <= self._absolute_reservation_value
+        # except IndexError:
+        #     # shouldn't terminate if we haven't generated any offers
+        #     return False
 
     def _generate_next_message(self) -> Message:
         # this check is only for the type lining

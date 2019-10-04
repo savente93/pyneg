@@ -17,7 +17,7 @@ class TestConstrainedEnumGenerator(TestCase):
         self.max_util = 4+25+64
         self.constr_value = -2 * self.max_util
         self.uniform_weights = {
-            issue: 1 / len(values) for issue, values in self.neg_space.items()}
+            issue: 1 / len(self.neg_space.keys()) for issue  in self.neg_space.keys()}
         self.evaluator = ConstrainedLinearEvaluator(
             self.utilities, self.uniform_weights, self.non_agreement_cost, self.constr_value,set())
         self.violating_offer = Offer({

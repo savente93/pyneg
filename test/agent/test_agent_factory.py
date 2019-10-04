@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from pyneg.comms import Offer, AtomicConstraint
 from pyneg.agent import AgentFactory
+from pyneg.utils import generate_random_scenario, neg_scenario_from_util_matrices
 
 class TestAgentFactory(TestCase):
 
@@ -57,12 +58,67 @@ class TestAgentFactory(TestCase):
 
     def test_reservation_value_is_lower_than_estimated_max_utility(self):
         agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
-                                                                            self.non_agreement_cost, None, set())
+                                                                        self.non_agreement_cost, set(), None)
         self.assertTrue(agent_a._absolute_reservation_value <= agent_a._engine.calc_offer_utility(self.optimal_offer))
+
+    def test_reservation_value_is_estimated_correctly_for_linear_utility_function(self):
+        self.utilities = {
+            "boolean_True": 100,
+            "boolean_False": -100,
+            "integer_1": 10,"integer_2": -10,
+            "integer_3": 10,"integer_4": -10,
+            "integer_5": 10,"integer_6": -10,
+            "integer_7": 10,"integer_8": -10,
+            "'float_0.1'": 1,"'float_0.2'": -1,
+            "'float_0.3'": 1,"'float_0.4'": -1,
+            "'float_0.5'": 1,"'float_0.6'": -1,
+            "'float_0.7'": 1,"'float_0.8'": -1,
+        }
+
+
+        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+                                                                        self.non_agreement_cost, set(), None)
+
+        self.assertAlmostEqual(agent_a._absolute_reservation_value, 0.5*(100/3+10/3+1/3))
+
+
 
 
     def test_factory_correctly_determines_constraints(self):
         agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
-                                                                        self.non_agreement_cost, None, set())
+                                                                        self.non_agreement_cost, set(), None)
 
         self.assertTrue(AtomicConstraint("integer","5") in agent_a.get_constraints())
+
+    def test_detects_constraints_in_generated_scenarios(self):
+        numb_of_constraints = 6
+        u_a, u_b = generate_random_scenario((4,4),numb_of_constraints)
+        neg_space, utils_a, utils_b = neg_scenario_from_util_matrices(u_a,u_b)
+        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.5,
+                                                                        self.non_agreement_cost, set(), None)
+
+        self.assertEqual(len(agent_a.get_constraints()), numb_of_constraints, agent_a.get_constraints())
+
+    def test_solution_found_by_unconstrained_agents_satisfies_constraints(self):
+        numb_of_constraints = 2
+        u_a, u_b = generate_random_scenario((4, 4), numb_of_constraints)
+        neg_space, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
+        rand_a = AgentFactory.make_linear_concession_agent("A", neg_space, utils_a, 0.1,
+                                                                        self.non_agreement_cost, None)
+
+        rand_b = AgentFactory.make_linear_concession_agent("B", neg_space, utils_b, 0.1,
+                                                                       self.non_agreement_cost, None)
+
+
+        constr_a = AgentFactory.make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.3,
+                                                                         self.non_agreement_cost, set(), None)
+
+        constr_b = AgentFactory.make_constrained_linear_concession_agent("B", neg_space, utils_b, 0.3,
+                                                                         self.non_agreement_cost, set(), None)
+
+        rand_a.negotiate(rand_b)
+
+        last_message = rand_a._transcript[-1]
+        self.assertTrue(last_message.is_acceptance(), rand_a._transcript)
+        self.assertTrue(constr_a._engine.satisfies_all_constraints(last_message.offer))
+        self.assertTrue(constr_b._engine.satisfies_all_constraints(last_message.offer))

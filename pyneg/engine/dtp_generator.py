@@ -32,6 +32,7 @@ class DTPGenerator(Generator):
     def reset_generator(self):
         self.generated_offers = {}
         self.offer_queue = []
+        self.active = True
 
     def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
@@ -135,6 +136,7 @@ class DTPGenerator(Generator):
             # score of offers are now below acceptability threshold
             # so we should terminate
             if score < self.acceptability_threshold:
+                self.active = False
                 raise StopIteration()
             cleaned_query_output = self.clean_query_output(query_output)
             extended_offers = self.extend_partial_offer(cleaned_query_output)

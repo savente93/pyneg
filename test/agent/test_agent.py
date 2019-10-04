@@ -1,8 +1,9 @@
 from unittest import TestCase
-
+from unittest.mock import Mock, MagicMock
 from pyneg.agent import AgentFactory
 from pyneg.comms import Offer, Message
 from pyneg.types import MessageType
+
 
 
 class TestAgent(TestCase):
@@ -72,7 +73,7 @@ class TestAgent(TestCase):
         self.offer_message = Message(
             self.agent_name, self.opponent_name, MessageType.OFFER, self.nested_test_offer)
         self.uniform_weights = {
-            issue: 1 / len(values) for issue, values in self.neg_space.items()}
+            issue: 1 / len(self.neg_space.keys()) for issue, values in self.neg_space.items()}
 
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
@@ -128,7 +129,7 @@ class TestAgent(TestCase):
         temp_neg_space = {"first": ["True", "False"]}
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
         self.opponent = AgentFactory.make_linear_concession_agent(
@@ -143,7 +144,7 @@ class TestAgent(TestCase):
         temp_neg_space = {"first": ["True", "False"]}
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
         self.opponent = AgentFactory.make_linear_concession_agent(
@@ -160,7 +161,7 @@ class TestAgent(TestCase):
         temp_agent_utils = {"first_True": 10000}
         temp_opponent_utils = {"second_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", temp_neg_space, temp_agent_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
         self.opponent = AgentFactory.make_linear_concession_agent(
@@ -178,7 +179,7 @@ class TestAgent(TestCase):
         temp_agent_utils = {"first_True": -10000, "first_False": 10000}
         temp_opponent_utils = {"first_True": 10000, "first_False": -10000}
         temp_uniform_weights = {
-            issue: 1 / len(issue) for issue in temp_neg_space.keys()}
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
         temp_reservation_value = 1000
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", temp_neg_space, temp_agent_utils, temp_reservation_value, self.non_agreement_cost,
@@ -232,3 +233,42 @@ class TestAgent(TestCase):
             "agent", self.neg_space, self.utilities, 0.0, self.non_agreement_cost,
             self.uniform_weights)
         self.assertTrue(self.agent._accepts(self.optimal_offer))
+
+
+    def test_random_agent_terminates_correctly(self):
+        self.agent = AgentFactory.make_random_agent(
+            "agent", self.neg_space, self.utilities, 1, self.non_agreement_cost,[],max_rounds=1)
+
+        opponent_utils = {atom:-util for atom,util in self.utilities.items()}
+
+        self.opponent = AgentFactory.make_random_agent(
+            "opponent", self.neg_space, opponent_utils, 1, self.non_agreement_cost, [], max_rounds=1)
+
+        self.agent._call_for_negotiation(self.opponent, self.neg_space)
+
+        self.agent.send_message(self.opponent, self.agent._generate_next_message())
+        self.agent._wait_for_response(self.opponent)
+        self.assertTrue(self.agent._should_exit())
+
+    def test_concession_agent_terminates_correctly(self):
+        self.agent = AgentFactory.make_linear_concession_agent(
+            "agent", self.neg_space, self.utilities, 0.95, self.non_agreement_cost)
+
+        self.opponent = AgentFactory.make_linear_concession_agent(
+            "opponent", self.neg_space, {"integer_5": 100}, 0.95, self.non_agreement_cost)
+
+        self.agent._call_for_negotiation(self.opponent,self.neg_space)
+
+        for i in range(10):
+            self.agent.send_message(self.opponent, self.agent._generate_next_message())
+            self.agent._wait_for_response(self.opponent)
+            self.assertFalse(self.agent._should_exit())
+
+        self.agent.send_message(self.opponent, self.agent._generate_next_message())
+        self.agent._wait_for_response(self.opponent)
+        self.assertTrue(self.agent._should_exit())
+
+    #
+    # def test_constrained_random_agent_terminates_correctly(self):
+    #
+    # def test_constrained_concession_agent_terminates_correctly(self):

@@ -92,6 +92,7 @@ class EnumGenerator(Generator):
                 (-util, self.offer_counter, best_offer_indices))
             self.generated_offers.add(
                 self.offer_from_index_dict(best_offer_indices))
+            self.active = True
 
     def accepts(self, offer: Offer) -> bool:
         util = self.evaluator.calc_offer_utility(offer)
@@ -114,11 +115,13 @@ class EnumGenerator(Generator):
 
     def generate_offer(self) -> Offer:
         if self.assignement_frontier.empty():
+            self.active = False
             raise StopIteration()
 
         self.offer_counter += 1
         negative_util, uuid, indices = self.assignement_frontier.get()
         if -negative_util <= self.acceptability_threshold:
+            self.active = False
             raise StopIteration()
         self.expand_assignment(indices)
         return self.offer_from_index_dict(indices)

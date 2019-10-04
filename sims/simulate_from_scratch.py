@@ -20,12 +20,9 @@ from math import ceil
 
 def explore_scenarios(row, q):
     from os.path import join, abspath
-    from numpy import load, isclose
+    from numpy import load
     from pyneg.utils import count_acceptable_offers
     _id, cntr, rho_a, rho_b, strat = row
-
-    if isclose(rho_a,0) or isclose(rho_b,0):
-        return
 
     a = load(abspath(join("./scenarios",_id, str(cntr), "a.npy")))
     b = load(abspath(join("./scenarios",_id, str(cntr), "b.npy")))
@@ -35,14 +32,7 @@ def explore_scenarios(row, q):
 
     p_a = both_accept / a_accepts if a_accepts != 0 else 0
     p_b = both_accept / b_accepts if b_accepts != 0 else 0
-
-    if isclose(rho_a,0) or isclose(rho_b,0):
-        p_ap_b = 1.0
-    elif isclose(p_a,0) or isclose(p_b,0):
-        p_ap_b = 0.0
-    else:
-        p_ap_b = p_a*p_b
-
+    p_ap_b = p_a*p_b
 
     q.put({
             "id": _id,
@@ -83,9 +73,9 @@ def simulate_negotiations(config, q):
                                                                         [])
         elif strat == "Constrained Enumeration":
             agent_a = AgentFactory.make_constrained_linear_concession_agent("A", issues, utils_a, rho_a,
-                                                                            non_agreement_cost, None, set())
+                                                                            non_agreement_cost, set(), None)
             agent_b = AgentFactory.make_constrained_linear_concession_agent("B", issues, utils_b, rho_b,
-                                                                            non_agreement_cost, None, set())
+                                                                            non_agreement_cost, set(), None)
 
         else:
             raise ValueError("unknown agent type: {}".format(strat))
@@ -157,7 +147,7 @@ def main():
     record_func = partial(record_results_as_csv, columns=csv_columns)
     param_space = product(
         *[ids,
-          range(1*shape[0]),
+          range(numb_of_constraints),
           rho_a_range,
           rho_b_range,
           strats])

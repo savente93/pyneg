@@ -57,10 +57,12 @@ class ConstrainedRandomGenerator(RandomGenerator):
 
     def generate_offer(self) -> Offer:
         if not self.constraints_satisfiable:
+            self.active = False
             raise StopIteration()
         try:
             offer = super().generate_offer()
         except StopIteration:
+            self.active = False
             raise StopIteration()
         if not self.satisfies_all_constraints(offer):
             raise RuntimeError()

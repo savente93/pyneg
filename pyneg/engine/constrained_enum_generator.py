@@ -120,6 +120,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
 
     def generate_offer(self) -> Offer:
         if self.assignement_frontier.empty() or not self.constraints_satisfiable:
+            self.active = False
             raise StopIteration()
 
         negative_util, uuid, indices = self.assignement_frontier.get()

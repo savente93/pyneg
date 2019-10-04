@@ -81,14 +81,16 @@ class TestConstraintAgent(TestCase):
         self.violating_offer_message = Message( self.agent_name, self.opponent_name, MessageType.OFFER, self.violating_offer)
 
         self.uniform_weights = {
-            issue: 1 / len(values) for issue, values in self.neg_space.items()}
+            issue: 1 / len(self.neg_space.keys()) for issue  in self.neg_space.keys()}
 
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
-            self.uniform_weights, None, 20)
-        self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
-            self.uniform_weights, None, 20)
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", self.neg_space, self.utilities,
+                                                                           self.reservation_value,
+                                                                           self.non_agreement_cost, None,
+                                                                           self.uniform_weights, 20)
+        self.opponent = AgentFactory.make_constrained_linear_concession_agent("opponent", self.neg_space,
+                                                                              self.utilities, self.reservation_value,
+                                                                              self.non_agreement_cost, None,
+                                                                              self.uniform_weights, 20)
         assert self.agent._call_for_negotiation(self.opponent, self.agent._neg_space)
 
     def test_counts_messages_correctly_in_successful_negotiation(self):
@@ -160,13 +162,15 @@ class TestConstraintAgent(TestCase):
         temp_neg_space = {"first": ["True", "False"]}
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights,
-            None, 20)
-        self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
+            issue: 1 / len(temp_neg_space.keys()) for issue  in temp_neg_space.keys()}
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", temp_neg_space, temp_utils,
+                                                                           self.reservation_value,
+                                                                           self.non_agreement_cost, None,
+                                                                           temp_uniform_weights, 20)
+        self.opponent = AgentFactory.make_constrained_linear_concession_agent("opponent", temp_neg_space, temp_utils,
+                                                                              self.reservation_value,
+                                                                              self.non_agreement_cost, None,
+                                                                              temp_uniform_weights, 20)
 
         self.agent.negotiate(self.opponent)
         self.assertTrue(
@@ -176,13 +180,15 @@ class TestConstraintAgent(TestCase):
         temp_neg_space = {"first": ["True", "False"]}
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights,
-            None, 20)
-        self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", temp_neg_space, temp_utils,
+                                                                           self.reservation_value,
+                                                                           self.non_agreement_cost, None,
+                                                                           temp_uniform_weights, 20)
+        self.opponent = AgentFactory.make_constrained_linear_concession_agent("opponent", temp_neg_space, temp_utils,
+                                                                              self.reservation_value,
+                                                                              self.non_agreement_cost, None,
+                                                                              temp_uniform_weights, 20)
         self.agent.negotiate(self.opponent)
         self.assertTrue(
             self.agent._transcript[-1].is_acceptance() and self.opponent._transcript[-1].is_acceptance())
@@ -193,13 +199,16 @@ class TestConstraintAgent(TestCase):
         temp_agent_utils = {"first_True": 10000}
         temp_opponent_utils = {"second_True": 10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", temp_neg_space, temp_agent_utils, self.reservation_value, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
-        self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", temp_neg_space, temp_opponent_utils, self.reservation_value, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", temp_neg_space, temp_agent_utils,
+                                                                           self.reservation_value,
+                                                                           self.non_agreement_cost, None,
+                                                                           temp_uniform_weights, 20)
+        self.opponent = AgentFactory.make_constrained_linear_concession_agent("opponent", temp_neg_space,
+                                                                              temp_opponent_utils,
+                                                                              self.reservation_value,
+                                                                              self.non_agreement_cost, None,
+                                                                              temp_uniform_weights, 20)
         self.agent.negotiate(self.opponent)
 
         self.assertTrue(
@@ -210,13 +219,14 @@ class TestConstraintAgent(TestCase):
         temp_agent_utils = {"first_True": -10000, "first_False": 10000}
         temp_opponent_utils = {"first_True": 10000, "first_False": -10000}
         temp_uniform_weights = {
-            issue: 1 / len(values) for issue, values in temp_neg_space.items()}
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", temp_neg_space, temp_agent_utils, 0.2, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
-        self.opponent = AgentFactory.make_constrained_linear_concession_agent(
-            "opponent", temp_neg_space, temp_opponent_utils, 0.2, self.non_agreement_cost,
-            temp_uniform_weights, None, 20)
+            issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", temp_neg_space, temp_agent_utils,
+                                                                           0.2, self.non_agreement_cost, None,
+                                                                           temp_uniform_weights, 20)
+        self.opponent = AgentFactory.make_constrained_linear_concession_agent("opponent", temp_neg_space,
+                                                                              temp_opponent_utils, 0.2,
+                                                                              self.non_agreement_cost, None,
+                                                                              temp_uniform_weights, 20)
         self.agent.negotiate(self.opponent)
         self.assertTrue(
             not self.agent.successful and not self.agent.negotiation_active and not self.opponent.successful and not self.opponent.negotiation_active)
@@ -258,8 +268,8 @@ class TestConstraintAgent(TestCase):
             "integer_5": -10000,
             "'float_0.1'": -10000
         }
-        self.agent = AgentFactory.make_constrained_linear_concession_agent(
-            "agent", self.neg_space, self.utilities, 0.0, self.non_agreement_cost,
-            self.uniform_weights, None, 20)
+        self.agent = AgentFactory.make_constrained_linear_concession_agent("agent", self.neg_space, self.utilities, 0.0,
+                                                                           self.non_agreement_cost, None,
+                                                                           self.uniform_weights, 20)
         self.agent.add_constraint(self.integer_constraint)
         self.assertFalse(self.agent._accepts(self.optimal_offer))

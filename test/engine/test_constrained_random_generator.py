@@ -71,6 +71,7 @@ class TestConstrainedRandomGenerator(TestCase):
         self.generator = ConstrainedRandomGenerator(self.neg_space, self.utilities,
                                                     self.evaluator, self.non_agreement_cost,
                                                     self.kb, self.reservation_value, self.max_rounds, self.constr_value, set())
+        print(self._testMethodName)
 
     def test_own_offer_does_not_violate_constraint(self):
         self.generator.add_constraint(AtomicConstraint("boolean", "True"))
@@ -109,19 +110,14 @@ class TestConstrainedRandomGenerator(TestCase):
         self.assertTrue({AtomicConstraint("integer", "4"), AtomicConstraint(
             "float", "0.9")}.issubset(self.generator.constraints))
 
-    def test_doesnt_generate_same_offer_five_times(self):
+    def test_creates_atleast_5_different_offers_in_20_tries(self):
         # since some elements might be randomly picked it can sometimes happen that the elements are the same but it
         # shouldn't keep happening so we'll try it a couple of times
-        last_offer = self.generator.generate_offer()
-        for i in range(20):
-            new_offer = self.generator.generate_offer()
-            self.assertNotEqual(last_offer, new_offer,i)
-            last_offer = new_offer
+        offer_set = set([ self.generator.generate_offer() for _ in range (20)])
+        self.assertTrue(len(offer_set) > 5)
 
     def test_terminates_after_constrains_become_unsatisfiable(self):
-        incompatible_constraints = set([
-            AtomicConstraint("boolean", "True"),
-            AtomicConstraint("boolean", "False")])
+        incompatible_constraints = {AtomicConstraint("boolean", "True"), AtomicConstraint("boolean", "False")}
         self.generator.add_constraints(incompatible_constraints)
 
         with self.assertRaises(StopIteration):

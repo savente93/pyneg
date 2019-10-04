@@ -152,6 +152,17 @@ def setup_random_scenarios(root_dir, shape, numb_of_scenarios, numb_constraints)
             np.save(path.join(instance_dir, "b.npy"), constr_b)
 
 
+def generate_random_scenario(shape,numb_constraints):
+
+    lower = 0
+    upper = 100
+
+    base_a = randint(lower, upper, shape[0]*shape[1]).reshape(shape)
+    base_b = randint(lower, upper, shape[0]*shape[1]).reshape(shape)
+
+    return insert_difficult_constraints(base_a,base_b,numb_constraints)
+
+
 def insert_difficult_constraints(a, b, numb):
     constr = -1000
     a_ret = a.copy()

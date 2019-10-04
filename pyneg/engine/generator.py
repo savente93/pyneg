@@ -16,6 +16,7 @@ class Generator:
         self.kb = []
         self.neg_space = {}
         self.acceptability_threshold = 0.0
+        self.active = False
 
     def generate_offer(self) -> Offer:
         raise NotImplementedError()

@@ -39,6 +39,9 @@ class AbstractEngine:
     def accepts(self, offer: Offer) -> bool:
         raise NotImplementedError()
 
+    def can_continue(self) -> bool:
+        raise NotImplementedError()
+
 
 class Engine(AbstractEngine):
     def __init__(self, generator: Generator, evaluator: Evaluator):
@@ -88,3 +91,6 @@ class Engine(AbstractEngine):
             return True
 
         return self.evaluator.calc_offer_utility(offer) >= self.generator.acceptability_threshold
+
+    def can_continue(self) -> bool:
+        return self.generator.active

@@ -21,6 +21,7 @@ class AbstractAgent:
         self._next_constraint: Optional[AtomicConstraint] = None
         self._constraints_satisfiable = True
         self._accepts_all = False
+        self._should_terminate = False
 
     def receive_negotiation_request(self, opponent: 'AbstractAgent', neg_space: NegSpace) -> bool:
         raise NotImplementedError()

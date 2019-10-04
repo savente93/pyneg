@@ -18,7 +18,7 @@ class RandomGenerator(Generator):
                  kb: List[str],
                  acceptability_threshold: float,
                  max_rounds: int,
-                 max_generation_tries: int = 500):
+                 max_generation_tries: int = 1000):
         super().__init__()
         self.utilities = utilities
         self.kb = kb
@@ -28,6 +28,8 @@ class RandomGenerator(Generator):
         self.evaluator = evaluator
         self.init_uniform_strategy(neg_space)
         self.max_rounds = max_rounds
+        self.round_counter = 0
+        self.active = True
         self.max_generation_tries = max_generation_tries
         self.acceptability_threshold = acceptability_threshold
 
@@ -42,6 +44,11 @@ class RandomGenerator(Generator):
         self.strategy = Strategy(strat_dict)
 
     def generate_offer(self) -> Offer:
+
+        if self.round_counter >= self.max_rounds:
+            self.active = False
+            raise StopIteration()
+
         return_offer = None
         for _ in range(self.max_generation_tries):
             offer: Dict[str, Dict[str, float]] = {}
@@ -61,8 +68,12 @@ class RandomGenerator(Generator):
                 break
 
         if not return_offer:
+            self.active = False
             raise StopIteration()
 
+        self.round_counter +=1
+        if self.round_counter >= self.max_rounds:
+            self.active = False
         return return_offer
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:

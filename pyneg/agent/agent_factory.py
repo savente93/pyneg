@@ -33,14 +33,15 @@ class AgentFactory:
                                      utilities: Dict[str, float],
                                      reservation_value: float,
                                      non_agreement_cost: float,
-                                     issue_weights: Optional[Dict[str, float]]) -> Agent:
+                                     issue_weights: Optional[Dict[str, float]] = None) -> Agent:
         agent = Agent()
         agent.name = name
         agent._type = "Linear Concession"
         agent._neg_space = neg_space
+        agent._should_terminate = False
 
         if not issue_weights:
-            issue_weights = {issue: 1 / len(neg_space[issue]) for issue in neg_space.keys()}
+            issue_weights = {issue: 1 / len(neg_space.keys()) for issue in neg_space.keys()}
 
         weight_adjusted_utilities = {}
         for atom, util in utilities.items():
@@ -75,9 +76,10 @@ class AgentFactory:
         agent.name = name
         agent._type = "Linear Random"
         agent._neg_space = neg_space
+        agent._should_terminate = False
 
         if not issue_weights:
-            issue_weights = {issue: 1 / len(neg_space[issue]) for issue in neg_space.keys()}
+            issue_weights = {issue: 1 / len(neg_space.keys()) for issue in neg_space.keys()}
 
         if not max_rounds:
             max_rounds = STANDARD_MAX_ROUNDS
@@ -122,6 +124,7 @@ class AgentFactory:
         agent.name = name
         agent._type = "Random"
         agent._neg_space = neg_space
+        agent._should_terminate = False
 
         if not max_rounds:
             max_rounds = STANDARD_MAX_ROUNDS
@@ -144,23 +147,20 @@ class AgentFactory:
         return agent
 
     @staticmethod
-    def make_constrained_linear_concession_agent(name: str,
-                                                 neg_space: NegSpace,
-                                                 utilities: Dict[str, float],
-                                                 reservation_value: float,
-                                                 non_agreement_cost: float,
-                                                 issue_weights: Optional[Dict[str, float]],
-                                                 initial_constraints: Optional[Set[AtomicConstraint]],
+    def make_constrained_linear_concession_agent(name: str, neg_space: NegSpace, utilities: Dict[str, float],
+                                                 reservation_value: float, non_agreement_cost: float,
+                                                 initial_constraints: Optional[Set[AtomicConstraint]]= None,
+                                                 issue_weights: Optional[Dict[str, float]] = None,
                                                  auto_constraints=True) -> ConstrainedAgent:
         agent = ConstrainedAgent()
         agent.name = name
         agent._type = "Constrained Linear Concession"
         agent._neg_space = neg_space
+        agent._should_terminate = False
 
         if not issue_weights:
             issue_weights = {
-                issue: 1 / len(neg_space[issue])
-                for issue in neg_space.keys()}
+                issue: 1 / len(neg_space.keys()) for issue in neg_space.keys()}
 
         if not initial_constraints:
             initial_constraints = set()
@@ -202,11 +202,11 @@ class AgentFactory:
         agent.name = name
         agent._type = "Constrained Linear Random"
         agent._neg_space = neg_space
+        agent._should_terminate = False
 
         if not issue_weights:
             issue_weights = {
-                issue: 1 / len(neg_space[issue])
-                for issue in neg_space.keys()}
+                issue: 1 / len(neg_space.keys())  for issue in neg_space.keys()}
 
         if not initial_constraints:
             initial_constraints = set()

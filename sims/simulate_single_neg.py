@@ -7,22 +7,25 @@ from pandas import Series
 from pyneg.agent import AgentFactory
 from pyneg.types import MessageType
 from pyneg.utils import neg_scenario_from_util_matrices
-
+import pandas as pd
+import sys
 
 def main():
-    config = {'id': '/home/sam/Documents/code/work/pyneg/results/6d71df9c-9682-48bd-8544-da87dcbe8356',
-              'constr_count': 0,
-              'rho_a': 0.3333333333333333,
-              'rho_b': 0.5333333333333333,
-              'a_accepts': 7699,
-              'b_accepts': 3197,
-              'both_accept': 3143,
-              'p_a': 0.4082348356929472,
-              'p_b': 0.9831091648420394,
-              'p_ap_b': 0.4013394083775205,
-              'strat': 'Constrained Enumeration'}
+    index = int(sys.argv[1])
+    config = pd.read_csv("./results/configs.csv").iloc[index]
+    # config = {'id': 'results/6d71df9c-9682-48bd-8544-da87dcbe8356',
+    #           'constr_count': 0,
+    #           'rho_a': 0.3333333333333333,
+    #           'rho_b': 0.5333333333333333,
+    #           'a_accepts': 7699,
+    #           'b_accepts': 3197,
+    #           'both_accept': 3143,
+    #           'p_a': 0.4082348356929472,
+    #           'p_b': 0.9831091648420394,
+    #           'p_ap_b': 0.4013394083775205,
+    #           'strat': 'Constrained Enumeration'}
 
-    _id, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values()
+    _id, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values
     a = np.load(abspath(join(_id, str(int(cntr)), "a.npy")))
     b = np.load(abspath(join(_id, str(int(cntr)), "b.npy")))
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(a, b)
@@ -44,9 +47,9 @@ def main():
         elif strat == "Constrained Enumeration":
             print("starting constrained random simulation")
             agent_a = AgentFactory.make_constrained_linear_concession_agent("A", issues, utils_a, rho_a,
-                                                                            non_agreement_cost, None, set())
+                                                                            non_agreement_cost, set(), None)
             agent_b = AgentFactory.make_constrained_linear_concession_agent("B", issues, utils_b, rho_b,
-                                                                            non_agreement_cost, None, set())
+                                                                            non_agreement_cost, set(), None)
 
         else:
             raise ValueError("unknown agent type: {}".format(strat))
@@ -83,6 +86,8 @@ def main():
                   'utility': util_a,
                   'opponent_utility': util_b,
                   'transcript': "\n".join(map(str, agent_a._transcript))}))
+
+    print("\n".join(map(str, agent_a._transcript)))
 
 
 main()

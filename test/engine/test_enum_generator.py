@@ -15,10 +15,10 @@ class TestEnumGenerator(TestCase):
         self.arbitrary_reservation_value = 0
         self.max_util = 93
         self.arbitrary_non_agreement_cost = -1000
-        uniform_weights = {
-            issue: 1 / len(values) for issue, values in self.issues.items()}
+        self.uniform_weights = {
+            issue: 1 / len(self.issues.keys()) for issue  in self.issues.keys()}
         self.evaluator = LinearEvaluator(
-            self.utilities, uniform_weights, self.arbitrary_non_agreement_cost)
+            self.utilities, self.uniform_weights, self.arbitrary_non_agreement_cost)
 
         self.generator = EnumGenerator(
             self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value)
@@ -112,7 +112,7 @@ class TestEnumGenerator(TestCase):
             "float": ["{0:.1f}".format(0.1 * i) for i in range(10)]
         }
         neg_space_size = reduce(lambda x, y: x * y, [len(temp_neg_space[issue]) for issue in temp_neg_space.keys()])
-        print(neg_space_size)
+
         temp_utilities = {
             "boolean_True": 1000.0,
             "boolean_False": 10.0,
@@ -125,7 +125,7 @@ class TestEnumGenerator(TestCase):
         }
         temp_reservation_value = -(10 ** 10) + 1
         temp_non_agreement_cost = -(10 ** 10)
-        evaluator = LinearEvaluator(temp_utilities, {issue: 1 for issue in temp_neg_space.keys()},
+        evaluator = LinearEvaluator(temp_utilities, {issue: 1/3 for issue in temp_neg_space.keys()},
                                                temp_non_agreement_cost)
         generator = EnumGenerator(temp_neg_space, temp_utilities, evaluator, temp_reservation_value)
         offer = generator.generate_offer()
@@ -136,5 +136,8 @@ class TestEnumGenerator(TestCase):
             util = evaluator.calc_offer_utility(offer)
             transcript.append((offer, util))
             self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript[-5:])
+
+        print("\n".join(map(str,transcript)))
+
 
 
