@@ -43,17 +43,14 @@ class ParallelSimulator:
         else:
             self.work_pool = mp.Pool()
 
-        print("Starting recorder")
+        # print("Starting recorder")
         # this must be apply_async because it has to work while the rest of the code continues
         self.work_pool.apply_async(
             record_function, (self.output_queue, self.results_file))
 
-        print("Starting workers")
+        # print("Starting workers")
         self.work_pool.starmap(
             work_function, [(x, self.output_queue) for x in self.parameter_space])
-
-    def await_results(self):
-        self.work_pool.join()
 
 
 
@@ -74,12 +71,14 @@ def record_results_as_csv(q, file, columns, chunksize=5):
     while True:
         m = q.get()
         if m == 'kill':
+            print("found stop token")
             break
         counter += 1
         results = results.append(Series(m), ignore_index=True)
 
-        if counter % chunksize == 0:
-            results.to_csv(file, index=False)
+        # if counter % chunksize == 0:
+        #     results.to_csv(file, index=False)
 
+    print("writing results to file")
     results.to_csv(file, index=False)
     print("recorder is dying....")

@@ -122,3 +122,4 @@ class TestAgentFactory(TestCase):
         self.assertTrue(last_message.is_acceptance(), rand_a._transcript)
         self.assertTrue(constr_a._engine.satisfies_all_constraints(last_message.offer))
         self.assertTrue(constr_b._engine.satisfies_all_constraints(last_message.offer))
+

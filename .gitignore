@@ -6,11 +6,11 @@ coverage_report
 .coverage
 .vscode
 .ipynb_checkpoints
-results
 .mypy_cache
 coverage.xml
 .pytest_cache
 .venv
 .idea
-*.npy
 venv
+sims/scenarios
+sims/results

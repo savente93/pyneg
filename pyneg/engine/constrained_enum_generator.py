@@ -24,11 +24,11 @@ class ConstrainedEnumGenerator(EnumGenerator):
         self.constraints_satisfiable = True
         self.max_util = 0.0
         super().__init__(neg_space, utilities, evaluator, acceptance_threshold)
-        if initial_constraints:
-            self.constraints.update(initial_constraints)
         self.auto_constraints = auto_constraints
         self.max_utility_by_issue: Dict[str, int] = {}
         self.index_max_utilities()
+        if initial_constraints:
+            self.add_constraints(initial_constraints)
         if self.auto_constraints:
             self.add_constraints(self.discover_constraints())
 
@@ -112,7 +112,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
             util = self.evaluator.calc_offer_utility(offer)
             if self.offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
                 # might seem stratge but if we hit a constraint we still need to keep searching in this direction
-                if util >= self.acceptability_threshold or not self.satisfies_all_constraints(offer):
+                if util >= self.acceptability_threshold and self.satisfies_all_constraints(offer):
                     self.assignement_frontier.put(
                         (-util, str(uuid4())[-8:], copied_offer_indices))
                     self.generated_offers.add(
@@ -129,7 +129,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
         if self.satisfies_all_constraints(offer):
             return offer
         else:
-            return self.generate_offer()
+            raise ValueError("generated violating offer")
 
     def accepts(self, offer: Offer) -> bool:
         util = self.evaluator.calc_offer_utility(offer)

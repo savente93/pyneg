@@ -9,10 +9,15 @@ from pyneg.types import MessageType
 from pyneg.utils import neg_scenario_from_util_matrices
 import pandas as pd
 import sys
+import pickle
+
+import pydevd_pycharm
+pydevd_pycharm.settrace('localhost', port=2424, stdoutToServer=True, stderrToServer=True)
+
 
 def main():
-    index = int(sys.argv[1])
-    config = pd.read_csv("./results/configs.csv").iloc[index]
+    configs = pd.read_csv("./results/configs.csv")
+    config = configs.iloc[1844,:]
     # config = {'id': 'results/6d71df9c-9682-48bd-8544-da87dcbe8356',
     #           'constr_count': 0,
     #           'rho_a': 0.3333333333333333,
@@ -25,7 +30,7 @@ def main():
     #           'p_ap_b': 0.4013394083775205,
     #           'strat': 'Constrained Enumeration'}
 
-    _id, cntr, rho_a, rho_b, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b, strat = config.values
+    _id, cntr, rho_a, rho_b,strat, a_accepts, b_accepts, both_accept, p_a, p_b, p_ap_b = config.values
     a = np.load(abspath(join(_id, str(int(cntr)), "a.npy")))
     b = np.load(abspath(join(_id, str(int(cntr)), "b.npy")))
     issues, utils_a, utils_b = neg_scenario_from_util_matrices(a, b)
@@ -45,7 +50,7 @@ def main():
             agent_b = AgentFactory.make_constrained_linear_random_agent("B", issues, utils_b, rho_b, non_agreement_cost,
                                                                         [])
         elif strat == "Constrained Enumeration":
-            print("starting constrained random simulation")
+            print("starting constrained concession simulation")
             agent_a = AgentFactory.make_constrained_linear_concession_agent("A", issues, utils_a, rho_a,
                                                                             non_agreement_cost, set(), None)
             agent_b = AgentFactory.make_constrained_linear_concession_agent("B", issues, utils_b, rho_b,
