@@ -199,3 +199,62 @@ class TestConstrainedEnumGenerator(TestCase):
             transcript.append((offer, util))
             self.assertTrue(transcript[-1][1] <= transcript[-2][1], transcript)
 
+
+    def test_wont_add_violating_offers_to_the_queue(self):
+        self.neg_space, self.utilities, _ = neg_scenario_from_util_matrices(arange(6).reshape((1,6)) ** 2, arange(6).reshape((1,6)))
+        self.arbitrary_reservation_value = 0
+        self.non_agreement_cost = -1000
+        self.max_util = 6**2
+        self.constr_value = -2 * self.max_util
+        self.uniform_weights = {
+            issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
+        self.evaluator = ConstrainedLinearEvaluator(
+            self.utilities,
+            self.uniform_weights,
+            self.non_agreement_cost,
+            self.constr_value,
+            {AtomicConstraint("issue0", "2")}
+        )
+        self.generator = ConstrainedEnumGenerator(
+            self.neg_space,
+            self.utilities,
+            self.evaluator,
+            self.arbitrary_reservation_value,
+            self.constr_value,
+            {AtomicConstraint("issue0", "2")})
+
+
+        offer_list = []
+        for i in range(5):
+            offer_list.append(self.generator.generate_offer())
+
+        self.assertTrue(all([self.generator.satisfies_all_constraints(offer) for offer in offer_list]))
+
+        with self.assertRaises(StopIteration):
+            self.generator.generate_offer()
+
+
+    def test_sorts_utils_correctly_with_initial_constraints(self):
+        self.neg_space, self.utilities, _ = neg_scenario_from_util_matrices(arange(6).reshape((2,3)) ** 2, arange(6).reshape((2,3)))
+        self.arbitrary_reservation_value = 0
+        self.non_agreement_cost = -1000
+        self.max_util = 9**2
+        self.constr_value = -2 * self.max_util
+        self.uniform_weights = {
+            issue: 1 / len(self.neg_space.keys()) for issue in self.neg_space.keys()}
+        self.evaluator = ConstrainedLinearEvaluator(
+            self.utilities,
+            self.uniform_weights,
+            self.non_agreement_cost,
+            self.constr_value,
+            {AtomicConstraint("issue0", "2")}
+        )
+        self.generator = ConstrainedEnumGenerator(
+            self.neg_space,
+            self.utilities,
+            self.evaluator,
+            self.arbitrary_reservation_value,
+            self.constr_value,
+            {AtomicConstraint("issue0", "2")})
+
+        self.generator.generate_offer()
