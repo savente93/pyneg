@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pyneg.agent.agent &#8212; PyNeg 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pyneg.agent.agent</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
+<span class="kn">from</span> <span class="nn">pyneg.engine</span> <span class="kn">import</span> <span class="n">AbstractEngine</span>
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Offer</span>
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">MessageType</span>
+
+
+<div class="viewcode-block" id="Agent"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent">[docs]</a><span class="k">class</span> <span class="nc">Agent</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;&quot;The Agent&#39;s docstring&quot;&quot;&quot;</span>
+        <span class="c1"># we setup all the attributes here for type annotations but don&#39;t set meaningful values</span>
+        <span class="c1"># All of that is done by the factory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Message</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neg_space</span><span class="p">:</span> <span class="n">NegSpace</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">:</span> <span class="n">AbstractEngine</span> <span class="o">=</span> <span class="n">AbstractEngine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_reservation_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">**</span> <span class="mi">31</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">successful</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_offer_received_was_acceptable</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constraints_satisfiable</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accepts_all</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_should_terminate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># for string annotation reason see</span>
+    <span class="c1"># https://www.python.org/dev/peps/pep-0484/#the-problem-of-forward-declarations</span>
+<div class="viewcode-block" id="Agent.receive_negotiation_request"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.receive_negotiation_request">[docs]</a>    <span class="k">def</span> <span class="nf">receive_negotiation_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opponent</span><span class="p">:</span> <span class="s1">&#39;Agent&#39;</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># allows others to initiate negotiations with us</span>
+        <span class="c1"># only accept if we&#39;re talking about the same things</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepts_negotiation_proposal</span><span class="p">(</span><span class="n">neg_space</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span> <span class="o">=</span> <span class="n">opponent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_accepts_negotiation_proposal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Accepts a proposal&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neg_space</span> <span class="o">==</span> <span class="n">neg_space</span>
+
+    <span class="k">def</span> <span class="nf">_call_for_negotiation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opponent</span><span class="p">:</span> <span class="s1">&#39;Agent&#39;</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># allows us to initiate negotiations with others</span>
+        <span class="n">response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">opponent</span><span class="o">.</span><span class="n">receive_negotiation_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span> <span class="o">=</span> <span class="n">opponent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<div class="viewcode-block" id="Agent.negotiate"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.negotiate">[docs]</a>    <span class="k">def</span> <span class="nf">negotiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opponent</span><span class="p">:</span> <span class="s1">&#39;Agent&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># self is assumed to have setup the negotiation (including issues) beforehand</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_for_negotiation</span><span class="p">(</span>
+            <span class="n">opponent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neg_space</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">successful</span>
+
+        <span class="n">next_message_to_send</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">next_message_to_send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_next_message</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="c1"># raised when no acceptable offers can be found</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">opponent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminate</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+                <span class="k">break</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">opponent</span><span class="p">,</span> <span class="n">next_message_to_send</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">successful</span></div>
+
+    <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">successful</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;no negotiation to terminate&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">successful</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                           <span class="n">MessageType</span><span class="o">.</span><span class="n">ACCEPT</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">offer</span><span class="p">)</span>
+            <span class="c1"># self.send_message(self.opponent, acceptance_message)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                           <span class="n">MessageType</span><span class="o">.</span><span class="n">EXIT</span><span class="p">,</span>
+                           <span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># self.send_message(self.opponent, termination_message)</span>
+
+<div class="viewcode-block" id="Agent.send_message"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opponent</span><span class="p">:</span> <span class="s1">&#39;Agent&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">opponent</span><span class="o">.</span><span class="n">receive_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_wait_for_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="p">:</span> <span class="s1">&#39;Agent&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">sender</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sender</span><span class="o">.</span><span class="n">_generate_next_message</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_record_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Agent.receive_message"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.receive_message">[docs]</a>    <span class="k">def</span> <span class="nf">receive_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_response</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_acceptance</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">is_termination</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">successful</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">constraint</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_constraints_satisfiable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accepts</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">offer</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_offer_received_was_acceptable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_constraint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">find_violated_constraint</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">offer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">can_continue</span><span class="p">()</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     if not self._constraints_satisfiable:</span>
+        <span class="c1">#         return True</span>
+        <span class="c1">#</span>
+        <span class="c1">#     if self._transcript[-1].is_termination():</span>
+        <span class="c1">#         return True</span>
+        <span class="c1">#</span>
+        <span class="c1">#     if self._transcript[-1].sender_name != self.name:</span>
+        <span class="c1">#         util = self._engine.calc_offer_utility(self._transcript[-2].offer)</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         util = self._engine.calc_offer_utility(self._transcript[-1].offer)</span>
+        <span class="c1">#     return util &lt;= self._absolute_reservation_value</span>
+        <span class="c1"># except IndexError:</span>
+        <span class="c1">#     # shouldn&#39;t terminate if we haven&#39;t generated any offers</span>
+        <span class="c1">#     return False</span>
+
+    <span class="k">def</span> <span class="nf">_generate_next_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="c1"># this check is only for the type lining</span>
+        <span class="c1"># we should never get here if we don&#39;t have an opponent</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_offer_received_was_acceptable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminate</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_exit</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">OFFER</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">generate_offer</span><span class="p">(),</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">_next_constraint</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="c1"># weren&#39;t able to come up with acceptable offer so terminate anyway</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Agent.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">add_utilities</span><span class="p">(</span><span class="n">new_utils</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Agent.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utilities</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">set_utilities</span><span class="p">(</span><span class="n">new_utilities</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">PyNeg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/modules.html">pyneg</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sam Vente.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pyneg.engine package &#8212; PyNeg 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pyneg-engine-package">
+<h1>pyneg.engine package<a class="headerlink" href="#pyneg-engine-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyneg.engine.constrained_dtp_generator">
+<span id="pyneg-engine-constrained-dtp-generator-module"></span><h2>pyneg.engine.constrained_dtp_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_dtp_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_dtp_generator.</code><code class="sig-name descname">ConstrainedDTPGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptance_threshold: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.dtp_generator.DTPGenerator" title="pyneg.engine.dtp_generator.DTPGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.dtp_generator.DTPGenerator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model">
+<code class="sig-name descname">compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.discover_constraints">
+<code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities">
+<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.reset_generator">
+<code class="sig-name descname">reset_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.reset_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.reset_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.constrained_enum_generator">
+<span id="pyneg-engine-constrained-enum-generator-module"></span><h2>pyneg.engine.constrained_enum_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_enum_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_enum_generator.</code><code class="sig-name descname">ConstrainedEnumGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, acceptance_threshold: float, constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.enum_generator.EnumGenerator" title="pyneg.engine.enum_generator.EnumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.enum_generator.EnumGenerator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.discover_constraints">
+<code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment">
+<code class="sig-name descname">expand_assignment</code><span class="sig-paren">(</span><em class="sig-param">sorted_offer_indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.expand_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.index_max_utilities">
+<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.constrained_linear_evaluator">
+<span id="pyneg-engine-constrained-linear-evaluator-module"></span><h2>pyneg.engine.constrained_linear_evaluator module<a class="headerlink" href="#module-pyneg.engine.constrained_linear_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_linear_evaluator.</code><code class="sig-name descname">ConstrainedLinearEvaluator</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float], issue_weights: Dict[str, float], non_agreement_cost: float, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.linear_evaluator.LinearEvaluator" title="pyneg.engine.linear_evaluator.LinearEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.linear_evaluator.LinearEvaluator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_assignment_util">
+<code class="sig-name descname">calc_assignment_util</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.calc_assignment_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_assignment_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_strat_utility">
+<code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.constrained_problog_evaluator">
+<span id="pyneg-engine-constrained-problog-evaluator-module"></span><h2>pyneg.engine.constrained_problog_evaluator module<a class="headerlink" href="#module-pyneg.engine.constrained_problog_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_problog_evaluator.</code><code class="sig-name descname">ConstrainedProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="pyneg.engine.problog_evaluator.ProblogEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.problog_evaluator.ProblogEvaluator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_assignment_util">
+<code class="sig-name descname">calc_assignment_util</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.calc_assignment_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_assignment_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_strat_utility">
+<code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.constrained_random_generator">
+<span id="pyneg-engine-constrained-random-generator-module"></span><h2>pyneg.engine.constrained_random_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_random_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_random_generator.</code><code class="sig-name descname">ConstrainedRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint], auto_constraints=True, max_generation_tries: int = 500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.random_generator.RandomGenerator" title="pyneg.engine.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.random_generator.RandomGenerator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints">
+<code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities">
+<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant">
+<code class="sig-name descname">make_strat_constraint_compliant</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.make_strat_constraint_compliant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.dtp_generator">
+<span id="pyneg-engine-dtp-generator-module"></span><h2>pyneg.engine.dtp_generator module<a class="headerlink" href="#module-pyneg.engine.dtp_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.dtp_generator.</code><code class="sig-name descname">DTPGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptability_threshold: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.generator.Generator" title="pyneg.engine.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.generator.Generator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.clean_query_output">
+<code class="sig-name descname">clean_query_output</code><span class="sig-paren">(</span><em class="sig-param">query_output: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.clean_query_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.clean_query_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model">
+<code class="sig-name descname">compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer">
+<code class="sig-name descname">extend_partial_offer</code><span class="sig-paren">(</span><em class="sig-param">partial_offer</em><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.offer.Offer]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.extend_partial_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.reset_generator">
+<code class="sig-name descname">reset_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.reset_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.reset_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.engine">
+<span id="pyneg-engine-engine-module"></span><h2>pyneg.engine.engine module<a class="headerlink" href="#module-pyneg.engine.engine" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.engine.AbstractEngine">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.engine.</code><code class="sig-name descname">AbstractEngine</code><a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract engine class docstring</p>
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.can_continue">
+<code class="sig-name descname">can_continue</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.can_continue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.can_continue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.AbstractEngine.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#AbstractEngine.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.AbstractEngine.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyneg.engine.engine.Engine">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.engine.</code><code class="sig-name descname">Engine</code><span class="sig-paren">(</span><em class="sig-param">generator: pyneg.engine.generator.Generator</em>, <em class="sig-param">evaluator: pyneg.engine.evaluator.Evaluator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.engine.AbstractEngine" title="pyneg.engine.engine.AbstractEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.engine.AbstractEngine</span></code></a></p>
+<p>Engine docstring</p>
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.can_continue">
+<code class="sig-name descname">can_continue</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.can_continue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.can_continue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.satisfies_all_constraints">
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.engine.Engine.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/engine.html#Engine.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.engine.Engine.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.enum_generator">
+<span id="pyneg-engine-enum-generator-module"></span><h2>pyneg.engine.enum_generator module<a class="headerlink" href="#module-pyneg.engine.enum_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.enum_generator.EnumGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.enum_generator.</code><code class="sig-name descname">EnumGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, acceptability_threshold: float</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.generator.Generator" title="pyneg.engine.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.generator.Generator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.expand_assignment">
+<code class="sig-name descname">expand_assignment</code><span class="sig-paren">(</span><em class="sig-param">sorted_offer_indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.expand_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.expand_assignment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.init_generator">
+<code class="sig-name descname">init_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.init_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.init_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.offer_from_index_dict">
+<code class="sig-name descname">offer_from_index_dict</code><span class="sig-paren">(</span><em class="sig-param">index_dict: Dict[str, int]</em><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.offer_from_index_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.offer_from_index_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.evaluator">
+<span id="pyneg-engine-evaluator-module"></span><h2>pyneg.engine.evaluator module<a class="headerlink" href="#module-pyneg.engine.evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.evaluator.Evaluator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.evaluator.</code><code class="sig-name descname">Evaluator</code><a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>evaluator class docstring</p>
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.calc_assignment_util">
+<code class="sig-name descname">calc_assignment_util</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.calc_assignment_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.calc_assignment_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.evaluator.Evaluator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/evaluator.html#Evaluator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.evaluator.Evaluator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.generator">
+<span id="pyneg-engine-generator-module"></span><h2>pyneg.engine.generator module<a class="headerlink" href="#module-pyneg.engine.generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.generator.Generator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.generator.</code><code class="sig-name descname">Generator</code><a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generator empty class that is used soley for type annotations</p>
+<p>:raises NotImplementedError
+:raises NotImplementedError</p>
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.generator.Generator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/generator.html#Generator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.generator.Generator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.linear_evaluator">
+<span id="pyneg-engine-linear-evaluator-module"></span><h2>pyneg.engine.linear_evaluator module<a class="headerlink" href="#module-pyneg.engine.linear_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.linear_evaluator.</code><code class="sig-name descname">LinearEvaluator</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float], issue_weights: Dict[str, float], non_agreement_cost: float</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.evaluator.Evaluator" title="pyneg.engine.evaluator.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.evaluator.Evaluator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.calc_assignment_util">
+<code class="sig-name descname">calc_assignment_util</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.calc_assignment_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.calc_assignment_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.calc_strat_utility">
+<code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.problog_evaluator">
+<span id="pyneg-engine-problog-evaluator-module"></span><h2>pyneg.engine.problog_evaluator module<a class="headerlink" href="#module-pyneg.engine.problog_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.problog_evaluator.</code><code class="sig-name descname">ProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.evaluator.Evaluator" title="pyneg.engine.evaluator.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.evaluator.Evaluator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_assignment_util">
+<code class="sig-name descname">calc_assignment_util</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_assignment_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_assignment_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_offer_utility">
+<code class="sig-name descname">calc_offer_utility</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_offer_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_offer_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities">
+<code class="sig-name descname">calc_probabilities_of_utilities</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Dict[str, float]<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_probabilities_of_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility">
+<code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model">
+<code class="sig-name descname">compile_problog_model</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.compile_problog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.random_generator">
+<span id="pyneg-engine-random-generator-module"></span><h2>pyneg.engine.random_generator module<a class="headerlink" href="#module-pyneg.engine.random_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.random_generator.RandomGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.random_generator.</code><code class="sig-name descname">RandomGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, max_generation_tries: int = 1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyneg.engine.generator.Generator" title="pyneg.engine.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.generator.Generator</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.generate_offer">
+<code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy">
+<code class="sig-name descname">init_uniform_strategy</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.init_uniform_strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyneg.engine.random_generator.choice">
+<code class="sig-prename descclassname">pyneg.engine.random_generator.</code><code class="sig-name descname">choice</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">size=None</em>, <em class="sig-param">replace=True</em>, <em class="sig-param">p=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pyneg.engine.random_generator.choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a random sample from a given 1-D array</p>
+<blockquote>
+<div><div class="versionadded">
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
+</div>
+</div></blockquote>
+<dl class="simple">
+<dt>a<span class="classifier">1-D array-like or int</span></dt><dd><p>If an ndarray, a random sample is generated from its elements.
+If an int, the random sample is generated as if a were np.arange(a)</p>
+</dd>
+<dt>size<span class="classifier">int or tuple of ints, optional</span></dt><dd><p>Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  Default is None, in which case a
+single value is returned.</p>
+</dd>
+<dt>replace<span class="classifier">boolean, optional</span></dt><dd><p>Whether the sample is with or without replacement</p>
+</dd>
+<dt>p<span class="classifier">1-D array-like, optional</span></dt><dd><p>The probabilities associated with each entry in a.
+If not given the sample assumes a uniform distribution over all
+entries in a.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>samples<span class="classifier">single item or ndarray</span></dt><dd><p>The generated random samples</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If a is an int and less than zero, if a or p are not 1-dimensional,
+if a is an array-like of size 0, if p is not a vector of
+probabilities, if a and p have different lengths, or if
+replace=False and the sample size is greater than the population
+size</p>
+</dd>
+</dl>
+<p>randint, shuffle, permutation</p>
+<p>Generate a uniform random sample from np.arange(5) of size 3:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">array([0, 3, 4]) # random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#This is equivalent to np.random.randint(0,5,3)</span>
+</pre></div>
+</div>
+<p>Generate a non-uniform random sample from np.arange(5) of size 3:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">array([3, 3, 0]) # random</span>
+</pre></div>
+</div>
+<p>Generate a uniform random sample from np.arange(5) of size 3 without
+replacement:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([3,1,0]) # random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#This is equivalent to np.random.permutation(np.arange(5))[:3]</span>
+</pre></div>
+</div>
+<p>Generate a non-uniform random sample from np.arange(5) of size
+3 without replacement:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">array([2, 3, 0]) # random</span>
+</pre></div>
+</div>
+<p>Any of the above can be repeated with an arbitrary array-like
+instead of just integers. For instance:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aa_milne_arr</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pooh&#39;</span><span class="p">,</span> <span class="s1">&#39;rabbit&#39;</span><span class="p">,</span> <span class="s1">&#39;piglet&#39;</span><span class="p">,</span> <span class="s1">&#39;Christopher&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">aa_milne_arr</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<span class="go">array([&#39;pooh&#39;, &#39;pooh&#39;, &#39;pooh&#39;, &#39;Christopher&#39;, &#39;piglet&#39;], # random</span>
+<span class="go">      dtype=&#39;&lt;U11&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine.strategy">
+<span id="pyneg-engine-strategy-module"></span><h2>pyneg.engine.strategy module<a class="headerlink" href="#module-pyneg.engine.strategy" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.engine.strategy.Strategy">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.strategy.</code><code class="sig-name descname">Strategy</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1, verbose=&lt;Verbosity.none: 0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.comms.offer.Offer</span></code></a></p>
+<dl class="method">
+<dt id="pyneg.engine.strategy.Strategy.get_value_dist">
+<code class="sig-name descname">get_value_dist</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Dict[str, float]<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.get_value_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.get_value_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.strategy.Strategy.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterable[str]<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.strategy.Strategy.normalise_issue">
+<code class="sig-name descname">normalise_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.normalise_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.normalise_issue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.strategy.Strategy.set_prob">
+<code class="sig-name descname">set_prob</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em>, <em class="sig-param">prob: float</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.set_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.set_prob" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.engine">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyneg.engine" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyNeg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sam Vente.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/API/pyneg.engine.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,5 @@
+Comm's API
+=============
+.. autoclass:: pyneg.comms.message
+  :members:
+  :undoc-members:

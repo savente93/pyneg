@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pyneg.comms package &#8212; PyNeg 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pyneg-comms-package">
+<h1>pyneg.comms package<a class="headerlink" href="#pyneg-comms-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyneg.comms.atomic_constraint">
+<span id="pyneg-comms-atomic-constraint-module"></span><h2>pyneg.comms.atomic_constraint module<a class="headerlink" href="#module-pyneg.comms.atomic_constraint" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.comms.atomic_constraint.AtomicConstraint">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.atomic_constraint.</code><code class="sig-name descname">AtomicConstraint</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment">
+<code class="sig-name descname">is_satisfied_by_assignment</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.is_satisfied_by_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer">
+<code class="sig-name descname">is_satisfied_by_offer</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.is_satisfied_by_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.comms.message">
+<span id="pyneg-comms-message-module"></span><h2>pyneg.comms.message module<a class="headerlink" href="#module-pyneg.comms.message" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.comms.message.Message">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.message.</code><code class="sig-name descname">Message</code><span class="sig-paren">(</span><em class="sig-param">sender_name: str, recipient_name: str, type_: pyneg.types.message_type.MessageType, offer: Optional[pyneg.comms.offer.Offer], constraint: Optional[pyneg.comms.atomic_constraint.AtomicConstraint] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/message.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>message test docstring</p>
+<dl class="method">
+<dt id="pyneg.comms.message.Message.get_constraint">
+<code class="sig-name descname">get_constraint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.get_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.get_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.message.Message.has_constraint">
+<code class="sig-name descname">has_constraint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.has_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.has_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.message.Message.is_acceptance">
+<code class="sig-name descname">is_acceptance</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_acceptance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_acceptance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.message.Message.is_empty">
+<code class="sig-name descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.message.Message.is_offer">
+<code class="sig-name descname">is_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_offer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.message.Message.is_termination">
+<code class="sig-name descname">is_termination</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_termination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_termination" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.comms.notify">
+<span id="pyneg-comms-notify-module"></span><h2>pyneg.comms.notify module<a class="headerlink" href="#module-pyneg.comms.notify" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pyneg.comms.notify.send_message">
+<code class="sig-prename descclassname">pyneg.comms.notify.</code><code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/notify.html#send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.notify.send_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyneg.comms.notify.try_except_notify">
+<code class="sig-prename descclassname">pyneg.comms.notify.</code><code class="sig-name descname">try_except_notify</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/notify.html#try_except_notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.notify.try_except_notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try/Except decorator - takes as input a function, and outputs
+a modified version of that function whose first argument is how
+many times you want to re-run the function if any exception is
+raised. The second function is the path to a file containing the tokens
+used for the push notifications</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.comms.offer">
+<span id="pyneg-comms-offer-module"></span><h2>pyneg.comms.offer module<a class="headerlink" href="#module-pyneg.comms.offer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyneg.comms.offer.Offer">
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.offer.</code><code class="sig-name descname">Offer</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.get_chosen_value">
+<code class="sig-name descname">get_chosen_value</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_chosen_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_chosen_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.get_issues">
+<code class="sig-name descname">get_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_issues" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.get_problog_dists">
+<code class="sig-name descname">get_problog_dists</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_problog_dists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_problog_dists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.get_sparse_repr">
+<code class="sig-name descname">get_sparse_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_repr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.get_sparse_str_repr">
+<code class="sig-name descname">get_sparse_str_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_str_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_str_repr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.offer.Offer.is_assigned">
+<code class="sig-name descname">is_assigned</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.is_assigned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.is_assigned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyneg.comms">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyneg.comms" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">PyNeg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sam Vente.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/API/pyneg.comms.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

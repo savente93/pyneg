@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pyneg.utils.utils &#8212; PyNeg 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pyneg.utils.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">sub</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">randint</span>
+
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NestedDict</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">mkdir</span>
+
+
+<div class="viewcode-block" id="nested_dict_from_atom_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.nested_dict_from_atom_dict">[docs]</a><span class="k">def</span> <span class="nf">nested_dict_from_atom_dict</span><span class="p">(</span><span class="n">atom_dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedDict</span><span class="p">:</span>
+    <span class="n">nested_dict</span><span class="p">:</span> <span class="n">NestedDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atom_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c1"># following patern is guaranteed to work since no _ in the names are allowed</span>
+        <span class="n">issue</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">issue_value_tuple_from_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">issue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">atom_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">nested_dict</span></div>
+
+
+<div class="viewcode-block" id="issue_value_tuple_from_atom"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.issue_value_tuple_from_atom">[docs]</a><span class="k">def</span> <span class="nf">issue_value_tuple_from_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="s2">&quot;(.*)_(.*)&quot;</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Could not parse atom: </span><span class="si">{atom}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="n">atom</span><span class="p">))</span>
+
+    <span class="n">issue</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># atoms containing floats have an extra &#39; which we need to remove</span>
+    <span class="n">issue</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">issue</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">issue</span><span class="p">,</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="atom_from_issue_value"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_from_issue_value">[docs]</a><span class="k">def</span> <span class="nf">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&#39;</span><span class="si">{issue}</span><span class="s2">_</span><span class="si">{val}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{issue}</span><span class="s2">_</span><span class="si">{val}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="atom_dict_from_nested_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_dict_from_nested_dict">[docs]</a><span class="k">def</span> <span class="nf">atom_dict_from_nested_dict</span><span class="p">(</span><span class="n">nested_dict</span><span class="p">):</span>
+    <span class="n">atom_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span>
+                <span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">atom_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">atom_dict</span></div>
+
+
+<div class="viewcode-block" id="generate_binary_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_binary_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_binary_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">tau_a</span><span class="p">,</span> <span class="n">tau_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">u_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">u_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tau_b</span><span class="p">:</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">tau_a</span>
+
+    <span class="n">u_a</span><span class="p">[:,</span> <span class="p">:</span><span class="n">tau_a</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">u_b</span><span class="p">[:,</span> <span class="n">tau_b</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
+
+
+<div class="viewcode-block" id="generate_gradient_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_gradient_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_gradient_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">tau_a</span><span class="p">,</span> <span class="n">tau_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tau_b</span><span class="p">:</span>
+        <span class="n">tau_b</span> <span class="o">=</span> <span class="n">tau_a</span>
+
+    <span class="c1"># starts at -1000 and linearly increases to 0 at tau_a then linearly increases until 1000 at m</span>
+    <span class="n">u_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau_a</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">tau_a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">u_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tau_b</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">tau_b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
+
+
+<div class="viewcode-block" id="generate_lex_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_lex_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_lex_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">u_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="n">order</span>
+    <span class="n">u_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="n">order</span>
+
+    <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
+
+
+<div class="viewcode-block" id="count_acceptable_offers"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.count_acceptable_offers">[docs]</a><span class="k">def</span> <span class="nf">count_acceptable_offers</span><span class="p">(</span><span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span><span class="p">,</span> <span class="n">rho_a_percentile</span><span class="p">,</span> <span class="n">rho_b_percentile</span><span class="p">,</span> <span class="n">w_a</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">u_a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">w_a</span><span class="p">:</span>
+        <span class="n">w_a</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">w_b</span><span class="p">:</span>
+        <span class="n">w_b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+    <span class="n">issue_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="p">(</span><span class="n">m</span> <span class="o">**</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">value_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])))</span>
+
+    <span class="n">utils_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u_a</span><span class="p">[</span><span class="n">issue_indices</span><span class="p">,</span> <span class="n">value_indices</span><span class="p">],</span> <span class="n">w_a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">utils_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u_b</span><span class="p">[</span><span class="n">issue_indices</span><span class="p">,</span> <span class="n">value_indices</span><span class="p">],</span> <span class="n">w_b</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="n">rho_a_absolute</span> <span class="o">=</span> <span class="n">rho_a_percentile</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">utils_a</span><span class="p">)</span>
+    <span class="n">rho_b_absolute</span> <span class="o">=</span> <span class="n">rho_b_percentile</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">utils_b</span><span class="p">)</span>
+
+    <span class="n">a_accepts</span> <span class="o">=</span> <span class="n">utils_a</span> <span class="o">&gt;=</span> <span class="n">rho_a_absolute</span>
+    <span class="n">b_accepts</span> <span class="o">=</span> <span class="n">utils_b</span> <span class="o">&gt;=</span> <span class="n">rho_b_absolute</span>
+
+    <span class="n">both_accept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">a_accepts</span><span class="p">,</span> <span class="n">b_accepts</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a_accepts</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">b_accepts</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">both_accept</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="neg_scenario_from_util_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.neg_scenario_from_util_matrices">[docs]</a><span class="k">def</span> <span class="nf">neg_scenario_from_util_matrices</span><span class="p">(</span><span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span><span class="p">):</span>
+    <span class="n">utils_a</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">utils_b</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">issues</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">number_of_issues_to_generate</span><span class="p">,</span> <span class="n">issue_cardinality</span> <span class="o">=</span> <span class="n">u_a</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_issues_to_generate</span><span class="p">):</span>
+        <span class="n">issues</span><span class="p">[</span><span class="s2">&quot;issue</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">issue_cardinality</span><span class="p">))))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">issue_cardinality</span><span class="p">):</span>
+            <span class="n">utils_a</span><span class="p">[</span><span class="s2">&quot;issue</span><span class="si">{i}</span><span class="s2">_</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">u_a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">utils_b</span><span class="p">[</span><span class="s2">&quot;issue</span><span class="si">{i}</span><span class="s2">_</span><span class="si">{j}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">u_b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">issues</span><span class="p">,</span> <span class="n">utils_a</span><span class="p">,</span> <span class="n">utils_b</span></div>
+
+<div class="viewcode-block" id="setup_random_scenarios"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.setup_random_scenarios">[docs]</a><span class="k">def</span> <span class="nf">setup_random_scenarios</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">numb_of_scenarios</span><span class="p">,</span> <span class="n">numb_constraints</span><span class="p">):</span>
+
+    <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">upper</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">base_a</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">base_b</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numb_of_scenarios</span><span class="p">):</span>
+        <span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+
+        <span class="n">scenario_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="p">))</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="n">scenario_dir</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cntr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numb_constraints</span><span class="p">):</span>
+            <span class="n">instance_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scenario_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">cntr</span><span class="p">))</span>
+            <span class="n">mkdir</span><span class="p">(</span><span class="n">instance_dir</span><span class="p">)</span>
+            <span class="n">constr_a</span><span class="p">,</span> <span class="n">constr_b</span> <span class="o">=</span> <span class="n">insert_difficult_constraints</span><span class="p">(</span>
+                <span class="n">base_a</span><span class="p">,</span> <span class="n">base_b</span><span class="p">,</span> <span class="n">cntr</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">instance_dir</span><span class="p">,</span> <span class="s2">&quot;a.npy&quot;</span><span class="p">),</span> <span class="n">constr_a</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">instance_dir</span><span class="p">,</span> <span class="s2">&quot;b.npy&quot;</span><span class="p">),</span> <span class="n">constr_b</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="generate_random_scenario"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_random_scenario">[docs]</a><span class="k">def</span> <span class="nf">generate_random_scenario</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">numb_constraints</span><span class="p">):</span>
+
+    <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">upper</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">base_a</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">base_b</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">insert_difficult_constraints</span><span class="p">(</span><span class="n">base_a</span><span class="p">,</span><span class="n">base_b</span><span class="p">,</span><span class="n">numb_constraints</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="insert_difficult_constraints"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.insert_difficult_constraints">[docs]</a><span class="k">def</span> <span class="nf">insert_difficult_constraints</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">numb</span><span class="p">):</span>
+    <span class="n">constr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>
+    <span class="n">a_ret</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">b_ret</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">b</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">numb</span><span class="p">]):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">ind</span>
+        <span class="n">a_ret</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">constr</span>
+
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">numb</span><span class="p">]):</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">ind</span>
+        <span class="n">b_ret</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">constr</span>
+
+    <span class="k">return</span> <span class="n">a_ret</span><span class="p">,</span> <span class="n">b_ret</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">PyNeg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/modules.html">pyneg</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sam Vente.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

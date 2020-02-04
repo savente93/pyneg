@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pyneg.engine.constrained_random_generator &#8212; PyNeg 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pyneg.engine.constrained_random_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">isclose</span>
+
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span><span class="p">,</span> <span class="n">Offer</span>
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">AtomicDict</span>
+<span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">atom_from_issue_value</span>
+<span class="kn">from</span> <span class="nn">pyneg.engine</span> <span class="kn">import</span> <span class="n">Evaluator</span><span class="p">,</span> <span class="n">RandomGenerator</span>
+
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator">[docs]</a><span class="k">class</span> <span class="nc">ConstrainedRandomGenerator</span><span class="p">(</span><span class="n">RandomGenerator</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
+                 <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
+                 <span class="n">evaluator</span><span class="p">:</span> <span class="n">Evaluator</span><span class="p">,</span>
+                 <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">kb</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">acceptability_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">max_rounds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">constr_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">initial_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">],</span>
+                 <span class="n">auto_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">max_generation_tries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span> <span class="o">=</span> <span class="n">constr_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span>
+                         <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">,</span> <span class="n">acceptability_threshold</span><span class="p">,</span> <span class="n">max_rounds</span><span class="p">,</span> <span class="n">max_generation_tries</span><span class="o">=</span><span class="n">max_generation_tries</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span> <span class="o">=</span> <span class="n">auto_constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">initial_constraints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">initial_constraints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_constraints</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">new_utils</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_utilities</span><span class="p">(</span><span class="n">new_utils</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_constraints</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span></div>
+
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">new_utils</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_constraints</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_utilities</span><span class="p">(</span><span class="n">new_utils</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.generate_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.generate_offer">[docs]</a>    <span class="k">def</span> <span class="nf">generate_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">offer</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_offer</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">satisfies_all_constraints</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">offer</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_strat_constraint_compliant</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_strat_constraint_compliant</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.discover_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">discover_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="n">new_constraints</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">best_case</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">bc</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">issue</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>
+                <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">value_util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value_util</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">if</span> <span class="n">best_case</span> <span class="o">+</span> <span class="n">value_util</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span><span class="p">:</span>
+                    <span class="n">new_constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AtomicConstraint</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">new_constraints</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">):</span>
+        <span class="n">issue_constrained_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">constr</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="k">if</span> <span class="n">constr</span><span class="o">.</span><span class="n">issue</span> <span class="o">==</span> <span class="n">issue</span><span class="p">)</span>
+        <span class="n">issue_unconstrained_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">])</span> <span class="o">-</span> <span class="n">issue_constrained_values</span>
+        <span class="k">return</span> <span class="n">issue_unconstrained_values</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.index_max_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">index_max_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">issue</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">max_issue_util</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">31</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>
+                <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">calc_assignment_util</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">util</span> <span class="o">&gt;</span> <span class="n">max_issue_util</span><span class="p">:</span>
+                    <span class="n">max_issue_util</span> <span class="o">=</span> <span class="n">util</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_issue_util</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.make_strat_constraint_compliant"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant">[docs]</a>    <span class="k">def</span> <span class="nf">make_strat_constraint_compliant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+            <span class="c1"># if constr.is_satisfied_by_strat(self.strategy):</span>
+            <span class="c1">#     continue</span>
+
+            <span class="n">issue</span> <span class="o">=</span> <span class="n">constr</span><span class="o">.</span><span class="n">issue</span>
+            <span class="n">unconstrained_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span>
+                <span class="n">issue</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unconstrained_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># Unsatisfiable constraint so we&#39;re terminating on the next message so we won&#39;t need to update the strat</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_assignment</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">set_prob</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># it&#39;s possible we just made the last value in the strategy 0 so</span>
+            <span class="c1"># we have to figure out a value that is still unconstrained</span>
+            <span class="c1"># and set that one to 1</span>
+            <span class="n">value_dist_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">get_value_dist</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="n">value_dist_sum</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">set_prob</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span>
+                    <span class="nb">iter</span><span class="p">(</span><span class="n">unconstrained_values</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">normalise_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.find_violated_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.find_violated_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">find_violated_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_issues</span><span class="p">():</span>
+                <span class="n">chosen_value</span> <span class="o">=</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_chosen_value</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_assignment</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">chosen_value</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">AtomicConstraint</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">chosen_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ConstrainedRandomGenerator.get_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">PyNeg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API/modules.html">pyneg</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sam Vente.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
