@@ -1,3 +1,8 @@
+"""
+This module handles how agents generate and evaluate offers. This is where utility functions, constraints and other
+information needed for that is stored. 
+"""
+
 from pyneg.engine.generator import Generator
 from pyneg.engine.enum_generator import EnumGenerator
 from pyneg.engine.random_generator import RandomGenerator

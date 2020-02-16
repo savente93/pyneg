@@ -12,5 +12,7 @@ coverage.xml
 .venv
 .idea
 venv
-sims/scenarios
-sims/results
+sims/
+*sublime*
+.dockercache
+docs/_build/

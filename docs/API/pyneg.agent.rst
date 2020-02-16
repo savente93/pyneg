@@ -1,18 +1,7 @@
-pyneg.agent package
+Agents
 ===================
 
-Submodules
-----------
-
-pyneg.agent.abstract\_agent module
-----------------------------------
-
-.. automodule:: pyneg.agent.abstract_agent
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.agent.agent module
+Base Agent
 ------------------------
 
 .. automodule:: pyneg.agent.agent
@@ -20,7 +9,7 @@ pyneg.agent.agent module
    :undoc-members:
    :show-inheritance:
 
-pyneg.agent.agent\_factory module
+Agent Factory
 ---------------------------------
 
 .. automodule:: pyneg.agent.agent_factory
@@ -28,19 +17,10 @@ pyneg.agent.agent\_factory module
    :undoc-members:
    :show-inheritance:
 
-pyneg.agent.constr\_agent module
+Constraint Agent
 --------------------------------
 
 .. automodule:: pyneg.agent.constr_agent
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: pyneg.agent
    :members:
    :undoc-members:
    :show-inheritance:

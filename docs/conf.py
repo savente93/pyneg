@@ -34,8 +34,20 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_rtd_theme'
 ]
+autodoc_default_options = {
+    'members': None,
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'private-members': None,
+    'undoc-members': None,
+    'exclude-members': 'randint, choice' # exclude documentation from numpy functions
+}
+## Generate autodoc stubs with summaries from code
+autosummary_generate = True
+
 templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
@@ -51,7 +63,8 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -75,4 +88,4 @@ latex_elements = {
     'figure_align':'htbp',
     # The font size ('10pt', '11pt' or '12pt').
     #
-    'pointsize': '10pt'}
+    'pointsize': '16pt'}

@@ -1,10 +1,8 @@
+Usage Examples
+=================
 
-Usage
-======
+.. toctree::
+   :maxdepth: 2
 
-Installation
--------------
-
-Getting started
-----------------
-
+   
+   agent-setup.rst

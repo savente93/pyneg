@@ -1,57 +1,332 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>pyneg.agent package &#8212; PyNeg 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Agents &mdash; PyNeg 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Comms" href="pyneg.comms.html" />
+    <link rel="prev" title="API" href="pyneg.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="../index.html" class="icon icon-home"> PyNeg
+          
+
+          
+          </a>
+
+          
             
-  <div class="section" id="pyneg-agent-package">
-<h1>pyneg.agent package<a class="headerlink" href="#pyneg-agent-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-<div class="section" id="module-pyneg.agent.abstract_agent">
-<span id="pyneg-agent-abstract-agent-module"></span><h2>pyneg.agent.abstract_agent module<a class="headerlink" href="#module-pyneg.agent.abstract_agent" title="Permalink to this headline">¶</a></h2>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pyneg.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyneg.agent.agent">Base Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyneg.agent.agent_factory">Agent Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyneg.agent.constr_agent">Constraint Agent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html">Comms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html">Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.types.html">pyneg.types package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.utils.html">pyneg.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNeg</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="pyneg.html">API</a> &raquo;</li>
+        
+      <li>Agents</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/API/pyneg.agent.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
 </div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="agents">
+<h1>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-pyneg.agent.agent">
-<span id="pyneg-agent-agent-module"></span><h2>pyneg.agent.agent module<a class="headerlink" href="#module-pyneg.agent.agent" title="Permalink to this headline">¶</a></h2>
+<span id="base-agent"></span><h2>Base Agent<a class="headerlink" href="#module-pyneg.agent.agent" title="Permalink to this headline">¶</a></h2>
+<p>This module defines the base agent class. Here is where a lot of the
+communication logic and the main negotiation loop is defined.</p>
 <dl class="class">
 <dt id="pyneg.agent.agent.Agent">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.agent.agent.</code><code class="sig-name descname">Agent</code><a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base negotiation agent. This class handles most things like the main
+negotiation loop, communication, and genrally acts like a hub
+for other classes.</p>
+<dl class="simple">
+<dt>Public Methods:</dt><dd><ul class="simple">
+<li><p>receive_negotiation_request(self, opponent: Agent, neg_space: NegSpace) -&gt; bool:</p></li>
+<li><p>negotiate(self, opponent: Agent) -&gt; bool:</p></li>
+<li><p>send_message(self, opponent: Agent, msg: Message) -&gt; None</p></li>
+<li><p>receive_message(self, msg: Message) -&gt; None</p></li>
+<li><p>generate_next_message(self) -&gt; Message</p></li>
+<li><p>add_utilities(self, new_utils: Dict[str, float]) -&gt; bool</p></li>
+<li><p>set_utilities(self, new_utils: Dict[str, float]) -&gt; bool</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
-<dt id="pyneg.agent.agent.Agent.add_utilities">
-<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.add_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.agent.agent.Agent.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup all the class attributes, but we don’t assign them meaningful
+values here. That is all handled by the factory. They are initialised here
+to make the linters a bit happier.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyneg.agent.agent.Agent.name">
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pyneg.agent.agent.Agent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the agent. mainly used for logging</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent.receive_negotiation_request">
+<code class="sig-name descname">receive_negotiation_request</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent, neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.receive_negotiation_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.receive_negotiation_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Public function that allows other agents to propose a negoation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opponent</strong> (<a class="reference internal" href="#pyneg.agent.agent.Agent" title="pyneg.agent.agent.Agent"><em>Agent</em></a>) – Agent that is proposing the negotiation.
+Usually called with <cite>self</cite> as argument</p></li>
+<li><p><strong>neg_space</strong> (<em>NegSpace</em>) – Negotiation space that negotiation will take place in</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if and only if the request for negotiation is accepted</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent._accepts_negotiation_proposal">
+<code class="sig-name descname">_accepts_negotiation_proposal</code><span class="sig-paren">(</span><em class="sig-param">neg_space</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._accepts_negotiation_proposal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._accepts_negotiation_proposal" title="Permalink to this definition">¶</a></dt>
+<dd><p>determines if the agent should accept the call for negotiation.
+Currently this just checks if the proposed negotiation
+space is equal to it’s own, since this otherwise leads to inconsistencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>neg_space</strong> (<em>NegSpace</em>) – the negotiation space that the proposed negotiation
+would take place in.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>whether the negotiation is accepted or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent._call_for_negotiation">
+<code class="sig-name descname">_call_for_negotiation</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent, neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._call_for_negotiation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._call_for_negotiation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a message to opponent to request a negotiation and wait for the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opponent</strong> (<a class="reference internal" href="#pyneg.agent.agent.Agent" title="pyneg.agent.agent.Agent"><em>Agent</em></a>) – The agent self want’s to negotiate with</p></li>
+<li><p><strong>neg_space</strong> (<em>NegSpace</em>) – The negotiation space self want’s to negotiate in</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether opponent accepted the request to negotiate</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.negotiate">
 <code class="sig-name descname">negotiate</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.negotiate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.negotiate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the entrypoint to run a negotiation, and where the main loop is located.
+<cite>self</cite> is assumed to have set up the negotiation before hand, meaning that it must
+have both a neotiation space and a utility function defined. This should be the case if
+the agent was created by the factory. See <a class="reference internal" href="../usage/agent-setup.html"><span class="doc">Setting up agents for a negotiation</span></a> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>opponent</strong> (<a class="reference internal" href="#pyneg.agent.agent.Agent" title="pyneg.agent.agent.Agent"><em>Agent</em></a>) – Agent that <cite>self</cite> is going to negotiate with</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the negotiation came to an agreement or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent._terminate">
+<code class="sig-name descname">_terminate</code><span class="sig-paren">(</span><em class="sig-param">successful: bool</em><span class="sig-paren">)</span> &#x2192; pyneg.comms.message.Message<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._terminate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the message that signals to the opporent that the negotiaion has ended and
+whether it was successful or not. If it was successful the message includes the
+offer that was accepted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>successful</strong> (<em>bool</em>) – Whether the agents wants to terminate with agreement (True) or        without agreement (False)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if this function is called while no negotiation is active        or no opponent is known.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The message that will signal to the opponent that the negotiation has ended        as speciffied.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message">Message</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent.send_message">
+<code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent</em>, <em class="sig-param">msg: pyneg.comms.message.Message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a message to the opponent, and records the communication in the transcript
+Message should be one allowed by the protocol which is defined in <a class="reference internal" href="pyneg.types.html#msg-type"><span class="std std-ref">Message Types</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opponent</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>msg</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – [description]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent._wait_for_response">
+<code class="sig-name descname">_wait_for_response</code><span class="sig-paren">(</span><em class="sig-param">sender: pyneg.agent.agent.Agent</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._wait_for_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._wait_for_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent._record_message">
+<code class="sig-name descname">_record_message</code><span class="sig-paren">(</span><em class="sig-param">msg: pyneg.comms.message.Message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._record_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._record_message" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -60,13 +335,28 @@
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pyneg.agent.agent.Agent.receive_negotiation_request">
-<code class="sig-name descname">receive_negotiation_request</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent, neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.receive_negotiation_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.receive_negotiation_request" title="Permalink to this definition">¶</a></dt>
+<dt id="pyneg.agent.agent.Agent._parse_response">
+<code class="sig-name descname">_parse_response</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._parse_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._parse_response" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pyneg.agent.agent.Agent.send_message">
-<code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param">opponent: pyneg.agent.agent.Agent</em>, <em class="sig-param">msg: pyneg.comms.message.Message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.send_message" title="Permalink to this definition">¶</a></dt>
+<dt id="pyneg.agent.agent.Agent._should_exit">
+<code class="sig-name descname">_should_exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._should_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._should_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent.generate_next_message">
+<code class="sig-name descname">generate_next_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.message.Message<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.generate_next_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.generate_next_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.accepts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent.Agent.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.add_utilities" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -78,7 +368,7 @@
 
 </div>
 <div class="section" id="module-pyneg.agent.agent_factory">
-<span id="pyneg-agent-agent-factory-module"></span><h2>pyneg.agent.agent_factory module<a class="headerlink" href="#module-pyneg.agent.agent_factory" title="Permalink to this headline">¶</a></h2>
+<span id="agent-factory"></span><h2>Agent Factory<a class="headerlink" href="#module-pyneg.agent.agent_factory" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pyneg.agent.agent_factory.AgentFactory">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">AgentFactory</code><a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory" title="Permalink to this definition">¶</a></dt>
@@ -86,16 +376,6 @@
 <dl class="method">
 <dt id="pyneg.agent.agent_factory.AgentFactory.estimate_max_linear_utility">
 <em class="property">static </em><code class="sig-name descname">estimate_max_linear_utility</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.estimate_max_linear_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.estimate_max_linear_utility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent">
-<em class="property">static </em><code class="sig-name descname">make_constrained_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, issue_weights: Optional[Dict[str, float]] = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent">
-<em class="property">static </em><code class="sig-name descname">make_constrained_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, kb: List[str], issue_weights: Optional[Dict[str, float]] = None, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, max_rounds: int = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -113,104 +393,169 @@
 <em class="property">static </em><code class="sig-name descname">make_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: Union[float, int], non_agreement_cost: float, kb: List[str], max_rounds: int = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent">
+<em class="property">static </em><code class="sig-name descname">make_constrained_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, issue_weights: Optional[Dict[str, float]] = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent">
+<em class="property">static </em><code class="sig-name descname">make_constrained_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, kb: List[str], issue_weights: Optional[Dict[str, float]] = None, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, max_rounds: int = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.agent.constr_agent">
-<span id="pyneg-agent-constr-agent-module"></span><h2>pyneg.agent.constr_agent module<a class="headerlink" href="#module-pyneg.agent.constr_agent" title="Permalink to this headline">¶</a></h2>
+<span id="constraint-agent"></span><h2>Constraint Agent<a class="headerlink" href="#module-pyneg.agent.constr_agent" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the logic for agents that know how to reason about constraints.
+It basically only contains the ConstrainedAgent class</p>
 <dl class="class">
 <dt id="pyneg.agent.constr_agent.ConstrainedAgent">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.agent.constr_agent.</code><code class="sig-name descname">ConstrainedAgent</code><a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.agent.agent.Agent" title="pyneg.agent.agent.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.agent.agent.Agent</span></code></a></p>
+<p>A negotiation agent that has additional logic to deal with constraints.
+For now only atomic constraints are supported</p>
+<dl class="simple">
+<dt>Public functions:</dt><dd><ul class="simple">
+<li><p>add_constraint(self, constraint) -&gt; None</p></li>
+<li><p>get_unconstrainted_values_by_issue(self,issue) -&gt; Set[str]</p></li>
+<li><p>get_constraints(self) -&gt; Set[AtomicConstraint]</p></li>
+<li><p>accepts(self, offer: Offer) -&gt; bool</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pyneg.agent.constr_agent.ConstrainedAgent.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>constraint agent constructor. As with other agents, everything is set by the factory</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pyneg.agent.constr_agent.ConstrainedAgent.add_constraint">
 <code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.add_constraint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyneg.agent.constr_agent.ConstrainedAgent.get_constraints">
-<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.get_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Register a constraint with the agent and it’s engine
+:param constraint: the constraint to be added
+:type constraint: AtomicConstraint</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.constr_agent.ConstrainedAgent.get_unconstrained_values_by_issue">
-<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set containing all unconstrained values for a specific issue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>bool</em>) – The issue of which to retreive the unconstrained values</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A set containing all value strings that have no known        constraint associated</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Set[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.constr_agent.ConstrainedAgent.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set containing all the constraints known to this agent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Set containing all the constraints known to this agent</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.constr_agent.ConstrainedAgent._accepts_negotiation_proposal">
+<code class="sig-name descname">_accepts_negotiation_proposal</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent._accepts_negotiation_proposal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent._accepts_negotiation_proposal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decide whether we should accept the proposal for a negotiation.        We accept whenever the negotiatin space being proposed is equal to our own        so we can reason about it, and there are still solutions possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>neg_space</strong> (<em>NegSpace</em>) – The negotiation space the proposed negotiation will take part in</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the agents agrees to start a negotiation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.agent.constr_agent.ConstrainedAgent.accepts">
+<code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/constr_agent.html#ConstrainedAgent.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.constr_agent.ConstrainedAgent.accepts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the agent finds the provided offer acceptable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to consider</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if and only if the agent accepts the proposal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="module-pyneg.agent">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyneg.agent" title="Permalink to this headline">¶</a></h2>
-</div>
 </div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">PyNeg</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyneg.comms.html" class="btn btn-neutral float-right" title="Comms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pyneg.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Sam Vente
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Sam Vente.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/API/pyneg.agent.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

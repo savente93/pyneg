@@ -4,8 +4,13 @@ from pyneg.engine.evaluator import Evaluator
 from pyneg.engine.generator import Generator
 from typing import Set, Optional
 
+"""
+this is the engine docstring
+"""
 
 class AbstractEngine:
+    """The abstract engine is an empty stub. It has to purposes: 
+    The first is to enable """
     def __init__(self):
         pass
 
@@ -33,7 +38,7 @@ class AbstractEngine:
     def get_unconstrained_values_by_issue(self, issue):
         raise NotImplementedError()
 
-    def get_constraints(self):
+    def get_constraints(self) -> Set[AtomicConstraint]:
         raise NotImplementedError()
 
     def accepts(self, offer: Offer) -> bool:
@@ -42,8 +47,12 @@ class AbstractEngine:
     def can_continue(self) -> bool:
         raise NotImplementedError()
 
+    def satisfies_all_constraints(self,offer: Offer) -> bool:
+        raise NotImplementedError()
+
 
 class Engine(AbstractEngine):
+    """Engine docstring"""
     def __init__(self, generator: Generator, evaluator: Evaluator):
         super().__init__()
         self.generator: Generator = generator
@@ -76,7 +85,7 @@ class Engine(AbstractEngine):
     def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
         return self.generator.get_unconstrained_values_by_issue(issue)
 
-    def get_constraints(self):
+    def get_constraints(self) -> Set[AtomicConstraint]:
         return self.generator.get_constraints()
 
     def satisfies_all_constraints(self, offer: Offer) -> bool:

@@ -1,8 +1,6 @@
-pyneg package
+API
 =============
 
-Subpackages
------------
 
 .. toctree::
 
@@ -11,11 +9,3 @@ Subpackages
    pyneg.engine
    pyneg.types
    pyneg.utils
-
-Module contents
----------------
-
-.. automodule:: pyneg
-   :members:
-   :undoc-members:
-   :show-inheritance:

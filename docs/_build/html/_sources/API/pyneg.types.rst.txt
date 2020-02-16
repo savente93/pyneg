@@ -4,7 +4,9 @@ pyneg.types package
 Submodules
 ----------
 
-pyneg.types.message\_type module
+.. _msg_type:
+
+Message Types
 --------------------------------
 
 .. automodule:: pyneg.types.message_type

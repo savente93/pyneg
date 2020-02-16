@@ -3,7 +3,9 @@ from pyneg.types import AtomicDict
 from typing import Set
 
 
+
 class Evaluator():
+    """evaluator class docstring"""
     def __init__(self):
         pass
 

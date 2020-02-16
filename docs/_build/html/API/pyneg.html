@@ -1,81 +1,202 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>pyneg package &#8212; PyNeg 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API &mdash; PyNeg 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agents" href="pyneg.agent.html" />
+    <link rel="prev" title="Welcomde to PyNeg’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="../index.html" class="icon icon-home"> PyNeg
+          
+
+          
+          </a>
+
+          
             
-  <div class="section" id="pyneg-package">
-<h1>pyneg package<a class="headerlink" href="#pyneg-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html">Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html">Comms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html">Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.types.html">pyneg.types package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.utils.html">pyneg.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNeg</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/API/pyneg.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pyneg.agent.html">pyneg.agent package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.abstract_agent">pyneg.agent.abstract_agent module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.agent">pyneg.agent.agent module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.agent_factory">pyneg.agent.agent_factory module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.constr_agent">pyneg.agent.constr_agent module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyneg.agent.html">Agents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.agent">Base Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.agent_factory">Agent Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.agent.html#module-pyneg.agent.constr_agent">Constraint Agent</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyneg.comms.html">pyneg.comms package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.atomic_constraint">pyneg.comms.atomic_constraint module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.message">pyneg.comms.message module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.notify">pyneg.comms.notify module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.offer">pyneg.comms.offer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyneg.comms.html">Comms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.atomic_constraint">Atomic Constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.message">Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.comms.html#module-pyneg.comms.offer">Offer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyneg.engine.html">pyneg.engine package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_dtp_generator">pyneg.engine.constrained_dtp_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_enum_generator">pyneg.engine.constrained_enum_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_linear_evaluator">pyneg.engine.constrained_linear_evaluator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_problog_evaluator">pyneg.engine.constrained_problog_evaluator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_random_generator">pyneg.engine.constrained_random_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.dtp_generator">pyneg.engine.dtp_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.engine">pyneg.engine.engine module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.enum_generator">pyneg.engine.enum_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.evaluator">pyneg.engine.evaluator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.generator">pyneg.engine.generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.linear_evaluator">pyneg.engine.linear_evaluator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.problog_evaluator">pyneg.engine.problog_evaluator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.random_generator">pyneg.engine.random_generator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.strategy">pyneg.engine.strategy module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyneg.engine.html">Engine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.engine">Wrappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#evaluators">Evaluators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_linear_evaluator">Constrained Linear Evaluator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_problog_evaluator">pyneg.engine.constrained_problog_evaluator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.evaluator">pyneg.engine.evaluator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.linear_evaluator">pyneg.engine.linear_evaluator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.problog_evaluator">pyneg.engine.problog_evaluator module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.engine.html#generators">Generators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_dtp_generator">pyneg.engine.constrained_dtp_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_enum_generator">pyneg.engine.constrained_enum_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.constrained_random_generator">pyneg.engine.constrained_random_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.dtp_generator">pyneg.engine.dtp_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.enum_generator">pyneg.engine.enum_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.generator">pyneg.engine.generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.random_generator">pyneg.engine.random_generator module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyneg.engine.html#module-pyneg.engine.strategy">pyneg.engine.strategy module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pyneg.types.html">pyneg.types package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pyneg.types.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyneg.types.html#module-pyneg.types.message_type">pyneg.types.message_type module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyneg.types.html#module-pyneg.types.message_type">Message Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyneg.types.html#module-pyneg.types.verbosity">pyneg.types.verbosity module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyneg.types.html#module-pyneg.types">Module contents</a></li>
 </ul>
@@ -90,77 +211,54 @@
 </ul>
 </div>
 </div>
-<div class="section" id="module-pyneg">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyneg" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">PyNeg</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pyneg.agent.html" class="btn btn-neutral float-right" title="Agents" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcomde to PyNeg’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Sam Vente
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Sam Vente.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="../_sources/API/pyneg.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

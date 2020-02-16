@@ -5,12 +5,16 @@ from .atomic_constraint import AtomicConstraint
 from .offer import Offer
 
 
+"""hello?"""
+
 class Message():
+    """message test docstring"""
     def __init__(self, sender_name: str,
                  recipient_name: str,
                  type_: MessageType,
                  offer: Optional[Offer],
                  constraint: Optional[AtomicConstraint] = None):
+        """message init test docstring"""
 
         self.sender_name: str = sender_name
         self.recipient_name: str = recipient_name

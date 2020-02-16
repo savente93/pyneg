@@ -1,10 +1,7 @@
-pyneg.comms package
+Comms
 ===================
 
-Submodules
-----------
-
-pyneg.comms.atomic\_constraint module
+Atomic Constraint
 -------------------------------------
 
 .. automodule:: pyneg.comms.atomic_constraint
@@ -12,7 +9,7 @@ pyneg.comms.atomic\_constraint module
    :undoc-members:
    :show-inheritance:
 
-pyneg.comms.message module
+Message
 --------------------------
 
 .. automodule:: pyneg.comms.message
@@ -20,15 +17,7 @@ pyneg.comms.message module
    :undoc-members:
    :show-inheritance:
 
-pyneg.comms.notify module
--------------------------
-
-.. automodule:: pyneg.comms.notify
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.comms.offer module
+Offer
 ------------------------
 
 .. automodule:: pyneg.comms.offer
@@ -36,11 +25,3 @@ pyneg.comms.offer module
    :undoc-members:
    :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: pyneg.comms
-   :members:
-   :undoc-members:
-   :show-inheritance:
