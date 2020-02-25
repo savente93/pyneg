@@ -183,13 +183,36 @@ class Agent:
         sender.send_message(self, sender.generate_next_message())
 
     def _record_message(self, msg: Message) -> None:
+        """
+        appends message to transcript
+
+        :param msg: The message to be appended
+        :type msg: Message
+        """
         self._transcript.append(msg)
 
     def receive_message(self, msg: Message) -> None:
+        """
+        Main entry point for other agents to send messages to `self`.
+        records the message in the transcript, parses the message
+        so the engine can do the reasoing next.
+
+        :param msg: Message to be parsed
+        :type msg: Message
+        """
         self._record_message(msg)
         self._parse_response(msg)
 
-    def _parse_response(self, response):
+    def _parse_response(self, response: Message):
+        """
+        Parse a recieved message. If the message was either acceptance
+        or termination we terminate the negotiation loop appropriately
+        otherwise, if the message included a constraint we incorporate it
+        and check if we can accept the received proposal.
+
+        :param response: The message to be parsed
+        :type response: Message
+        """
         if response.type_ == MessageType.EMPTY:
             return
 
@@ -206,6 +229,8 @@ class Agent:
         if response.constraint:
             self._constraints_satisfiable = self._engine.add_constraint(response.constraint)
 
+        if not response.offer:
+            raise RuntimeError(f"Malformed message: {response}")
 
         if self.accepts(response.offer):
             self._last_offer_received_was_acceptable = True
@@ -214,12 +239,32 @@ class Agent:
         self._next_constraint = self._engine.find_violated_constraint(response.offer)
 
     def _should_exit(self) -> bool:
+        """
+        Determine if we should end the negotiation without agreement.
+        currently the only triger for this is when the engine can't find
+        new proposals, but allows arbitrary logic.
+
+        :raises RuntimeWarning: Raised if the engine is not properly \
+            initialised, or no negotiation is active.
+        :return: True if and only if the agent should terminate unsucessfully
+        :rtype: bool
+        """
         if not self._engine:
             raise RuntimeWarning("Engine was not initialised.")
 
         return not self._engine.can_continue()
 
     def generate_next_message(self) -> Message:
+        """
+        Generates the next message to be sent in a negotiation.
+        Generates acceptance or termination message if appropriate,
+        otherwise asks engine to generate new offer and sends message
+        containing that offer.
+
+        :raises RuntimeError: Raised if no negotiation is active
+        :return: The message to be sent back
+        :rtype: Message
+        """
 
         # we should never get here if we don't have an opponent
         if not self.negotiation_active or not self.opponent:
@@ -243,12 +288,40 @@ class Agent:
             return self._terminate(False)
 
     def accepts(self, offer: Offer) -> bool:
+        """
+        Determines whether an offer is acceptable or not. Mostly just a passthrough 
+        to the engine who does th4e actual reasoning. 
+        
+        :param offer: The offer to consider
+        :type offer: Offer
+        :return: true if the agent finds the offer acceptable
+        :rtype: bool
+        """
         return self._engine.accepts(offer)
 
     def add_utilities(self, new_utils: Dict[str, float]) -> bool:
+        """
+        Adds new utilities to the knowledge base so the engine can
+        reason about them properly. Returns False if adding the utility
+        makes the current negotiation impossible.
+        
+        :param new_utils: New utility rules to be added
+        :type new_utils: Dict[str, float]
+        :return: Whether a solution is still possible according to the agent.
+        :rtype: bool
+        """
         return self._engine.add_utilities(new_utils)
 
     def set_utilities(self, new_utilities: Dict[str, float]) -> bool:
+        """
+        Overrides utilities int the knowledge base. Returns False if adding
+        the utility makes the current negotiation impossible.
+        
+        :param new_utils: New utility rules
+        :type new_utils: Dict[str, float]
+        :return: Whether a solution is still possible according to the agent.
+        :rtype: bool
+        """
         return self._engine.set_utilities(new_utilities)
 
     def __repr__(self) -> str:

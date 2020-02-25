@@ -187,29 +187,3 @@ class TestConstrainedDTPGenerator(TestCase):
                                                  self.non_agreement_cost, self.reservation_value,
                                                  self.kb, self.constr_value, set())
         self.assertEqual(len(self.generator.constraints), 1)
-    #
-    # def test_generates_all_possible_offers(self):
-    #     neg_space_size = 2*10*9
-    #     self.generator.add_constraint(AtomicConstraint("integer", "9"))
-    #     offer_list = []
-    #     for _ in range(neg_space_size):
-    #         offer_list.append(self.generator.generate_offer())
-    #     self.assertEqual(len(offer_list), neg_space_size)
-    #
-    # def test_all_offers_are_generated_in_dec_order_of_util(self):
-    #     neg_space_size = 2*10*9
-    #     self.generator.add_constraint(AtomicConstraint("integer", "9"))
-    #     evaluator = ConstrainedProblogEvaluator(self.neg_space, self.utilities, self.non_agreement_cost, self.kb,
-    #                                             {AtomicConstraint("integer", "9")})
-    #     offer_list = [self.generator.generate_offer()]
-    #     util_list = [evaluator.calc_offer_utility(offer_list[-1])]
-    #     for i in range(neg_space_size):
-    #         offer = self.generator.generate_offer()
-    #         util = evaluator.calc_offer_utility(offer)
-    #         offer_list.append(offer)
-    #         util_list.append(util)
-    #         self.assertTrue(util_list[-1] <= util_list[-2], list(zip(offer_list, util_list)))
-    #
-    #
-    #     self.assertTrue(all(util_list[i] >= util_list[i + 1]
-    #                         for i in range(len(util_list) - 1)), util_list)

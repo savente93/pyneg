@@ -1,15 +1,13 @@
 from itertools import product
+from os import mkdir, path
 from re import search, sub
-from typing import List, Dict
-from typing import Tuple
+from typing import Dict, List, Tuple
+from uuid import uuid4
 
 import numpy as np
-
-from uuid import uuid4
 from numpy.random import randint
 
 from pyneg.types import NestedDict
-from os import path, mkdir
 
 
 def nested_dict_from_atom_dict(atom_dict) -> NestedDict:
@@ -176,4 +174,3 @@ def insert_difficult_constraints(a, b, numb):
         b_ret[i, j] = constr
 
     return a_ret, b_ret
-

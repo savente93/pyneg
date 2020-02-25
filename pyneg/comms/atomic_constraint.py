@@ -1,7 +1,18 @@
+"""
+This module defines an atomic constraint, the simples form of constraint possible. 
+It expresses that any offer which has a perticular assignement will never be accepted. 
+Good baseline for addapting for more complicated constraints
+"""
+
 from .offer import Offer
 
 
 class AtomicConstraint():
+    """
+        Atomic constraint, the simples form of constraint possible. 
+        It expresses that any offer which has a perticular assignement will never be accepted. 
+        Good baseline for addapting for more complicated constraints
+    """
     def __init__(self, issue: str, value: str):
         self.issue = str(issue)
         self.value = str(value)
@@ -19,20 +30,39 @@ class AtomicConstraint():
         return True
 
     def is_satisfied_by_assignment(self, issue: str, value: str) -> bool:
+        """
+        Determines whether a perticular assignement satisfies this constraint.
+        For example:
+        >>> AtomicConstraint("A","first").is_satisfied_by_assignment("A","first")
+        False
+        >>> AtomicConstraint("A","first").is_satisfied_by_assignment("A","second")
+        True
+
+        :param issue: The issue the potential assignement is refering too
+        :type issue: str
+        :param value: The value the potential assignement is refering too
+        :type value: str
+        :return: True iff the assignement is satisfied
+        :rtype: bool
+        """
         return not (issue == self.issue and value == self.value)
 
     def is_satisfied_by_offer(self, offer: Offer) -> bool:
-
+        """
+        Checks if a whole offer is satisfied by the constraint.
+        For atomic constraints this means just checking all of the
+        assignements individually.
+        
+        :param offer: The offer to be checked
+        :type offer: Offer
+        :return: True iff the assignement is allowed under this constraint
+        :rtype: bool
+        """
         chosen_value = offer.get_chosen_value(self.issue)
         if chosen_value == self.value:
             return False
-        else:
-            return True
-
-    # def is_satisfied_by_strat(self, strat: Strategy) -> bool:
-
-    #     constrainted_prob = stratagy.get_prob(self.issue, self.value)
-    #     return isclose(constrainted_prob, 0)
+        
+        return True
 
     def __hash__(self) -> int:
         return hash((self.issue, self.value))

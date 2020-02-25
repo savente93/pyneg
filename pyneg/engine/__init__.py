@@ -1,5 +1,6 @@
 """
-This module handles how agents generate and evaluate offers. This is where utility functions, constraints and other
+This module handles how agents generate and evaluate offers. 
+This is where utility functions, constraints and other
 information needed for that is stored. 
 """
 
