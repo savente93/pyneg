@@ -272,4 +272,4 @@ class TestConstraintAgent(TestCase):
                                                                            self.non_agreement_cost, None,
                                                                            self.uniform_weights, 20)
         self.agent.add_constraint(self.integer_constraint)
-        self.assertFalse(self.agent._accepts(self.optimal_offer))
+        self.assertFalse(self.agent.accepts(self.optimal_offer))

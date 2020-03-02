@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -145,18 +146,32 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generator Nothing but an abstract class. Sometimes used for type annotations</span>
+<span class="sd">and as a template for implementing your own. Generators are what </span>
+<span class="sd">agent engines use to generate offers. All logic relating to reasoning </span>
+<span class="sd">and finding potential offers should be located here. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span><span class="p">,</span> <span class="n">Offer</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
 
 
 <div class="viewcode-block" id="Generator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator">[docs]</a><span class="k">class</span> <span class="nc">Generator</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Generator empty class that is used soley for type annotations</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Nothing but an abstract class. Sometimes used for type annotations</span>
+<span class="sd">    and as a template for implementing your own. Generators are what </span>
+<span class="sd">    agent engines use to generate offers. All logic relating to reasoning </span>
+<span class="sd">    and finding potential offers should be located here. </span>
 
-<span class="sd">    :raises NotImplementedError</span>
-<span class="sd">    :raises NotImplementedError</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    - utilities: a utility mapping. </span>
+<span class="sd">    - kb: a knowledge base. only supported if the generator uses ProbLog </span>
+<span class="sd">    - acceptability_threshold: minimum utility needed for the agent to accept an offer</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="Generator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="p">{}</span>
@@ -166,27 +181,109 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Generator.generate_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.generate_offer">[docs]</a>    <span class="k">def</span> <span class="nf">generate_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates the next offer the agent should propose.</span>
+<span class="sd">        </span>
+<span class="sd">        :raises NotImplementedError: </span>
+<span class="sd">        :return: The offer the agent should propose</span>
+<span class="sd">        :rtype: Offer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        sets the utilities in the knowledge base. Returns true if there are </span>
+<span class="sd">        still potential acceptable solutions. If the evaluator doesn&#39;t reason </span>
+<span class="sd">        about this, it should always return true. similar to add-utilities but</span>
+<span class="sd">        overwrites all previous utilities. </span>
+<span class="sd">        </span>
+
+<span class="sd">        :param new_utils: an atomic dictionary of the utilities to add </span>
+<span class="sd">        :type new_utils: AtomicDict</span>
+<span class="sd">        :raises NotImplementedError:</span>
+<span class="sd">        :return: should return true if there are still potentially offers \</span>
+<span class="sd">        possible.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add utilities to the knowledge base. Returns true if there are </span>
+<span class="sd">        still potential acceptable solutions. If the evaluator doesn&#39;t reason </span>
+<span class="sd">        about this, it should always return true.     </span>
+<span class="sd">        </span>
+
+<span class="sd">        :param new_utils: an atomic dictionary of the utilities to add </span>
+<span class="sd">        :type new_utils: AtomicDict</span>
+<span class="sd">        :raises NotImplementedError:</span>
+<span class="sd">        :return: should return true if there are still potentially offers \</span>
+<span class="sd">        possible.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add the given constraint to the knowledge base. Returns true if there are</span>
+<span class="sd">        still potential acceptable solutions. If the agent doesn&#39;t reason about </span>
+<span class="sd">        constrints, this should be a no-op and always return true. </span>
+<span class="sd">        </span>
+<span class="sd">        :param constraint: The constraint to add</span>
+<span class="sd">        :type constraint: AtomicConstraint</span>
+<span class="sd">        :raises NotImplementedError: </span>
+<span class="sd">        :return: Whether there are still potential acceptable solutions</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add multiple constraints to the knowledge base. Returns true if there are</span>
+<span class="sd">        still potential acceptable solutions. If the agent doesn&#39;t reason about </span>
+<span class="sd">        constrints, this should be a no-op and always return true. </span>
+<span class="sd">        </span>
+<span class="sd">        :param constraint: The constraint to add</span>
+<span class="sd">        :type constraint: AtomicConstraint</span>
+<span class="sd">        :raises NotImplementedError: </span>
+<span class="sd">        :return: Whether there are still potential acceptable solutions</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Generator.get_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Generator.get_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a set containing all the constraints known. </span>
+<span class="sd">        </span>
+<span class="sd">        :raises NotImplementedError: [description]</span>
+<span class="sd">        :return: A set of all known constraints. </span>
+<span class="sd">        :rtype: Set[AtomicConstraint]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.find_violated_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.find_violated_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">find_violated_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the constraint that is violating the given offer if any. </span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to check</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :raises NotImplementedError: [description]</span>
+<span class="sd">        :return: The constraint that is being violated by the offer if any. </span>
+<span class="sd">        :rtype: Optional[AtomicConstraint]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.generator.Generator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a set of all values associated with an issue that are not ruled out by</span>
+<span class="sd">        any constraint. </span>
+<span class="sd">        </span>
+<span class="sd">        :param issue: The issue to get the values for.</span>
+<span class="sd">        :type issue: str</span>
+<span class="sd">        :raises NotImplementedError: </span>
+<span class="sd">        :return: A set of all unconstrained values. Could be empty.</span>
+<span class="sd">        :rtype: Set[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 </pre></div>
 

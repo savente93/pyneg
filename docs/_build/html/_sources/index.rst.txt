@@ -5,5 +5,6 @@ Welcomde to PyNeg's documentation!
   :maxdepth: 4
 
   API/pyneg
+  theory/index
   usage/index
   examples/index

@@ -4,27 +4,13 @@ pyneg.utils package
 Submodules
 ----------
 
-pyneg.utils.const module
-------------------------
 
-.. automodule:: pyneg.utils.const
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. _utils:
 
-pyneg.utils.utils module
+Helper functions
 ------------------------
 
 .. automodule:: pyneg.utils.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: pyneg.utils
    :members:
    :undoc-members:
    :show-inheritance:

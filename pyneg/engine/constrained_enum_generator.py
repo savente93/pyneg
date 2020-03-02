@@ -108,15 +108,15 @@ class ConstrainedEnumGenerator(EnumGenerator):
             if copied_offer_indices[issue] + 1 >= len(self.sorted_utils[issue]):
                 continue
             copied_offer_indices[issue] += 1
-            offer = self.offer_from_index_dict(copied_offer_indices)
+            offer = self._offer_from_index_dict(copied_offer_indices)
             util = self.evaluator.calc_offer_utility(offer)
-            if self.offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
+            if self._offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
                 # might seem stratge but if we hit a constraint we still need to keep searching in this direction
                 if util >= self.acceptability_threshold and self.satisfies_all_constraints(offer):
                     self.assignement_frontier.put(
                         (-util, str(uuid4())[-8:], copied_offer_indices))
                     self.generated_offers.add(
-                        self.offer_from_index_dict(copied_offer_indices))
+                        self._offer_from_index_dict(copied_offer_indices))
 
     def generate_offer(self) -> Offer:
         if self.assignement_frontier.empty() or not self.constraints_satisfiable:
@@ -125,7 +125,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
 
         negative_util, uuid, indices = self.assignement_frontier.get()
         self.expand_assignment(indices)
-        offer = self.offer_from_index_dict(indices)
+        offer = self._offer_from_index_dict(indices)
         if self.satisfies_all_constraints(offer):
             return offer
         else:

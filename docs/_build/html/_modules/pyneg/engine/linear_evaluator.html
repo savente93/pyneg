@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -145,16 +146,31 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.linear_evaluator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple evaluator that calculates the utility of an offer </span>
+<span class="sd">assuming :ref:`linear-additivity`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span>
 <span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">atom_from_issue_value</span>
+
 <span class="kn">from</span> <span class="nn">.engine</span> <span class="kn">import</span> <span class="n">Evaluator</span>
 <span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
 
 
 <div class="viewcode-block" id="LinearEvaluator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator">[docs]</a><span class="k">class</span> <span class="nc">LinearEvaluator</span><span class="p">(</span><span class="n">Evaluator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates offers using linear additive calculations. </span>
+<span class="sd">    (see :ref:`linear-additivity`)</span>
+<span class="sd">    Utilities should be a utility function represented</span>
+<span class="sd">    as an AtomicDict, issue weights should be a distribution over the</span>
+<span class="sd">    issues and non_agreement_cost should be the cost of unsuccessfully</span>
+<span class="sd">    terminating the negotiation. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="LinearEvaluator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">issue_weights</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
                  <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -176,14 +192,42 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="LinearEvaluator.calc_assignment_util"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.calc_assignment_util">[docs]</a>    <span class="k">def</span> <span class="nf">calc_assignment_util</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculates the utility gained from a perticular signed assignment</span>
+<span class="sd">        asignements with unknown utilities are assigned 0 utility</span>
+
+<span class="sd">        &gt;&gt;&gt; print(self.utilities)</span>
+<span class="sd">        {&quot;boolean_False&quot;: -10, &quot;boolean_True&quot;:10, &quot;integer_3&quot;: 100}</span>
+<span class="sd">        &gt;&gt;&gt; self.calc_assignment_util(&quot;boolean&quot;,&quot;False&quot;)</span>
+<span class="sd">        -10</span>
+<span class="sd">        &gt;&gt;&gt; self.calc_assignment_util(&quot;unknown&quot;,&quot;unknown&quot;)</span>
+<span class="sd">        0</span>
+
+<span class="sd">        :param issue: the issue the assignment is associated with</span>
+<span class="sd">        :type issue: str</span>
+<span class="sd">        :param value: the value of the potential assignement</span>
+<span class="sd">        :type value: str</span>
+<span class="sd">        :return: the utility of the experiement</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chosen_atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">chosen_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">issue_weights</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">*</span> \
                    <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">[</span><span class="n">chosen_atom</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span></div>
+        
+        <span class="k">return</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="LinearEvaluator.calc_offer_utility"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.calc_offer_utility">[docs]</a>    <span class="k">def</span> <span class="nf">calc_offer_utility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the utility of a full offer. In this implementation </span>
+<span class="sd">        this is simply the dot product of the utility of all the asignements</span>
+<span class="sd">        with their associated issue weights</span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to calculate the utility of</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: the utility the given offer is worth</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_issues</span><span class="p">():</span>
             <span class="n">chosen_value</span> <span class="o">=</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_chosen_value</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
@@ -191,7 +235,18 @@
         <span class="k">return</span> <span class="n">score</span></div>
 
 <div class="viewcode-block" id="LinearEvaluator.calc_strat_utility"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.calc_strat_utility">[docs]</a>    <span class="k">def</span> <span class="nf">calc_strat_utility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strat</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generalisation of an offer but works similarly. calculates the </span>
+<span class="sd">        expceted utility under the strategy distribution. see </span>
+<span class="sd">        :class:`Strategy` for more information.</span>
+<span class="sd">        </span>
+<span class="sd">        :param strat: the strategy to calculate the utility of </span>
+<span class="sd">        :type strat: Strategy</span>
+<span class="sd">        :return: expected utility under the given strategy with \</span>
+<span class="sd">            current knowledge base</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_issues</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_value_dist</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>

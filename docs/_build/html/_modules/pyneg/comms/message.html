@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -145,23 +146,29 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.comms.message</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines the Message class, which is the main mode of communication between agents. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">MessageType</span>
 <span class="kn">from</span> <span class="nn">.atomic_constraint</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span>
 <span class="kn">from</span> <span class="nn">.offer</span> <span class="kn">import</span> <span class="n">Offer</span>
 
 
-<span class="sd">&quot;&quot;&quot;hello?&quot;&quot;&quot;</span>
-
 <div class="viewcode-block" id="Message"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;message test docstring&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is the main mode of communication between agents. </span>
+<span class="sd">    It contains a sender and recipient name (mainly for logging purposes),</span>
+<span class="sd">    a type (defined in :ref:`msg_type`), and optionally an offer and </span>
+<span class="sd">    constraint. The message contain an offer if and only if it is either ACCEPT or OFFER. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Message.__init__"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">recipient_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">type_</span><span class="p">:</span> <span class="n">MessageType</span><span class="p">,</span>
                  <span class="n">offer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Offer</span><span class="p">],</span>
                  <span class="n">constraint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;message init test docstring&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sender_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">sender_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recipient_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">recipient_name</span>
@@ -188,45 +195,80 @@
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="Message.is_empty"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.is_empty">[docs]</a>    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the message is empty</span>
+<span class="sd">        </span>
+<span class="sd">        :return: True iff the message is empty</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EMPTY</span></div>
 
 <div class="viewcode-block" id="Message.is_acceptance"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.is_acceptance">[docs]</a>    <span class="k">def</span> <span class="nf">is_acceptance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the message is one of acceptance</span>
+<span class="sd">        </span>
+<span class="sd">        :return: True iff sender accepts the offer in this message</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">ACCEPT</span></div>
 
 <div class="viewcode-block" id="Message.is_termination"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.is_termination">[docs]</a>    <span class="k">def</span> <span class="nf">is_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the message signals one party is ending the negotiation early. </span>
+<span class="sd">        </span>
+<span class="sd">        :return: True iff sender is ending the negotiation early</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EXIT</span></div>
 
 <div class="viewcode-block" id="Message.has_constraint"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.has_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">has_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the message has a constraint</span>
+<span class="sd">        </span>
+<span class="sd">        :return: True iff the message has a constraint</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Message.is_offer"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.is_offer">[docs]</a>    <span class="k">def</span> <span class="nf">is_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the message contains an offer</span>
+<span class="sd">        </span>
+<span class="sd">        :return: True iff the message contains an offer</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">OFFER</span></div>
 
-<div class="viewcode-block" id="Message.get_constraint"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.get_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+<div class="viewcode-block" id="Message.get_constraint"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.message.Message.get_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicConstraint</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the constraint associated with this message</span>
+<span class="sd">        </span>
+<span class="sd">        :raises ValueError: Raised if the message does not contain a constraint</span>
+<span class="sd">        :return: The constraint associated with this message</span>
+<span class="sd">        :rtype: AtomicConstraint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Message has no constraint&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span></div>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">hash</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipient_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_name</span><span class="p">,</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">recipient_name</span><span class="p">,</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="p">,</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">,</span> 
+                     <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Message</span><span class="p">):</span>
-            <span class="c1"># print(&quot;unequal class&quot;)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">type_</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="p">:</span>
-            <span class="c1"># print(&quot;unequal kind&quot;)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">offer</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">:</span>
-            <span class="c1"># print(self.offer)</span>
-            <span class="c1"># print(other.offer)</span>
-            <span class="c1"># print(&quot;unequal offer&quot;)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">constraint</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">:</span>
-            <span class="c1"># print(&quot;unequal constraint&quot;)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span>
@@ -246,12 +288,12 @@
                 <span class="n">type_</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">offer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">,</span>
                 <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;(</span><span class="si">{sender}</span><span class="s2">=&gt;</span><span class="si">{recip}</span><span class="s2">;</span><span class="si">{type_}</span><span class="s2">;</span><span class="si">{offer}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_name</span><span class="p">,</span>
-                <span class="n">recip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recipient_name</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="n">offer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="s2">&quot;(</span><span class="si">{sender}</span><span class="s2">=&gt;</span><span class="si">{recip}</span><span class="s2">;</span><span class="si">{type_}</span><span class="s2">;</span><span class="si">{offer}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sender_name</span><span class="p">,</span>
+            <span class="n">recip</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recipient_name</span><span class="p">,</span>
+            <span class="n">type_</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">offer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">offer</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

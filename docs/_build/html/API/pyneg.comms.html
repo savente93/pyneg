@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pyneg.utils.html">pyneg.utils package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 </ul>
@@ -166,10 +167,16 @@
 <h1>Comms<a class="headerlink" href="#comms" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-pyneg.comms.atomic_constraint">
 <span id="atomic-constraint"></span><h2>Atomic Constraint<a class="headerlink" href="#module-pyneg.comms.atomic_constraint" title="Permalink to this headline">¶</a></h2>
+<p>This module defines an atomic constraint, the simples form of constraint possible. 
+It expresses that any offer which has a perticular assignement will never be accepted. 
+Good baseline for addapting for more complicated constraints</p>
 <dl class="class">
 <dt id="pyneg.comms.atomic_constraint.AtomicConstraint">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.atomic_constraint.</code><code class="sig-name descname">AtomicConstraint</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Atomic constraint, the simples form of constraint possible. 
+It expresses that any offer which has a perticular assignement will never be accepted. 
+Good baseline for addapting for more complicated constraints</p>
 <dl class="method">
 <dt id="pyneg.comms.atomic_constraint.AtomicConstraint.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.__init__" title="Permalink to this definition">¶</a></dt>
@@ -179,68 +186,174 @@
 <dl class="method">
 <dt id="pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment">
 <code class="sig-name descname">is_satisfied_by_assignment</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.is_satisfied_by_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Determines whether a perticular assignement satisfies this constraint.
+For example:
+&gt;&gt;&gt; AtomicConstraint(“A”,”first”).is_satisfied_by_assignment(“A”,”first”)
+False
+&gt;&gt;&gt; AtomicConstraint(“A”,”first”).is_satisfied_by_assignment(“A”,”second”)
+True</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue</strong> (<em>str</em>) – The issue the potential assignement is refering too</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – The value the potential assignement is refering too</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True iff the assignement is satisfied</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer">
 <code class="sig-name descname">is_satisfied_by_offer</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.is_satisfied_by_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks if a whole offer is satisfied by the constraint.
+For atomic constraints this means just checking all of the
+assignements individually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to be checked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True iff the assignement is allowed under this constraint</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.comms.message">
 <span id="message"></span><h2>Message<a class="headerlink" href="#module-pyneg.comms.message" title="Permalink to this headline">¶</a></h2>
+<p>This module defines the Message class, which is the main mode of communication between agents.</p>
 <dl class="class">
 <dt id="pyneg.comms.message.Message">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.message.</code><code class="sig-name descname">Message</code><span class="sig-paren">(</span><em class="sig-param">sender_name: str, recipient_name: str, type_: pyneg.types.message_type.MessageType, offer: Optional[pyneg.comms.offer.Offer], constraint: Optional[pyneg.comms.atomic_constraint.AtomicConstraint] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/message.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>message test docstring</p>
+<p>This class is the main mode of communication between agents. 
+It contains a sender and recipient name (mainly for logging purposes),
+a type (defined in <a class="reference internal" href="pyneg.types.html#msg-type"><span class="std std-ref">Message Types</span></a>), and optionally an offer and 
+constraint. The message contain an offer if and only if it is either ACCEPT or OFFER.</p>
 <dl class="method">
 <dt id="pyneg.comms.message.Message.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">sender_name: str, recipient_name: str, type_: pyneg.types.message_type.MessageType, offer: Optional[pyneg.comms.offer.Offer], constraint: Optional[pyneg.comms.atomic_constraint.AtomicConstraint] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>message init test docstring</p>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.is_empty">
 <code class="sig-name descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_empty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the message is empty</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the message is empty</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.is_acceptance">
 <code class="sig-name descname">is_acceptance</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_acceptance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_acceptance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the message is one of acceptance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff sender accepts the offer in this message</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.is_termination">
 <code class="sig-name descname">is_termination</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_termination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_termination" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the message signals one party is ending the negotiation early.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff sender is ending the negotiation early</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.has_constraint">
 <code class="sig-name descname">has_constraint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.has_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.has_constraint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the message has a constraint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the message has a constraint</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.is_offer">
 <code class="sig-name descname">is_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.is_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.is_offer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the message contains an offer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the message contains an offer</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.message.Message.get_constraint">
-<code class="sig-name descname">get_constraint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.get_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.get_constraint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_constraint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.atomic_constraint.AtomicConstraint<a class="reference internal" href="../_modules/pyneg/comms/message.html#Message.get_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.message.Message.get_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the constraint associated with this message</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if the message does not contain a constraint</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The constraint associated with this message</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.comms.offer">
 <span id="offer"></span><h2>Offer<a class="headerlink" href="#module-pyneg.comms.offer" title="Permalink to this headline">¶</a></h2>
+<p>Defines the Offer class.</p>
 <dl class="class">
 <dt id="pyneg.comms.offer.Offer">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.comms.offer.</code><code class="sig-name descname">Offer</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This essentially is a function from all of 
+the issue value pairs to {0.0,1.0}. Can be repesended as a 
+NestedDict or an AtomicDict. The assignements should be binary
+and the sum of all assignements for an issue should sum to 1.0 
+(i.e. exactly one value should be assigned 1.0 and all others 0.0).
+Note that the assignements should be floats instead of ints or bools.
+this is for compatibility with ProbLog.</p>
+<p>e.g. 
+&gt;&gt;&gt; nested = {“First”: {“A”:0.0, “B”:1.0}, “Second”:{“C”:1.0,”D”:0.0}}
+&gt;&gt;&gt; atomic = {“First_A”:0.0, “First_B”:1.0, “Second_C”:1.0, “Second_D”:0.0}</p>
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.__init__" title="Permalink to this definition">¶</a></dt>
@@ -250,32 +363,117 @@
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.get_chosen_value">
 <code class="sig-name descname">get_chosen_value</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_chosen_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_chosen_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Each issue has exactly one value that it “chooses” i.e. has assigned 1 to.
+This one returns that value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue of which you want to get the chosen value.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – raises when no choice is made</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the value chosen by the offer.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.is_assigned">
 <code class="sig-name descname">is_assigned</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.is_assigned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.is_assigned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks whether the passed issue value pair is the
+one chosen by this offer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue</strong> (<em>str</em>) – The issue to check</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – The value to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True iff this offer poposes the asssignement of <cite>value</cite> to <cite>issue</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.get_issues">
-<code class="sig-name descname">get_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_issues" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterable[str]<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all issues associated with this offer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an iterable containting the issues associated with this offer</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Iterable[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.get_problog_dists">
 <code class="sig-name descname">get_problog_dists</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_problog_dists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_problog_dists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Formats the offer as a distribution over the
+atomic issue value pairs. This is just so 
+ProbLog agents can reason about them.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Offer</span><span class="p">(</span><span class="n">atomic</span><span class="p">)</span><span class="o">.</span><span class="n">get_problog_dists</span><span class="p">()</span>
+<span class="go">0.0::First_A;1.0::First_B.</span>
+<span class="go">1.0::Second_C;0.0::Second_D.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string expressing the offer in valid ProbLog as         a distribution over the atomic issue value pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.get_sparse_repr">
-<code class="sig-name descname">get_sparse_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_repr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_sparse_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; FrozenSet[Tuple[str, str]]<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_repr" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a sparse reperesentation of itself. This means a frozenset of
+issue value pairs, where the value is the one assigned byt the offer. 
+Handy for logging and hashing</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Offer</span><span class="p">(</span><span class="n">atomic</span><span class="p">)</span><span class="o">.</span><span class="n">get_sparse_repr</span><span class="p">()</span>
+<span class="go">frozenset({(&#39;First&#39;, &#39;B&#39;), (&#39;Second&#39;, &#39;C&#39;)}) </span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A frozen set containt assigned issue value pairs</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>FrozenSet[Tuple[str,str]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.comms.offer.Offer.get_sparse_str_repr">
-<code class="sig-name descname">get_sparse_str_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_str_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_str_repr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_sparse_str_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/comms/offer.html#Offer.get_sparse_str_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.offer.Offer.get_sparse_str_repr" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a sparse string reperesentation of itself. Mainly useful for logging</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Offer</span><span class="p">(</span><span class="n">atomic</span><span class="p">)</span><span class="o">.</span><span class="n">get_sparse_str_repr</span><span class="p">()</span>
+<span class="go">[First-&gt;B, Second-&gt;C] </span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string of the mapping</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

@@ -138,7 +138,7 @@ class Offer:
         1.0::Second_C;0.0::Second_D.
 
 
-        :return: A string expressing the offer in valid ProbLog as 
+        :return: A string expressing the offer in valid ProbLog as \
         a distribution over the atomic issue value pairs. 
         :rtype: str
         """

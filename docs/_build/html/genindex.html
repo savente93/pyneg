@@ -22,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -81,6 +81,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
 </ul>
@@ -231,6 +232,10 @@
 </li>
       </ul></li>
       <li><a href="API/pyneg.agent.html#pyneg.agent.agent.Agent._call_for_negotiation">_call_for_negotiation() (pyneg.agent.agent.Agent method)</a>
+</li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._expand_assignment">_expand_assignment() (pyneg.engine.enum_generator.EnumGenerator method)</a>
+</li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._offer_from_index_dict">_offer_from_index_dict() (pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
       <li><a href="API/pyneg.agent.html#pyneg.agent.agent.Agent._parse_response">_parse_response() (pyneg.agent.agent.Agent method)</a>
 </li>
@@ -467,11 +472,7 @@
       <li><a href="API/pyneg.types.html#pyneg.types.message_type.MessageType.EXIT">EXIT (pyneg.types.message_type.MessageType attribute)</a>
 </li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment">expand_assignment() (pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
-
-      <ul>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.expand_assignment">(pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
-      </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer">extend_partial_offer() (pyneg.engine.dtp_generator.DTPGenerator method)</a>
 </li>
   </ul></td>
@@ -492,8 +493,6 @@
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.find_violated_constraint">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.find_violated_constraint">(pyneg.engine.engine.Engine method)</a>
-</li>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint">(pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.find_violated_constraint">(pyneg.engine.generator.Generator method)</a>
 </li>
@@ -708,8 +707,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.types.html#pyneg.types.message_type.MessageType.OFFER">OFFER (pyneg.types.message_type.MessageType attribute)</a>
 </li>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.offer_from_index_dict">offer_from_index_dict() (pyneg.engine.enum_generator.EnumGenerator method)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -740,10 +737,10 @@
 </li>
       <li><a href="API/pyneg.engine.html#module-pyneg.engine.constrained_random_generator">pyneg.engine.constrained_random_generator (module)</a>
 </li>
-      <li><a href="API/pyneg.engine.html#module-pyneg.engine.dtp_generator">pyneg.engine.dtp_generator (module)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/pyneg.engine.html#module-pyneg.engine.dtp_generator">pyneg.engine.dtp_generator (module)</a>
+</li>
       <li><a href="API/pyneg.engine.html#module-pyneg.engine.engine">pyneg.engine.engine (module)</a>
 </li>
       <li><a href="API/pyneg.engine.html#module-pyneg.engine.enum_generator">pyneg.engine.enum_generator (module)</a>
@@ -765,10 +762,6 @@
       <li><a href="API/pyneg.types.html#module-pyneg.types.message_type">pyneg.types.message_type (module)</a>
 </li>
       <li><a href="API/pyneg.types.html#module-pyneg.types.verbosity">pyneg.types.verbosity (module)</a>
-</li>
-      <li><a href="API/pyneg.utils.html#module-pyneg.utils">pyneg.utils (module)</a>
-</li>
-      <li><a href="API/pyneg.utils.html#module-pyneg.utils.const">pyneg.utils.const (module)</a>
 </li>
       <li><a href="API/pyneg.utils.html#module-pyneg.utils.utils">pyneg.utils.utils (module)</a>
 </li>

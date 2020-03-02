@@ -58,7 +58,7 @@ class Evaluator():
         :param new_utils: an atomic dictionary of the utilities to add 
         :type new_utils: AtomicDict
         :raises NotImplementedError:
-        :return: should return true if there are still potentially offers 
+        :return: should return true if there are still potentially offers \
         possible.
         :rtype: bool
         """
@@ -75,7 +75,7 @@ class Evaluator():
         :param new_utils: an atomic dictionary of the utilities to add 
         :type new_utils: AtomicDict
         :raises NotImplementedError:
-        :return: should return true if there are still potentially offers 
+        :return: should return true if there are still potentially offers \
         possible.
         :rtype: bool
         """

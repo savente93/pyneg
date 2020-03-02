@@ -1,14 +1,17 @@
 from copy import deepcopy
 from re import search
-from typing import List, Dict, Set, Optional
+from typing import Dict, List, Optional, Set
 
 from numpy import isclose
 from problog.program import PrologString
 from problog.tasks.dtproblog import dtproblog
 
-from pyneg.comms import Offer, AtomicConstraint
-from pyneg.types import NegSpace, AtomicDict
-from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value, atom_dict_from_nested_dict
+from pyneg.comms import AtomicConstraint, Offer
+from pyneg.types import AtomicDict, NegSpace
+from pyneg.utils import (atom_dict_from_nested_dict, 
+                         atom_from_issue_value,
+                         nested_dict_from_atom_dict)
+
 from .generator import Generator
 
 

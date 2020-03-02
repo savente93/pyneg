@@ -232,7 +232,7 @@ class TestAgent(TestCase):
         self.agent = AgentFactory.make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, 0.0, self.non_agreement_cost,
             self.uniform_weights)
-        self.assertTrue(self.agent._accepts(self.optimal_offer))
+        self.assertTrue(self.agent.accepts(self.optimal_offer))
 
 
     def test_random_agent_terminates_correctly(self):

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pyneg.utils.html">pyneg.utils package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 </ul>
@@ -197,7 +198,7 @@ to make the linters a bit happier.</p>
 
 <dl class="attribute">
 <dt id="pyneg.agent.agent.Agent.name">
-<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pyneg.agent.agent.Agent.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">name</code><em class="property">: str</em><em class="property"> = None</em><a class="headerlink" href="#pyneg.agent.agent.Agent.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the agent. mainly used for logging</p>
 </dd></dl>
 
@@ -312,8 +313,8 @@ Message should be one allowed by the protocol which is defined in <a class="refe
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>opponent</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
-<li><p><strong>msg</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – [description]</p></li>
+<li><p><strong>opponent</strong> (<a class="reference internal" href="#pyneg.agent.agent.Agent" title="pyneg.agent.agent.Agent"><em>Agent</em></a>) – The opponent to send the message to</p></li>
+<li><p><strong>msg</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – The message to send</p></li>
 </ul>
 </dd>
 </dl>
@@ -327,42 +328,134 @@ Message should be one allowed by the protocol which is defined in <a class="refe
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent._record_message">
 <code class="sig-name descname">_record_message</code><span class="sig-paren">(</span><em class="sig-param">msg: pyneg.comms.message.Message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._record_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._record_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>appends message to transcript</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – The message to be appended</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.receive_message">
 <code class="sig-name descname">receive_message</code><span class="sig-paren">(</span><em class="sig-param">msg: pyneg.comms.message.Message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.receive_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.receive_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Main entry point for other agents to send messages to <cite>self</cite>.
+records the message in the transcript, parses the message
+so the engine can do the reasoing next.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – Message to be parsed</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent._parse_response">
-<code class="sig-name descname">_parse_response</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._parse_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._parse_response" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">_parse_response</code><span class="sig-paren">(</span><em class="sig-param">response: pyneg.comms.message.Message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._parse_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._parse_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a recieved message. If the message was either acceptance
+or termination we terminate the negotiation loop appropriately
+otherwise, if the message included a constraint we incorporate it
+and check if we can accept the received proposal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>response</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message"><em>Message</em></a>) – The message to be parsed</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent._should_exit">
 <code class="sig-name descname">_should_exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent._should_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent._should_exit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Determine if we should end the negotiation without agreement.
+currently the only triger for this is when the engine can’t find
+new proposals, but allows arbitrary logic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeWarning</strong> – Raised if the engine is not properly             initialised, or no negotiation is active.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if and only if the agent should terminate unsucessfully</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.generate_next_message">
 <code class="sig-name descname">generate_next_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.message.Message<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.generate_next_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.generate_next_message" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generates the next message to be sent in a negotiation.
+Generates acceptance or termination message if appropriate,
+otherwise asks engine to generate new offer and sends message
+containing that offer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if no negotiation is active</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The message to be sent back</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pyneg.comms.html#pyneg.comms.message.Message" title="pyneg.comms.message.Message">Message</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.accepts">
 <code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.accepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Determines whether an offer is acceptable or not. Mostly just a passthrough 
+to the engine who does th4e actual reasoning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to consider</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if the agent finds the offer acceptable</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.add_utilities">
 <code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.add_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adds new utilities to the knowledge base so the engine can
+reason about them properly. Returns False if adding the utility
+makes the current negotiation impossible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_utils</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – New utility rules to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether a solution is still possible according to the agent.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.agent.agent.Agent.set_utilities">
 <code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utilities: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/agent/agent.html#Agent.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent.Agent.set_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Overrides utilities int the knowledge base. Returns False if adding
+the utility makes the current negotiation impossible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_utils</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – New utility rules</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether a solution is still possible according to the agent.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

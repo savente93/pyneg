@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -316,9 +317,9 @@
 <span class="sd">        Sends a message to the opponent, and records the communication in the transcript</span>
 <span class="sd">        Message should be one allowed by the protocol which is defined in :ref:`msg_type`</span>
 
-<span class="sd">        :param opponent: [description]</span>
-<span class="sd">        :type opponent: [type]</span>
-<span class="sd">        :param msg: [description]</span>
+<span class="sd">        :param opponent: The opponent to send the message to </span>
+<span class="sd">        :type opponent: Agent</span>
+<span class="sd">        :param msg: The message to send</span>
 <span class="sd">        :type msg: Message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -330,13 +331,36 @@
         <span class="n">sender</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender</span><span class="o">.</span><span class="n">generate_next_message</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Agent._record_message"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent._record_message">[docs]</a>    <span class="k">def</span> <span class="nf">_record_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        appends message to transcript</span>
+
+<span class="sd">        :param msg: The message to be appended</span>
+<span class="sd">        :type msg: Message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transcript</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent.receive_message"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.receive_message">[docs]</a>    <span class="k">def</span> <span class="nf">receive_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main entry point for other agents to send messages to `self`.</span>
+<span class="sd">        records the message in the transcript, parses the message</span>
+<span class="sd">        so the engine can do the reasoing next.</span>
+
+<span class="sd">        :param msg: Message to be parsed</span>
+<span class="sd">        :type msg: Message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_record_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_response</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Agent._parse_response"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent._parse_response">[docs]</a>    <span class="k">def</span> <span class="nf">_parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<div class="viewcode-block" id="Agent._parse_response"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent._parse_response">[docs]</a>    <span class="k">def</span> <span class="nf">_parse_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Message</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a recieved message. If the message was either acceptance</span>
+<span class="sd">        or termination we terminate the negotiation loop appropriately</span>
+<span class="sd">        otherwise, if the message included a constraint we incorporate it</span>
+<span class="sd">        and check if we can accept the received proposal.</span>
+
+<span class="sd">        :param response: The message to be parsed</span>
+<span class="sd">        :type response: Message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">type_</span> <span class="o">==</span> <span class="n">MessageType</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -353,6 +377,8 @@
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">constraint</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_constraints_satisfiable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">offer</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Malformed message: </span><span class="si">{response}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">offer</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_offer_received_was_acceptable</span> <span class="o">=</span> <span class="kc">True</span>
@@ -361,12 +387,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_next_constraint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">find_violated_constraint</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">offer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent._should_exit"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent._should_exit">[docs]</a>    <span class="k">def</span> <span class="nf">_should_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if we should end the negotiation without agreement.</span>
+<span class="sd">        currently the only triger for this is when the engine can&#39;t find</span>
+<span class="sd">        new proposals, but allows arbitrary logic.</span>
+
+<span class="sd">        :raises RuntimeWarning: Raised if the engine is not properly \</span>
+<span class="sd">            initialised, or no negotiation is active.</span>
+<span class="sd">        :return: True if and only if the agent should terminate unsucessfully</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeWarning</span><span class="p">(</span><span class="s2">&quot;Engine was not initialised.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">can_continue</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Agent.generate_next_message"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.generate_next_message">[docs]</a>    <span class="k">def</span> <span class="nf">generate_next_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates the next message to be sent in a negotiation.</span>
+<span class="sd">        Generates acceptance or termination message if appropriate,</span>
+<span class="sd">        otherwise asks engine to generate new offer and sends message</span>
+<span class="sd">        containing that offer.</span>
+
+<span class="sd">        :raises RuntimeError: Raised if no negotiation is active</span>
+<span class="sd">        :return: The message to be sent back</span>
+<span class="sd">        :rtype: Message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># we should never get here if we don&#39;t have an opponent</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">negotiation_active</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">opponent</span><span class="p">:</span>
@@ -390,12 +436,40 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent.accepts"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.accepts">[docs]</a>    <span class="k">def</span> <span class="nf">accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether an offer is acceptable or not. Mostly just a passthrough </span>
+<span class="sd">        to the engine who does th4e actual reasoning. </span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to consider</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: true if the agent finds the offer acceptable</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds new utilities to the knowledge base so the engine can</span>
+<span class="sd">        reason about them properly. Returns False if adding the utility</span>
+<span class="sd">        makes the current negotiation impossible.</span>
+<span class="sd">        </span>
+<span class="sd">        :param new_utils: New utility rules to be added</span>
+<span class="sd">        :type new_utils: Dict[str, float]</span>
+<span class="sd">        :return: Whether a solution is still possible according to the agent.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">add_utilities</span><span class="p">(</span><span class="n">new_utils</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.agent.html#pyneg.agent.agent.Agent.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utilities</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides utilities int the knowledge base. Returns False if adding</span>
+<span class="sd">        the utility makes the current negotiation impossible.</span>
+<span class="sd">        </span>
+<span class="sd">        :param new_utils: New utility rules</span>
+<span class="sd">        :type new_utils: Dict[str, float]</span>
+<span class="sd">        :return: Whether a solution is still possible according to the agent.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">set_utilities</span><span class="p">(</span><span class="n">new_utilities</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

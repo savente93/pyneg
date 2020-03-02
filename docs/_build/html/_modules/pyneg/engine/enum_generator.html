@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -145,18 +146,34 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.enum_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A very simple deterministic negotiation agent which just enumerates</span>
+<span class="sd">offers in order of preference. Uses breath first search.</span>
+<span class="sd">see :class:`EnumGenerator` for more information.  </span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
-<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">NestedDict</span><span class="p">,</span> <span class="n">AtomicDict</span>
-<span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">nested_dict_from_atom_dict</span>
-<span class="kn">from</span> <span class="nn">pyneg.engine.evaluator</span> <span class="kn">import</span> <span class="n">Evaluator</span>
-<span class="kn">from</span> <span class="nn">pyneg.engine.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
 
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span>
+<span class="kn">from</span> <span class="nn">pyneg.engine.evaluator</span> <span class="kn">import</span> <span class="n">Evaluator</span>
+<span class="kn">from</span> <span class="nn">pyneg.engine.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span><span class="p">,</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">NestedDict</span>
+<span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">nested_dict_from_atom_dict</span>
+
+
 <div class="viewcode-block" id="EnumGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator">[docs]</a><span class="k">class</span> <span class="nc">EnumGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple deterministic offer generator that lists </span>
+<span class="sd">    offers in order of preference. This implemantation </span>
+<span class="sd">    only works for linear additive spaces and utilty functions.</span>
+<span class="sd">    It uses breath first search to explore the negotiation space. </span>
+<span class="sd">    Raises `StopIteration` exception when it cannot find any </span>
+<span class="sd">    new acceptable offers.    </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="EnumGenerator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">evaluator</span><span class="p">:</span> <span class="n">Evaluator</span><span class="p">,</span>
@@ -172,7 +189,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">offer_counter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Offer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_generator</span><span class="p">()</span></div>
-        <span class="c1"># self.last_offer_util = 2**32</span>
 
 <div class="viewcode-block" id="EnumGenerator.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="p">{</span>
@@ -191,9 +207,20 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="EnumGenerator.init_generator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.init_generator">[docs]</a>    <span class="k">def</span> <span class="nf">init_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup for the breath first search. This is done by </span>
+<span class="sd">        indexing the negotiation space internally by utility </span>
+<span class="sd">        e.g.  </span>
+<span class="sd">        &gt;&gt;&gt; neg_space = {&quot;boolean&quot;:[&quot;True&quot;, &quot;False&quot;]}</span>
+<span class="sd">        the utility function {&quot;boolean_True&quot;:10,&quot;boolean_False&quot;:100} would be converted to </span>
+<span class="sd">        {&quot;boolean&quot;: [&quot;False&quot;,&quot;True&quot;]}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
         <span class="n">nested_utils</span> <span class="o">=</span> <span class="n">nested_dict_from_atom_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        
+        <span class="c1"># Setup a grid of assignments and their utilities so </span>
+        <span class="c1"># we can explore them later</span>
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">issue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nested_utils</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">nested_utils</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span><span class="mf">0.0</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]}</span>
                 <span class="k">continue</span>
@@ -215,22 +242,20 @@
         <span class="c1"># by utility in dec order</span>
         <span class="c1"># example: {&quot;boolean_True&quot;:10,&quot;boolean_False&quot;:100} =&gt; {&quot;boolean&quot;: [&quot;False&quot;,&quot;True&quot;]}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sorted_utils</span> <span class="o">=</span> <span class="p">{</span><span class="n">issue</span><span class="p">:</span>
-            <span class="nb">list</span><span class="p">(</span>
-                <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sorter</span><span class="p">(</span><span class="n">issue</span><span class="p">)))</span>
-            <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">nested_utils</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-        <span class="c1"># for issue in self.neg_space.keys():</span>
-        <span class="c1">#     if issue not in self.sorted_utils.keys():</span>
-        <span class="c1">#         self.sorted_utils[issue] = self.neg_space[issue]</span>
-        <span class="c1">#     for value in self.neg_space[issue]:</span>
-        <span class="c1">#         if not value in self.sorted_utils[issue]:</span>
-        <span class="c1">#             self.sorted_utils[issue].append(value)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sorted_utils</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">issue</span><span class="p">:</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                <span class="n">sorter</span><span class="p">(</span><span class="n">issue</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">nested_utils</span><span class="p">}</span>
 
-        <span class="n">best_offer_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">issue</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="c1"># Now we can find offers by simply incrementig the indices </span>
+        <span class="c1"># for this list and looking up the corresponding values</span>
+        <span class="n">best_offer_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">issue</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offer_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="n">offer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span><span class="n">best_offer_indices</span><span class="p">)</span>
+        <span class="n">offer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span><span class="n">best_offer_indices</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepts</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
             <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
             <span class="c1"># index by -util to get a max priority queue instead of the standard min</span>
@@ -238,42 +263,111 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
                 <span class="p">(</span><span class="o">-</span><span class="n">util</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_counter</span><span class="p">,</span> <span class="n">best_offer_indices</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span><span class="n">best_offer_indices</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span><span class="n">best_offer_indices</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="EnumGenerator.accepts"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.accepts">[docs]</a>    <span class="k">def</span> <span class="nf">accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine whether the offer is acceptble according to</span>
+<span class="sd">        the known criteria. </span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to be checked</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: True iff the offer is acceptable according to the criteria.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">util</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span></div>
 
-<div class="viewcode-block" id="EnumGenerator.expand_assignment"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.expand_assignment">[docs]</a>    <span class="k">def</span> <span class="nf">expand_assignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sorted_offer_indices</span><span class="p">):</span>
+<div class="viewcode-block" id="EnumGenerator._expand_assignment"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._expand_assignment">[docs]</a>    <span class="k">def</span> <span class="nf">_expand_assignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sorted_offer_indices</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes a typle of offer indices and generates new valid offer</span>
+<span class="sd">        indices from them, to be used in offer generation, and</span>
+<span class="sd">        puts them on the fronteir. For example assume there are three </span>
+<span class="sd">        issues with each three values, and each assignement </span>
+<span class="sd">        has utility equal to the values. i.e.</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; neg_space = {&quot;A&quot;:[1,2,3],&quot;B&quot;:[4,5,6],&quot;C&quot;:[7,8,9]}</span>
+<span class="sd">        </span>
+<span class="sd">        and [A-&gt;1,B-&gt;4,C-&gt;7] would have utility 1+4+7 = 12</span>
+<span class="sd">        then </span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; expand_assignment((2,1,1))</span>
+<span class="sd">        </span>
+<span class="sd">        would generate {(2,1,2),(2,2,2),(0,2,2)} and put them </span>
+<span class="sd">        in the fronteir. Note that the indices (i.e. the 2,1,1)</span>
+<span class="sd">        don&#39;t correspond to the indices in the negotiation space</span>
+<span class="sd">        but to the indices of the internal list of values sorted</span>
+<span class="sd">        by utility. See :func:`init_generator` for more info. </span>
+
+<span class="sd">        :param sorted_offer_indices: a tuple of indices corresponding to entries \</span>
+<span class="sd">        in the internal list refering to vaues </span>
+<span class="sd">        :type sorted_offer_indices: Tuple[int]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">copied_offer_indices</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">sorted_offer_indices</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">copied_offer_indices</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sorted_utils</span><span class="p">[</span><span class="n">issue</span><span class="p">]):</span>
                 <span class="k">continue</span>
             <span class="n">copied_offer_indices</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">offer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span><span class="n">copied_offer_indices</span><span class="p">)</span>
+            <span class="n">offer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span><span class="n">copied_offer_indices</span><span class="p">)</span>
             <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">util</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span>
+            <span class="k">if</span> <span class="n">util</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span>
                     <span class="n">copied_offer_indices</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
                     <span class="p">(</span><span class="o">-</span><span class="n">util</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())[</span><span class="o">-</span><span class="mi">8</span><span class="p">:],</span> <span class="n">copied_offer_indices</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span><span class="n">copied_offer_indices</span><span class="p">))</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span><span class="n">copied_offer_indices</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="EnumGenerator.generate_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.generate_offer">[docs]</a>    <span class="k">def</span> <span class="nf">generate_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates offer in breath first manner. Most of the work is done in </span>
+<span class="sd">        :func:`init_generator`, </span>
+<span class="sd">        :func:`expand_assignement` and </span>
+<span class="sd">        :func:`_offer_from_index_dict`</span>
+<span class="sd">        this function just takes the next offer from the priorityQueue and converts </span>
+<span class="sd">        it into an offer. </span>
+<span class="sd">        </span>
+<span class="sd">        :raises StopIteration: Raised when no acceptable offers can be found.\</span>
+<span class="sd">        in this case this is the case if we find offers that have utility \</span>
+<span class="sd">        below acceptance threshold because we use BFS.</span>
+<span class="sd">        :return: The next best offer with the current knowledge base.</span>
+<span class="sd">        :rtype: Offer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">offer_counter</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">negative_util</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="c1"># the second index is just to ensure stable ordering in the priorityQueue</span>
+        <span class="n">negative_util</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assignement_frontier</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">if</span> <span class="o">-</span><span class="n">negative_util</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">expand_assignment</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_from_index_dict</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnumGenerator.offer_from_index_dict"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.offer_from_index_dict">[docs]</a>    <span class="k">def</span> <span class="nf">offer_from_index_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expand_assignment</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offer_from_index_dict</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnumGenerator._offer_from_index_dict"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._offer_from_index_dict">[docs]</a>    <span class="k">def</span> <span class="nf">_offer_from_index_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        converts indicies corresponding to the internal list of values </span>
+<span class="sd">        into actuall offers. e.g. assume we have </span>
+
+<span class="sd">        &gt;&gt;&gt; neg_space = {&quot;A&quot;:[&quot;first&quot;,&quot;second&quot;,&quot;third&quot;],&quot;B&quot;:[&quot;fourth&quot;,&quot;fifth&quot;,&quot;sixth&quot;]</span>
+<span class="sd">        ,&quot;C&quot;:[&quot;seventh&quot;,&quot;eighth&quot;,&quot;ninth&quot;]}</span>
+<span class="sd">        and each assignement has utility equal to the values. i.e.</span>
+<span class="sd">        [A-&gt;&quot;first&quot;,B-&gt;&quot;forth&quot;,C-&gt;&quot;seventh&quot;] would have utility 1+4+7 = 12 then </span>
+<span class="sd">        we would have </span>
+
+<span class="sd">        &gt;&gt;&gt; _offer_from_index_dict({&quot;A&quot;:2,&quot;C&quot;:0,&quot;B&quot;:1}).get_sparse_str_repr()</span>
+<span class="sd">        [A-&gt;&quot;first&quot;,B-&gt;&quot;fifth&quot;, C-&gt;&quot;ninth&quot;]</span>
+
+<span class="sd">        :param index_dict: The dictionarry mapping issues to the corresponding \</span>
+<span class="sd">        index in the internal list</span>
+<span class="sd">        :type index_dict: Dict[str, int]</span>
+<span class="sd">        :return: An offer with the mapping corresponding to the indices passed in</span>
+<span class="sd">        :rtype: Offer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">offer</span><span class="p">:</span> <span class="n">NestedDict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">index_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -284,10 +378,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">offer</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="k">return</span> <span class="n">Offer</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="EnumGenerator.find_violated_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">find_violated_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="k">return</span> <span class="n">Offer</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

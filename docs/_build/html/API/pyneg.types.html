@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -88,13 +88,14 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">pyneg.types package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyneg.types.message_type">Message Types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-pyneg.types.verbosity">pyneg.types.verbosity module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyneg.types.verbosity">Verbosity levels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyneg.types">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pyneg.utils.html">pyneg.utils package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 </ul>
@@ -170,11 +171,15 @@
 </div>
 <div class="section" id="module-pyneg.types.message_type">
 <span id="message-types"></span><span id="msg-type"></span><h2>Message Types<a class="headerlink" href="#module-pyneg.types.message_type" title="Permalink to this headline">¶</a></h2>
+<p>A message type definitnion for easier checking and type annotations.</p>
 <dl class="class">
 <dt id="pyneg.types.message_type.MessageType">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.types.message_type.</code><code class="sig-name descname">MessageType</code><a class="reference internal" href="../_modules/pyneg/types/message_type.html#MessageType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.types.message_type.MessageType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>EMPTY: No message, just a stub
+EXIT: sender is exiting the negotiation without agreement
+OFFER: A proposal with optionally a constraint
+ACCEPT: Agent has accepted the offer in this message</p>
 <dl class="attribute">
 <dt id="pyneg.types.message_type.MessageType.EMPTY">
 <code class="sig-name descname">EMPTY</code><em class="property"> = 1</em><a class="headerlink" href="#pyneg.types.message_type.MessageType.EMPTY" title="Permalink to this definition">¶</a></dt>
@@ -199,12 +204,17 @@
 
 </div>
 <div class="section" id="module-pyneg.types.verbosity">
-<span id="pyneg-types-verbosity-module"></span><h2>pyneg.types.verbosity module<a class="headerlink" href="#module-pyneg.types.verbosity" title="Permalink to this headline">¶</a></h2>
+<span id="verbosity-levels"></span><span id="verbosity"></span><h2>Verbosity levels<a class="headerlink" href="#module-pyneg.types.verbosity" title="Permalink to this headline">¶</a></h2>
+<p>Enum type for more understandable verbosity levels.
+hopefully quite self-describing.</p>
 <dl class="class">
 <dt id="pyneg.types.verbosity.Verbosity">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.types.verbosity.</code><code class="sig-name descname">Verbosity</code><a class="reference internal" href="../_modules/pyneg/types/verbosity.html#Verbosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.types.verbosity.Verbosity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
-<p>An enumeration.</p>
+<p>None: No output.
+Messages: print each message as it is sent to another agent
+reasoning: Additionally print reasoning that led to the message
+debug: print absolutely everything.</p>
 <dl class="attribute">
 <dt id="pyneg.types.verbosity.Verbosity.none">
 <code class="sig-name descname">none</code><em class="property"> = 0</em><a class="headerlink" href="#pyneg.types.verbosity.Verbosity.none" title="Permalink to this definition">¶</a></dt>
@@ -230,6 +240,12 @@
 </div>
 <div class="section" id="module-pyneg.types">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyneg.types" title="Permalink to this headline">¶</a></h2>
+<p>This module defines constants and types used elsewhere. 
+The Types are for type annotations only.
+Examples: 
+&gt;&gt;&gt; neg_space = {“First”:[“A”,”B”], “Second”:[“C”,”D”]}
+&gt;&gt;&gt; nested = {“First”: {“A”:0, “B”:1}, “Second”:{“C”:1,”D”:0}}
+&gt;&gt;&gt; atomic = {“First_A”:0, “First_B”:1, “Second_C”:1, “Second_D”:0}</p>
 </div>
 </div>
 

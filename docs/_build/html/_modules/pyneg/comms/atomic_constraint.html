@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -80,6 +80,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../API/pyneg.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Negotiation theory 101</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
 </ul>
@@ -145,10 +146,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.comms.atomic_constraint</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.offer</span> <span class="kn">import</span> <span class="n">Offer</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines an atomic constraint, the simples form of constraint possible. </span>
+<span class="sd">It expresses that any offer which has a perticular assignement will never be accepted. </span>
+<span class="sd">Good baseline for addapting for more complicated constraints</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.offer</span> <span class="kn">import</span> <span class="n">Offer</span>
 
 
 <div class="viewcode-block" id="AtomicConstraint"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint">[docs]</a><span class="k">class</span> <span class="nc">AtomicConstraint</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atomic constraint, the simples form of constraint possible. </span>
+<span class="sd">        It expresses that any offer which has a perticular assignement will never be accepted. </span>
+<span class="sd">        Good baseline for addapting for more complicated constraints</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="AtomicConstraint.__init__"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">issue</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
@@ -166,20 +178,39 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="AtomicConstraint.is_satisfied_by_assignment"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment">[docs]</a>    <span class="k">def</span> <span class="nf">is_satisfied_by_assignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether a perticular assignement satisfies this constraint.</span>
+<span class="sd">        For example:</span>
+<span class="sd">        &gt;&gt;&gt; AtomicConstraint(&quot;A&quot;,&quot;first&quot;).is_satisfied_by_assignment(&quot;A&quot;,&quot;first&quot;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; AtomicConstraint(&quot;A&quot;,&quot;first&quot;).is_satisfied_by_assignment(&quot;A&quot;,&quot;second&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        :param issue: The issue the potential assignement is refering too</span>
+<span class="sd">        :type issue: str</span>
+<span class="sd">        :param value: The value the potential assignement is refering too</span>
+<span class="sd">        :type value: str</span>
+<span class="sd">        :return: True iff the assignement is satisfied</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">issue</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">issue</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AtomicConstraint.is_satisfied_by_offer"><a class="viewcode-back" href="../../../API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer">[docs]</a>    <span class="k">def</span> <span class="nf">is_satisfied_by_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if a whole offer is satisfied by the constraint.</span>
+<span class="sd">        For atomic constraints this means just checking all of the</span>
+<span class="sd">        assignements individually.</span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to be checked</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: True iff the assignement is allowed under this constraint</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chosen_value</span> <span class="o">=</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_chosen_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">chosen_value</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span></div>
-
-    <span class="c1"># def is_satisfied_by_strat(self, strat: Strategy) -&gt; bool:</span>
-
-    <span class="c1">#     constrainted_prob = stratagy.get_prob(self.issue, self.value)</span>
-    <span class="c1">#     return isclose(constrainted_prob, 0)</span>
+        
+        <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">issue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>

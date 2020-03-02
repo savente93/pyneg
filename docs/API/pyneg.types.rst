@@ -14,7 +14,10 @@ Message Types
    :undoc-members:
    :show-inheritance:
 
-pyneg.types.verbosity module
+
+.. _verbosity:
+
+Verbosity levels
 ----------------------------
 
 .. automodule:: pyneg.types.verbosity
