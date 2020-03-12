@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,9 +146,15 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.dtp_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module devines the :class:`DTPGenerator` class,</span>
+<span class="sd">which uses DTProbLog to generate optimal offers in </span>
+<span class="sd">settings that include probabalistic knowledge bases. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">search</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">isclose</span>
 <span class="kn">from</span> <span class="nn">problog.program</span> <span class="kn">import</span> <span class="n">PrologString</span>
@@ -156,24 +162,34 @@
 
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span><span class="p">,</span> <span class="n">Offer</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span><span class="p">,</span> <span class="n">NegSpace</span>
-<span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">atom_dict_from_nested_dict</span><span class="p">,</span> 
-                         <span class="n">atom_from_issue_value</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">atom_dict_from_nested_dict</span><span class="p">,</span> <span class="n">atom_from_issue_value</span><span class="p">,</span>
                          <span class="n">nested_dict_from_atom_dict</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
 
+<span class="c1"># Help out MyPy a bit</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">problog.logic</span> <span class="kn">import</span> <span class="n">Term</span> <span class="c1"># pylint: disable=ungrouped-imports</span>
+
 
 <div class="viewcode-block" id="DTPGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator">[docs]</a><span class="k">class</span> <span class="nc">DTPGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This generator class uses DTProbLog to generate optimal offers. </span>
+<span class="sd">    Since it uses DTProbLog it can reason about offers using utilities,</span>
+<span class="sd">    both atomic and compound and also using arbitrary knowledge bases. </span>
+<span class="sd">    It does mean that it is very slow and prone to memory leaks due to the </span>
+<span class="sd">    python implementation of DTProbLog</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DTPGenerator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                  <span class="n">acceptability_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                 <span class="n">kb</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-
+                 <span class="n">knowledge_base</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">utilities</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kb</span> <span class="o">=</span> <span class="n">kb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span> <span class="o">=</span> <span class="n">knowledge_base</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span> <span class="o">=</span> <span class="p">{</span><span class="n">issue</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
                           <span class="k">for</span> <span class="n">issue</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">neg_space</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span> <span class="o">=</span> <span class="n">non_agreement_cost</span>
@@ -181,6 +197,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_generator</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DTPGenerator.reset_generator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.reset_generator">[docs]</a>    <span class="k">def</span> <span class="nf">reset_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the internals of the generator so we can start anew for a new negotiaton. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">True</span></div>
@@ -197,11 +216,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">new_utils</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-    <span class="c1"># def accepts(self, offer: Offer) -&gt; bool:</span>
-    <span class="c1">#     util = self.evaluator.calc_offer_utility(offer)</span>
-    <span class="c1">#     return util &gt;= self.acceptability_threshold</span>
-
-<div class="viewcode-block" id="DTPGenerator.compile_dtproblog_model"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model">[docs]</a>    <span class="k">def</span> <span class="nf">compile_dtproblog_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DTPGenerator._compile_dtproblog_model"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._compile_dtproblog_model">[docs]</a>    <span class="k">def</span> <span class="nf">_compile_dtproblog_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes the internal knowledge of the agent and complies it into a string representing </span>
+<span class="sd">        a valid DTProbLog model that it can use to generate the next offer.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: A string representing a valid DTProbLog model</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dtp_decision_vars</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">atom_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -212,49 +234,78 @@
                 <span class="n">atom_list</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="n">utility_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">utility_string</span> <span class="o">+=</span> <span class="s2">&quot;utility(</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">utility</span><span class="p">,</span> <span class="n">reward</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">utility_string</span> <span class="o">+=</span> <span class="s2">&quot;utility(</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utility</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
 
         <span class="c1"># we have to make sure we offset the utility of previously generated</span>
         <span class="c1"># offers so dtproblog won&#39;t generate them again</span>
         <span class="n">offer_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sparse_offer</span><span class="p">,</span> <span class="n">util</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">config_string</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">sparse_offer</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> 
+                    <span class="n">sparse_offer</span><span class="p">)))</span>  <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
             <span class="n">utility_string</span> <span class="o">+=</span> <span class="s2">&quot;offer</span><span class="si">{}</span><span class="s2"> :- </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">offer_count</span><span class="p">,</span> <span class="n">config_string</span><span class="p">)</span>
             <span class="n">utility_string</span> <span class="o">+=</span> <span class="s2">&quot;utility(offer</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">offer_count</span><span class="p">,</span> <span class="o">-</span><span class="n">util</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span><span class="p">)</span>
             <span class="n">offer_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">kb_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kb</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">kb_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">dtp_decision_vars</span> <span class="o">+</span> <span class="n">kb_string</span> <span class="o">+</span> <span class="n">utility_string</span></div>
 
-<div class="viewcode-block" id="DTPGenerator.extend_partial_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer">[docs]</a>    <span class="k">def</span> <span class="nf">extend_partial_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Offer</span><span class="p">]:</span>
+<div class="viewcode-block" id="DTPGenerator._extend_partial_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._extend_partial_offer">[docs]</a>    <span class="k">def</span> <span class="nf">_extend_partial_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partial_offer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Offer</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When some decision variables have no impact on the final utility DTProbLog will </span>
+<span class="sd">        generate partial answers. This function will expand those final offers into all of their</span>
+<span class="sd">        full options so we can propose them. e.g. </span>
+
+<span class="sd">        &gt;&gt;&gt; gen = DTPGenerator(</span>
+<span class="sd">            neg_space = {&quot;boolean&quot;:[&quot;True&quot;,&quot;False&quot;], &quot;dummy&quot;:[&quot;1&quot;,&quot;2&quot;]},</span>
+<span class="sd">            utilities = {&quot;boolean_True&quot;:100},</span>
+<span class="sd">            non_agreement_cost = -100,</span>
+<span class="sd">            acceptability_threshold = 10,</span>
+<span class="sd">            knowledge_base = []</span>
+<span class="sd">        )</span>
+<span class="sd">        &gt;&gt;&gt; program = PrologString(gen._compile_dtproblog_model())</span>
+<span class="sd">        &gt;&gt;&gt; query_output, score, _ = dtproblog(program)</span>
+<span class="sd">        &gt;&gt;&gt; query_output</span>
+<span class="sd">        {boolean_True: 1}</span>
+<span class="sd">        &gt;&gt;&gt; cleaned_query_output = gen.clean_query_output(query_output)</span>
+<span class="sd">        &gt;&gt;&gt; gen._extend_partial_offer(cleaned_query_output)</span>
+<span class="sd">        {[boolean-&gt;True, dummy-&gt;1], [boolean-&gt;True, dummy-&gt;2]}</span>
+
+<span class="sd">        </span>
+<span class="sd">        :param partial_offer: </span>
+<span class="sd">        :type partial_offer: [type]</span>
+<span class="sd">        :raises valueerror: [description]</span>
+<span class="sd">        :return: [description]</span>
+<span class="sd">        :rtype: Set[Offer]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">partial_offer_queue</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">partial_offer_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial_offer</span><span class="p">)</span>
         <span class="n">full_offers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">partial_offer_queue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">partial_offer</span> <span class="o">=</span> <span class="n">nested_dict_from_atom_dict</span><span class="p">(</span>
+        <span class="k">while</span> <span class="n">partial_offer_queue</span><span class="p">:</span>
+            <span class="n">nested_partial_offer</span> <span class="o">=</span> <span class="n">nested_dict_from_atom_dict</span><span class="p">(</span>
                 <span class="n">partial_offer_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
             <span class="c1"># make sure we cover all of the issues</span>
             <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">issue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">partial_offer</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="n">issue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nested_partial_offer</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">nested_partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="n">value</span><span class="p">:</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]}</span>
 
             <span class="c1"># make sure the issues cover all values</span>
             <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>
-                    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nested_partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">nested_partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
             <span class="c1"># if an issue didn&#39;t have any utilities we can use that</span>
             <span class="c1"># to make lateral moves for free.</span>
             <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">isclose</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">nested_partial_offer</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="mi">0</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>
-                        <span class="n">partial_offer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">partial_offer</span><span class="p">)</span>
+                        <span class="n">partial_offer_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nested_partial_offer</span><span class="p">)</span>
                         <span class="n">partial_offer_copy</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
                         <span class="n">partial_atom_dict</span> <span class="o">=</span> <span class="n">atom_dict_from_nested_dict</span><span class="p">(</span>
                             <span class="n">partial_offer_copy</span><span class="p">)</span>
@@ -262,26 +313,40 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># is the partial offer valid? (Offer will raise valueerror if not)</span>
-                <span class="n">full_offer</span> <span class="o">=</span> <span class="n">Offer</span><span class="p">(</span><span class="n">partial_offer</span><span class="p">)</span>
+                <span class="n">full_offer</span> <span class="o">=</span> <span class="n">Offer</span><span class="p">(</span><span class="n">nested_partial_offer</span><span class="p">)</span>
                 <span class="n">full_offers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">full_offer</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">continue</span>
 
         <span class="k">return</span> <span class="n">full_offers</span></div>
 
-<div class="viewcode-block" id="DTPGenerator.clean_query_output"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.clean_query_output">[docs]</a>    <span class="k">def</span> <span class="nf">clean_query_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="DTPGenerator._clean_query_output"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._clean_query_output">[docs]</a>    <span class="k">def</span> <span class="nf">_clean_query_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query_output</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="s1">&#39;Term&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        sometimes dtproblog can return things such as &quot;choice(0,0,boolean_true)&quot; under certain</span>
+<span class="sd">        circumstances so we need to filter these. This function also casts the keys from </span>
+<span class="sd">        problog.logic.Term to str so we can manipulate them.</span>
+<span class="sd">        </span>
+<span class="sd">        :param query_output: the raw output dictionary from DTProbLog</span>
+<span class="sd">        :type query_output: Dict[problog.logic.Term, float]</span>
+<span class="sd">        :return: A dictionary containing the cleaned assignements of the optimal offer</span>
+<span class="sd">        :rtype: Dict[str, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">query_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># sometimes dtproblog can return things like &quot;choice(0,0,boolean_true)&quot; so we need to filter that out</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\&#39;?[A-z0-9|\.]+\_[A-z0-9|\.]+\&#39;?)&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom</span><span class="p">))</span>
-            <span class="n">clean_atom</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># sometimes dtproblog can return things </span>
+            <span class="c1"># like &quot;choice(0,0,boolean_true)&quot; so we need to filter that out</span>
+            <span class="n">reg_search</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\&#39;?[A-z0-9|\.]+\_[A-z0-9|\.]+\&#39;?)&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">reg_search</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not parse query output: </span><span class="si">{</span><span class="n">query_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="n">clean_atom</span> <span class="o">=</span> <span class="n">reg_search</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">return_dict</span><span class="p">[</span><span class="n">clean_atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">prob</span>
 
         <span class="k">return</span> <span class="n">return_dict</span></div>
 
 <div class="viewcode-block" id="DTPGenerator.generate_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.generate_offer">[docs]</a>    <span class="k">def</span> <span class="nf">generate_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">program</span> <span class="o">=</span> <span class="n">PrologString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compile_dtproblog_model</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="p">:</span>
+            <span class="n">program</span> <span class="o">=</span> <span class="n">PrologString</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compile_dtproblog_model</span><span class="p">())</span>
             <span class="n">query_output</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dtproblog</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
 
             <span class="c1"># score of offers are now below acceptability threshold</span>
@@ -289,21 +354,48 @@
             <span class="k">if</span> <span class="n">score</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
-            <span class="n">cleaned_query_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean_query_output</span><span class="p">(</span><span class="n">query_output</span><span class="p">)</span>
-            <span class="n">extended_offers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extend_partial_offer</span><span class="p">(</span><span class="n">cleaned_query_output</span><span class="p">)</span>
+            <span class="n">cleaned_query_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_query_output</span><span class="p">(</span><span class="n">query_output</span><span class="p">)</span>
+            <span class="n">extended_offers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extend_partial_offer</span><span class="p">(</span><span class="n">cleaned_query_output</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">offer</span> <span class="ow">in</span> <span class="n">extended_offers</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">offer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">offer</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">[</span><span class="n">offer</span><span class="o">.</span><span class="n">get_sparse_repr</span><span class="p">()]</span> <span class="o">=</span> <span class="n">score</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="DTPGenerator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">            with non constraint aware system. </span>
+<span class="s2">            add_constraint called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="DTPGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                add_constraints called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
 <div class="viewcode-block" id="DTPGenerator.find_violated_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.find_violated_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">find_violated_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                find_violated_constraint called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="DTPGenerator.get_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                function get_constraints called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DTPGenerator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                get_unconstrained_values_by_issue called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">])</span></div></div>
 </pre></div>
 
            </div>

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,12 +146,15 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.problog_evaluator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines the :class:`ProblogEvaluator` class. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
 
 <span class="kn">from</span> <span class="nn">problog</span> <span class="kn">import</span> <span class="n">get_evaluatable</span>
 <span class="kn">from</span> <span class="nn">problog.program</span> <span class="kn">import</span> <span class="n">PrologString</span>
 
-<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span>
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span>
 <span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">atom_from_issue_value</span>
@@ -160,14 +163,22 @@
 
 
 <div class="viewcode-block" id="ProblogEvaluator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator">[docs]</a><span class="k">class</span> <span class="nc">ProblogEvaluator</span><span class="p">(</span><span class="n">Evaluator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This evaluator uses ProbLog to calculate the utility of offers. </span>
+<span class="sd">    That means that it can deal with probabalistic as well as deterministic </span>
+<span class="sd">    knowledge bases and use them correctly to infer consequences.</span>
+<span class="sd">    This is however, much slower than the other classes. The knowledge base </span>
+<span class="sd">    should be represented as valid ProbLog statements see </span>
+<span class="sd">    https://dtai.cs.kuleuven.be/problog/ for more information. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ProblogEvaluator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                 <span class="n">kb</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+                 <span class="n">knowledge_base</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">utilities</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kb</span> <span class="o">=</span> <span class="n">kb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span> <span class="o">=</span> <span class="n">knowledge_base</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span> <span class="o">=</span> <span class="n">neg_space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span> <span class="o">=</span> <span class="n">non_agreement_cost</span></div>
 
@@ -180,6 +191,17 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ProblogEvaluator.calc_probabilities_of_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">calc_probabilities_of_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses ProbLog and the known knowledge_base to calculate the probability</span>
+<span class="sd">        of each of the known utilities to occur so we can use it to calculate the </span>
+<span class="sd">        expected utility of an offer. </span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer you want to calculate the utility of</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: A dictionary with known utilities as keys and the probability \</span>
+<span class="sd">            they will be fufilled as values.</span>
+<span class="sd">        :rtype: Dict[str, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_problog_model</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
         <span class="n">probability_of_facts</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">atom</span><span class="p">):</span> <span class="n">util</span> <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">util</span> <span class="ow">in</span>
                                 <span class="n">get_evaluatable</span><span class="p">(</span><span class="s2">&quot;sdd&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">create_from</span><span class="p">(</span>
@@ -188,17 +210,26 @@
         <span class="k">return</span> <span class="n">probability_of_facts</span></div>
 
 <div class="viewcode-block" id="ProblogEvaluator.compile_problog_model"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model">[docs]</a>    <span class="k">def</span> <span class="nf">compile_problog_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile the offer, knowledge base and known utilities into a string </span>
+<span class="sd">        representing a valid ProbLog model. </span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer that needs to be incoprated into the model. </span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: A string representation of the model including knowledge base and utilities</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">decision_facts_string</span> <span class="o">=</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_problog_dists</span><span class="p">()</span>
 
         <span class="n">query_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">util_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># we shouldn&#39;t ask problog for facts that we currently have no rules for</span>
             <span class="c1"># like we might not have after new issues are set so we&#39;ll skip those</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">util_atom</span> <span class="ow">in</span> <span class="n">rule</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kb</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">util_atom</span> <span class="ow">in</span> <span class="n">rule</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
                     <span class="p">[</span><span class="n">util_atom</span> <span class="ow">in</span> <span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">keys</span><span class="p">()]):</span>
                 <span class="n">query_string</span> <span class="o">+=</span> <span class="s2">&quot;query(</span><span class="si">{utilFact}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">utilFact</span><span class="o">=</span><span class="n">util_atom</span><span class="p">)</span>
 
-        <span class="n">kb_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kb</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">kb_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
         <span class="k">return</span> <span class="n">decision_facts_string</span> <span class="o">+</span> <span class="n">kb_string</span> <span class="o">+</span> <span class="n">query_string</span></div>
 
@@ -211,6 +242,17 @@
         <span class="k">return</span> <span class="n">total_util</span></div>
 
 <div class="viewcode-block" id="ProblogEvaluator.calc_strat_utility"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility">[docs]</a>    <span class="k">def</span> <span class="nf">calc_strat_utility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strat</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the expected utility of a strategy, meaning the expected</span>
+<span class="sd">        utility of an offer that is sampled from this strattegy under the current</span>
+<span class="sd">        knowledge base. </span>
+<span class="sd">        </span>
+<span class="sd">        :param strat: The strat to calculate the expected utility.</span>
+<span class="sd">        :type strat: Strategy</span>
+<span class="sd">        :return: The expected utility of the strategy under the current knowledge base \</span>
+<span class="sd">            and utilities. </span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_issues</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">strat</span><span class="o">.</span><span class="n">get_value_dist</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -224,8 +266,24 @@
         <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">0.0</span></div></div>
+        
+        <span class="k">return</span> <span class="mf">0.0</span></div>
+
+<div class="viewcode-block" id="ProblogEvaluator.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">new_utils</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ProblogEvaluator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">            with non constraint aware system. </span>
+<span class="s2">            add_constraint called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ProblogEvaluator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                add_constraints called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 </pre></div>
 
            </div>

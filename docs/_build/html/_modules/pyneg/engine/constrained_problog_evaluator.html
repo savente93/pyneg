@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,7 +146,11 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.constrained_problog_evaluator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Iterable</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines the :class:`ConstrainedProblogEvaluator` class, the contraint aware version of </span>
+<span class="sd">:class:`ProblogEvaluator` see that entry for more information.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span><span class="p">,</span> <span class="n">NegSpace</span>
@@ -156,35 +160,58 @@
 
 
 <div class="viewcode-block" id="ConstrainedProblogEvaluator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator">[docs]</a><span class="k">class</span> <span class="nc">ConstrainedProblogEvaluator</span><span class="p">(</span><span class="n">ProblogEvaluator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class is equal to the :class:`ProblogEvaluator` class but with </span>
+<span class="sd">        additional logic to handle constraints. See :class:`ProblogEvaluator` for </span>
+<span class="sd">        more information on how ProbLog is used. </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
 <div class="viewcode-block" id="ConstrainedProblogEvaluator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                 <span class="n">kb</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">knowledge_base</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                  <span class="n">constr_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                  <span class="n">initial_constraints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span> <span class="o">=</span> <span class="n">constr_value</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">knowledge_base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">initial_constraints</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">initial_constraints</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConstrainedProblogEvaluator.calc_offer_utility"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_offer_utility">[docs]</a>    <span class="k">def</span> <span class="nf">calc_offer_utility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">satisfies_all_constraints</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConstrainedProblogEvaluator.calc_strat_utility"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_strat_utility">[docs]</a>    <span class="k">def</span> <span class="nf">calc_strat_utility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strat</span><span class="p">:</span> <span class="n">Strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">satisfies_all_constraints</span><span class="p">(</span><span class="n">strat</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">calc_strat_utility</span><span class="p">(</span><span class="n">strat</span><span class="p">)</span></div>
+        
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">calc_strat_utility</span><span class="p">(</span><span class="n">strat</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConstrainedProblogEvaluator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">False</span>
+<div class="viewcode-block" id="ConstrainedProblogEvaluator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_check</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Offer</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the given offer or strategy  satisfies all known constraints.</span>
+<span class="sd">        </span>
+<span class="sd">        :param to_check: The offer or strategy to check</span>
+<span class="sd">        :type to_check: Union[Offer, Strategy]</span>
+<span class="sd">        :raises TypeError: if an object of unknown type is passed. </span>
+<span class="sd">        :return: True iff the given offer or strategy satisfies all known constraints.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_check</span><span class="p">,</span> <span class="n">Offer</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">to_check</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_check</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_strat</span><span class="p">(</span><span class="n">to_check</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;object is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">to_check</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead of </span>
+<span class="s2">                                Union[Offer, Strategy]. Object: </span><span class="si">{</span><span class="n">to_check</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -193,18 +220,19 @@
         <span class="n">constraint_atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">issue</span><span class="p">,</span> <span class="n">constraint</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_utilities</span><span class="p">({</span><span class="n">constraint_atom</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span><span class="p">})</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ConstrainedProblogEvaluator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_utilities</span><span class="p">({</span><span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">issue</span><span class="p">,</span> <span class="n">constraint</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span>
+<div class="viewcode-block" id="ConstrainedProblogEvaluator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_constraints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_utilities</span><span class="p">({</span><span class="n">atom_from_issue_value</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">issue</span><span class="p">,</span> <span class="n">constraint</span><span class="o">.</span><span class="n">value</span><span class="p">):</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span>
                              <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">})</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
@@ -216,7 +244,16 @@
             <span class="o">**</span><span class="n">new_utils</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="ConstrainedProblogEvaluator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">):</span>
+<div class="viewcode-block" id="ConstrainedProblogEvaluator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns all known values for the given issue that are not \</span>
+<span class="sd">        ruled out by a constraint. </span>
+<span class="sd">        </span>
+<span class="sd">        :param issue: The issue to retreive the unconstrained values of.</span>
+<span class="sd">        :type issue: str</span>
+<span class="sd">        :return: A set containt all values of an issue that are not constrained</span>
+<span class="sd">        :rtype: Set[AtomicConstraint]</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">issue_constrained_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
             <span class="n">constr</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="k">if</span> <span class="n">constr</span><span class="o">.</span><span class="n">issue</span> <span class="o">==</span> <span class="n">issue</span><span class="p">)</span>
         <span class="n">issue_unconstrained_values</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>

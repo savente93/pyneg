@@ -22,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -159,7 +159,6 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
- | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -223,18 +222,34 @@
         <li><a href="API/pyneg.agent.html#pyneg.agent.constr_agent.ConstrainedAgent._accepts_negotiation_proposal">(pyneg.agent.constr_agent.ConstrainedAgent method)</a>
 </li>
       </ul></li>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._add_utilities">_add_utilities() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator._add_utilities">_add_utilities() (pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
 
       <ul>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator._add_utilities">(pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
-</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator._add_utilities">(pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator method)</a>
 </li>
       </ul></li>
       <li><a href="API/pyneg.agent.html#pyneg.agent.agent.Agent._call_for_negotiation">_call_for_negotiation() (pyneg.agent.agent.Agent method)</a>
 </li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._clean_query_output">_clean_query_output() (pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._compile_dtproblog_model">_compile_dtproblog_model() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
+
+      <ul>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._compile_dtproblog_model">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
+      </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._expand_assignment">_expand_assignment() (pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator._extend_partial_offer">_extend_partial_offer() (pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
+      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._index_max_utilities">_index_max_utilities() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
+
+      <ul>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator._index_max_utilities">(pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator._index_max_utilities">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
+</li>
+      </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator._offer_from_index_dict">_offer_from_index_dict() (pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
       <li><a href="API/pyneg.agent.html#pyneg.agent.agent.Agent._parse_response">_parse_response() (pyneg.agent.agent.Agent method)</a>
@@ -286,13 +301,23 @@
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraint">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.add_constraint">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.add_constraint">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.add_constraint">(pyneg.engine.engine.Engine method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.add_constraint">(pyneg.engine.enum_generator.EnumGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.evaluator.Evaluator.add_constraint">(pyneg.engine.evaluator.Evaluator method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.add_constraint">(pyneg.engine.generator.Generator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.add_constraint">(pyneg.engine.linear_evaluator.LinearEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraint">(pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_constraint">(pyneg.engine.random_generator.RandomGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints">add_constraints() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
@@ -306,13 +331,23 @@
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.add_constraints">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.add_constraints">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.add_constraints">(pyneg.engine.engine.Engine method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.add_constraints">(pyneg.engine.enum_generator.EnumGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.evaluator.Evaluator.add_constraints">(pyneg.engine.evaluator.Evaluator method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.add_constraints">(pyneg.engine.generator.Generator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.add_constraints">(pyneg.engine.linear_evaluator.LinearEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraints">(pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_constraints">(pyneg.engine.random_generator.RandomGenerator method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -342,10 +377,10 @@
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.add_utilities">(pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_utilities">(pyneg.engine.random_generator.RandomGenerator method)</a>
+</li>
       </ul></li>
       <li><a href="API/pyneg.agent.html#pyneg.agent.agent.Agent">Agent (class in pyneg.agent.agent)</a>
-</li>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory">AgentFactory (class in pyneg.agent.agent_factory)</a>
 </li>
       <li><a href="API/pyneg.utils.html#pyneg.utils.utils.atom_dict_from_nested_dict">atom_dict_from_nested_dict() (in module pyneg.utils.utils)</a>
 </li>
@@ -389,6 +424,8 @@
       </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities">calc_probabilities_of_utilities() (pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.calc_strat_utility">calc_strat_utility() (pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator method)</a>
 
       <ul>
@@ -399,20 +436,10 @@
         <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility">(pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.can_continue">can_continue() (pyneg.engine.engine.AbstractEngine method)</a>
 
       <ul>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.can_continue">(pyneg.engine.engine.Engine method)</a>
-</li>
-      </ul></li>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.clean_query_output">clean_query_output() (pyneg.engine.dtp_generator.DTPGenerator method)</a>
-</li>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model">compile_dtproblog_model() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
-
-      <ul>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model">compile_problog_model() (pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
@@ -463,17 +490,15 @@
 </li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator">EnumGenerator (class in pyneg.engine.enum_generator)</a>
 </li>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.estimate_max_linear_utility">estimate_max_linear_utility() (pyneg.agent.agent_factory.AgentFactory static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.estimate_max_linear_utility">estimate_max_linear_utility() (in module pyneg.agent.agent_factory)</a>
+</li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.evaluator.Evaluator">Evaluator (class in pyneg.engine.evaluator)</a>
 </li>
       <li><a href="API/pyneg.types.html#pyneg.types.message_type.MessageType.EXIT">EXIT (pyneg.types.message_type.MessageType attribute)</a>
 </li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment">expand_assignment() (pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
-</li>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer">extend_partial_offer() (pyneg.engine.dtp_generator.DTPGenerator method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -493,6 +518,8 @@
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.find_violated_constraint">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.find_violated_constraint">(pyneg.engine.engine.Engine method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint">(pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.find_violated_constraint">(pyneg.engine.generator.Generator method)</a>
 </li>
@@ -550,19 +577,33 @@
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_constraints">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.get_constraints">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.get_constraints">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.get_constraints">(pyneg.engine.engine.Engine method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.get_constraints">(pyneg.engine.enum_generator.EnumGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.get_constraints">(pyneg.engine.generator.Generator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.get_constraints">(pyneg.engine.random_generator.RandomGenerator method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.comms.html#pyneg.comms.offer.Offer.get_issues">get_issues() (pyneg.comms.offer.Offer method)</a>
+
+      <ul>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.strategy.Strategy.get_issues">(pyneg.engine.strategy.Strategy method)</a>
 </li>
+      </ul></li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.offer.Offer.get_problog_dists">get_problog_dists() (pyneg.comms.offer.Offer method)</a>
+
+      <ul>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.strategy.Strategy.get_problog_dists">(pyneg.engine.strategy.Strategy method)</a>
 </li>
+      </ul></li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.offer.Offer.get_sparse_repr">get_sparse_repr() (pyneg.comms.offer.Offer method)</a>
 </li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.offer.Offer.get_sparse_str_repr">get_sparse_str_repr() (pyneg.comms.offer.Offer method)</a>
@@ -578,11 +619,17 @@
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_unconstrained_values_by_issue">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.dtp_generator.DTPGenerator.get_unconstrained_values_by_issue">(pyneg.engine.dtp_generator.DTPGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.AbstractEngine.get_unconstrained_values_by_issue">(pyneg.engine.engine.AbstractEngine method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.engine.Engine.get_unconstrained_values_by_issue">(pyneg.engine.engine.Engine method)</a>
 </li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.get_unconstrained_values_by_issue">(pyneg.engine.enum_generator.EnumGenerator method)</a>
+</li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.get_unconstrained_values_by_issue">(pyneg.engine.generator.Generator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.get_unconstrained_values_by_issue">(pyneg.engine.random_generator.RandomGenerator method)</a>
 </li>
       </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.strategy.Strategy.get_value_dist">get_value_dist() (pyneg.engine.strategy.Strategy method)</a>
@@ -601,14 +648,6 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities">index_max_utilities() (pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator method)</a>
-
-      <ul>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.index_max_utilities">(pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator method)</a>
-</li>
-        <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities">(pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
-</li>
-      </ul></li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.enum_generator.EnumGenerator.init_generator">init_generator() (pyneg.engine.enum_generator.EnumGenerator method)</a>
 </li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy">init_uniform_strategy() (pyneg.engine.random_generator.RandomGenerator method)</a>
@@ -617,29 +656,23 @@
 </li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.message.Message.is_acceptance">is_acceptance() (pyneg.comms.message.Message method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.comms.html#pyneg.comms.offer.Offer.is_assigned">is_assigned() (pyneg.comms.offer.Offer method)</a>
 </li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.message.Message.is_empty">is_empty() (pyneg.comms.message.Message method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/pyneg.comms.html#pyneg.comms.message.Message.is_offer">is_offer() (pyneg.comms.message.Message method)</a>
 </li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_assignment">is_satisfied_by_assignment() (pyneg.comms.atomic_constraint.AtomicConstraint method)</a>
 </li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_offer">is_satisfied_by_offer() (pyneg.comms.atomic_constraint.AtomicConstraint method)</a>
 </li>
+      <li><a href="API/pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_strat">is_satisfied_by_strat() (pyneg.comms.atomic_constraint.AtomicConstraint method)</a>
+</li>
       <li><a href="API/pyneg.comms.html#pyneg.comms.message.Message.is_termination">is_termination() (pyneg.comms.message.Message method)</a>
 </li>
       <li><a href="API/pyneg.utils.html#pyneg.utils.utils.issue_value_tuple_from_atom">issue_value_tuple_from_atom() (in module pyneg.utils.utils)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="K">K</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/pyneg.engine.html#pyneg.engine.strategy.Strategy.keys">keys() (pyneg.engine.strategy.Strategy method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -655,17 +688,17 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent">make_constrained_linear_concession_agent() (pyneg.agent.agent_factory.AgentFactory static method)</a>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.make_constrained_linear_concession_agent">make_constrained_linear_concession_agent() (in module pyneg.agent.agent_factory)</a>
 </li>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent">make_constrained_linear_random_agent() (pyneg.agent.agent_factory.AgentFactory static method)</a>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.make_constrained_linear_random_agent">make_constrained_linear_random_agent() (in module pyneg.agent.agent_factory)</a>
 </li>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.make_linear_concession_agent">make_linear_concession_agent() (pyneg.agent.agent_factory.AgentFactory static method)</a>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.make_linear_concession_agent">make_linear_concession_agent() (in module pyneg.agent.agent_factory)</a>
 </li>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.make_linear_random_agent">make_linear_random_agent() (pyneg.agent.agent_factory.AgentFactory static method)</a>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.make_linear_random_agent">make_linear_random_agent() (in module pyneg.agent.agent_factory)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.AgentFactory.make_random_agent">make_random_agent() (pyneg.agent.agent_factory.AgentFactory static method)</a>
+      <li><a href="API/pyneg.agent.html#pyneg.agent.agent_factory.make_random_agent">make_random_agent() (in module pyneg.agent.agent_factory)</a>
 </li>
       <li><a href="API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant">make_strat_constraint_compliant() (pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator method)</a>
 </li>
@@ -837,6 +870,10 @@
         <li><a href="API/pyneg.engine.html#pyneg.engine.generator.Generator.set_utilities">(pyneg.engine.generator.Generator method)</a>
 </li>
         <li><a href="API/pyneg.engine.html#pyneg.engine.linear_evaluator.LinearEvaluator.set_utilities">(pyneg.engine.linear_evaluator.LinearEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.problog_evaluator.ProblogEvaluator.set_utilities">(pyneg.engine.problog_evaluator.ProblogEvaluator method)</a>
+</li>
+        <li><a href="API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.set_utilities">(pyneg.engine.random_generator.RandomGenerator method)</a>
 </li>
       </ul></li>
   </ul></td>

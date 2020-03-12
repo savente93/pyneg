@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -217,6 +217,24 @@ assignements individually.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to be checked</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True iff the assignement is allowed under this constraint</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_strat">
+<code class="sig-name descname">is_satisfied_by_strat</code><span class="sig-paren">(</span><em class="sig-param">strat: Strategy</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/comms/atomic_constraint.html#AtomicConstraint.is_satisfied_by_strat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.comms.atomic_constraint.AtomicConstraint.is_satisfied_by_strat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a whole Stratagy is satisfied by the constraint.
+i.e. does the stratagy assign 0 probability to the constrained assignement?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>strat</strong> (<em>Stratagy</em>) – The strattagy to be checked</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True iff the assignement is allowed under this constraint</p>

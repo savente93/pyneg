@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock
-from pyneg.agent import AgentFactory
+from pyneg.agent import *
 from pyneg.comms import Offer, Message
 from pyneg.types import MessageType
 
@@ -75,10 +75,10 @@ class TestAgent(TestCase):
         self.uniform_weights = {
             issue: 1 / len(self.neg_space.keys()) for issue, values in self.neg_space.items()}
 
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
             self.uniform_weights)
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
             self.uniform_weights)
 
@@ -96,7 +96,7 @@ class TestAgent(TestCase):
             "inasdfasdfteger": list(range(10)),
             "asdfasdf": [float("{0:.2f}".format(0.1 * i)) for i in range(10)]
         }
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
             self.uniform_weights)
         self.assertFalse(self.agent._call_for_negotiation(self.opponent, self.agent._neg_space))
@@ -130,9 +130,9 @@ class TestAgent(TestCase):
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
             issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost,
             temp_uniform_weights)
 
@@ -145,9 +145,9 @@ class TestAgent(TestCase):
         temp_utils = {"first_True": 10000}
         temp_uniform_weights = {
             issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", temp_neg_space, temp_utils, self.reservation_value, self.non_agreement_cost,
             temp_uniform_weights)
         self.agent.negotiate(self.opponent)
@@ -162,9 +162,9 @@ class TestAgent(TestCase):
         temp_opponent_utils = {"second_True": 10000}
         temp_uniform_weights = {
             issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", temp_neg_space, temp_agent_utils, self.reservation_value, self.non_agreement_cost, temp_uniform_weights)
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", temp_neg_space, temp_opponent_utils, self.reservation_value, self.non_agreement_cost,
             temp_uniform_weights)
         self.agent.negotiate(self.opponent)
@@ -181,10 +181,10 @@ class TestAgent(TestCase):
         temp_uniform_weights = {
             issue: 1 / len(temp_neg_space.keys()) for issue in temp_neg_space.keys()}
         temp_reservation_value = 1000
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", temp_neg_space, temp_agent_utils, temp_reservation_value, self.non_agreement_cost,
             temp_uniform_weights)
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", temp_neg_space, temp_opponent_utils, temp_reservation_value, self.non_agreement_cost,
             temp_uniform_weights)
         self.agent.negotiate(self.opponent)
@@ -229,19 +229,19 @@ class TestAgent(TestCase):
             "integer_5": -10000,
             "'float_0.1'": -10000
         }
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, 0.0, self.non_agreement_cost,
             self.uniform_weights)
         self.assertTrue(self.agent.accepts(self.optimal_offer))
 
 
     def test_random_agent_terminates_correctly(self):
-        self.agent = AgentFactory.make_random_agent(
+        self.agent = make_random_agent(
             "agent", self.neg_space, self.utilities, 1, self.non_agreement_cost,[],max_rounds=1)
 
         opponent_utils = {atom:-util for atom,util in self.utilities.items()}
 
-        self.opponent = AgentFactory.make_random_agent(
+        self.opponent = make_random_agent(
             "opponent", self.neg_space, opponent_utils, 1, self.non_agreement_cost, [], max_rounds=1)
 
         self.agent._call_for_negotiation(self.opponent, self.neg_space)
@@ -251,10 +251,10 @@ class TestAgent(TestCase):
         self.assertTrue(self.agent._should_exit())
 
     def test_concession_agent_terminates_correctly(self):
-        self.agent = AgentFactory.make_linear_concession_agent(
+        self.agent = make_linear_concession_agent(
             "agent", self.neg_space, self.utilities, 0.95, self.non_agreement_cost)
 
-        self.opponent = AgentFactory.make_linear_concession_agent(
+        self.opponent = make_linear_concession_agent(
             "opponent", self.neg_space, {"integer_5": 100}, 0.95, self.non_agreement_cost)
 
         self.agent._call_for_negotiation(self.opponent,self.neg_space)

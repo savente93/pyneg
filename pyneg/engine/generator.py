@@ -19,7 +19,7 @@ class Generator:
     and finding potential offers should be located here. 
 
     - utilities: a utility mapping. 
-    - kb: a knowledge base. only supported if the generator uses ProbLog 
+    - knowledge_base: a knowledge base. only supported if the generator uses ProbLog 
     - acceptability_threshold: minimum utility needed for the agent to accept an offer
 
     """
@@ -27,7 +27,7 @@ class Generator:
 
     def __init__(self):
         self.utilities = {}
-        self.kb = []
+        self.knowledge_base = []
         self.neg_space = {}
         self.acceptability_threshold = 0.0
         self.active = False

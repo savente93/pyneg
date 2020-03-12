@@ -1,8 +1,0 @@
-component_depth: 1
-languages:
-   - python
-   - cpp
-
-exclude:
-    - /problog_libs/.*
-    - /results/.*

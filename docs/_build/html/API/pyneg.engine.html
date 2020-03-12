@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -668,10 +668,15 @@ of the offer is higher than the reservation value.</p>
 <h2>Evaluators<a class="headerlink" href="#evaluators" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-pyneg.engine.constrained_linear_evaluator">
 <span id="constrained-linear-evaluator"></span><h3>Constrained Linear Evaluator<a class="headerlink" href="#module-pyneg.engine.constrained_linear_evaluator" title="Permalink to this headline">¶</a></h3>
+<p>Defines the <a class="reference internal" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator" title="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstrainedLinearEvaluator</span></code></a> class, the contraint aware version of 
+<code class="xref py py-class docutils literal notranslate"><span class="pre">LinearEvaluator</span></code></p>
 <dl class="class">
 <dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_linear_evaluator.</code><code class="sig-name descname">ConstrainedLinearEvaluator</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float], issue_weights: Dict[str, float], non_agreement_cost: float, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.linear_evaluator.LinearEvaluator" title="pyneg.engine.linear_evaluator.LinearEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.linear_evaluator.LinearEvaluator</span></code></a></p>
+<p>This class is the contraint aware version of <code class="xref py py-class docutils literal notranslate"><span class="pre">LinearEvaluator</span></code>. It works the 
+same except that for any offer that violates one of the known constraints 
+it returns a utility of constr_value.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float], issue_weights: Dict[str, float], non_agreement_cost: float, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
@@ -702,7 +707,7 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraints">
-<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add multiple constraints to the knowledge base. Returns true if there are
 still potential acceptable solutions. If the agent doesn’t reason about 
 constrints, this should be a no-op and always return true.</p>
@@ -791,21 +796,41 @@ expceted utility under the strategy distribution. see
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.satisfies_all_constraints">
-<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">to_check: Union[pyneg.comms.offer.Offer, pyneg.engine.strategy.Strategy]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_linear_evaluator.html#ConstrainedLinearEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_linear_evaluator.ConstrainedLinearEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the given offer or strategy  satisfies all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>to_check</strong> (<em>Union</em><em>[</em><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a><em>, </em><a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a><em>]</em>) – The offer or strategy to check</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if an object of unknown type is passed.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the given offer or strategy satisfies all known constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.engine.constrained_problog_evaluator">
 <span id="pyneg-engine-constrained-problog-evaluator-module"></span><h3>pyneg.engine.constrained_problog_evaluator module<a class="headerlink" href="#module-pyneg.engine.constrained_problog_evaluator" title="Permalink to this headline">¶</a></h3>
+<p>Defines the <a class="reference internal" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator" title="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstrainedProblogEvaluator</span></code></a> class, the contraint aware version of 
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ProblogEvaluator</span></code> see that entry for more information.</p>
 <dl class="class">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator">
-<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_problog_evaluator.</code><code class="sig-name descname">ConstrainedProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_problog_evaluator.</code><code class="sig-name descname">ConstrainedProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, knowledge_base: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="pyneg.engine.problog_evaluator.ProblogEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.problog_evaluator.ProblogEvaluator</span></code></a></p>
+<p>This class is equal to the <code class="xref py py-class docutils literal notranslate"><span class="pre">ProblogEvaluator</span></code> class but with 
+additional logic to handle constraints. See <code class="xref py py-class docutils literal notranslate"><span class="pre">ProblogEvaluator</span></code> for 
+more information on how ProbLog is used.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, knowledge_base: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -832,12 +857,41 @@ expceted utility under the strategy distribution. see
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_strat_utility">
 <code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the expected utility of a strategy, meaning the expected
+utility of an offer that is sampled from this strattegy under the current
+knowledge base.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>strat</strong> (<a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a>) – The strat to calculate the expected utility.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The expected utility of the strategy under the current knowledge base             and utilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints">
-<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">to_check: Union[pyneg.comms.offer.Offer, pyneg.engine.strategy.Strategy]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the given offer or strategy  satisfies all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>to_check</strong> (<em>Union</em><em>[</em><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a><em>, </em><a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a><em>]</em>) – The offer or strategy to check</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if an object of unknown type is passed.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the given offer or strategy satisfies all known constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraint">
@@ -863,7 +917,7 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints">
-<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add multiple constraints to the knowledge base. Returns true if there are
 still potential acceptable solutions. If the agent doesn’t reason about 
 constrints, this should be a no-op and always return true.</p>
@@ -890,8 +944,20 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue">
-<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/constrained_problog_evaluator.html#ConstrainedProblogEvaluator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns all known values for the given issue that are not         ruled out by a constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue to retreive the unconstrained values of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A set containt all values of an issue that are not constrained</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_problog_evaluator.ConstrainedProblogEvaluator.set_utilities">
@@ -1231,18 +1297,69 @@ expceted utility under the strategy distribution. see
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given constraint to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.linear_evaluator.LinearEvaluator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/linear_evaluator.html#LinearEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.linear_evaluator.LinearEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple constraints to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.engine.problog_evaluator">
 <span id="pyneg-engine-problog-evaluator-module"></span><h3>pyneg.engine.problog_evaluator module<a class="headerlink" href="#module-pyneg.engine.problog_evaluator" title="Permalink to this headline">¶</a></h3>
+<p>This module defines the <a class="reference internal" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="pyneg.engine.problog_evaluator.ProblogEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblogEvaluator</span></code></a> class.</p>
 <dl class="class">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator">
-<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.problog_evaluator.</code><code class="sig-name descname">ProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.problog_evaluator.</code><code class="sig-name descname">ProblogEvaluator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, knowledge_base: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.evaluator.Evaluator" title="pyneg.engine.evaluator.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.evaluator.Evaluator</span></code></a></p>
+<p>This evaluator uses ProbLog to calculate the utility of offers. 
+That means that it can deal with probabalistic as well as deterministic 
+knowledge bases and use them correctly to infer consequences.
+This is however, much slower than the other classes. The knowledge base 
+should be represented as valid ProbLog statements see 
+<a class="reference external" href="https://dtai.cs.kuleuven.be/problog/">https://dtai.cs.kuleuven.be/problog/</a> for more information.</p>
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, knowledge_base: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -1271,12 +1388,39 @@ about this, it should always return true.</p>
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities">
 <code class="sig-name descname">calc_probabilities_of_utilities</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Dict[str, float]<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_probabilities_of_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_probabilities_of_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses ProbLog and the known knowledge_base to calculate the probability
+of each of the known utilities to occur so we can use it to calculate the 
+expected utility of an offer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer you want to calculate the utility of</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary with known utilities as keys and the probability             they will be fufilled as values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model">
 <code class="sig-name descname">compile_problog_model</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.compile_problog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.compile_problog_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compile the offer, knowledge base and known utilities into a string 
+representing a valid ProbLog model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer that needs to be incoprated into the model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A string representation of the model including knowledge base and utilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_offer_utility">
@@ -1301,7 +1445,21 @@ about this, it should always return true.</p>
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility">
 <code class="sig-name descname">calc_strat_utility</code><span class="sig-paren">(</span><em class="sig-param">strat: pyneg.engine.strategy.Strategy</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.calc_strat_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.calc_strat_utility" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the expected utility of a strategy, meaning the expected
+utility of an offer that is sampled from this strattegy under the current
+knowledge base.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>strat</strong> (<a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a>) – The strat to calculate the expected utility.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The expected utility of the strategy under the current knowledge base             and utilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.calc_assignment_util">
@@ -1327,6 +1485,73 @@ Only possible for linear additive utility functions.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets the utilities in the knowledge base. Returns true if there are 
+still potential acceptable solutions. If the evaluator doesn’t reason 
+about this, it should always return true. similar to add-utilities but
+overwrites all previous utilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_utils</strong> (<em>AtomicDict</em>) – an atomic dictionary of the utilities to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>should return true if there are still potentially offers         possible.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given constraint to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/problog_evaluator.html#ProblogEvaluator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.problog_evaluator.ProblogEvaluator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple constraints to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1335,10 +1560,15 @@ Only possible for linear additive utility functions.</p>
 <h2>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-pyneg.engine.constrained_dtp_generator">
 <span id="pyneg-engine-constrained-dtp-generator-module"></span><h3>pyneg.engine.constrained_dtp_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_dtp_generator" title="Permalink to this headline">¶</a></h3>
+<p>This module defines <a class="reference internal" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator" title="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstrainedDTPGenerator</span></code></a> which is the constraint aware version of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DTPGenerator</span></code></p>
 <dl class="class">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_dtp_generator.</code><code class="sig-name descname">ConstrainedDTPGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptance_threshold: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.dtp_generator.DTPGenerator" title="pyneg.engine.dtp_generator.DTPGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.dtp_generator.DTPGenerator</span></code></a></p>
+<p>This class defines the constraint aware version of the DTPGenerator. This means that it 
+also uses DTProbLog to generate optimal offers but adds additional logic to deal with
+constraints. For more information see <code class="xref py py-class docutils literal notranslate"><span class="pre">DTPGenerator</span></code></p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptance_threshold: float, kb: List[str], constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1348,7 +1578,8 @@ Only possible for linear additive utility functions.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.reset_generator">
 <code class="sig-name descname">reset_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.reset_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.reset_generator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset the internals of the generator so we can start anew for a new negotiaton.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraint">
@@ -1374,7 +1605,7 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints">
-<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add multiple constraints to the knowledge base. Returns true if there are
 still potential acceptable solutions. If the agent doesn’t reason about 
 constrints, this should be a no-op and always return true.</p>
@@ -1397,12 +1628,19 @@ constrints, this should be a no-op and always return true.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.satisfies_all_constraints">
 <code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._add_utilities">
-<code class="sig-name descname">_add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator._add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._add_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>checks whether the given offer satisfies all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to be checked.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True iff the given offer satisfies all known constraints.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_utilities">
@@ -1452,17 +1690,51 @@ overwrites all previous utilities.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.accepts">
 <code class="sig-name descname">accepts</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.accepts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.accepts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Determines whether the given offer is acceptable under the current knowledge base. 
+This means calculating it’s utility and checking that it is above the acceptablity 
+threshold. In addition, it has to satisfy all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model">
-<code class="sig-name descname">compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._compile_dtproblog_model">
+<code class="sig-name descname">_compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator._compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the internal knowledge of the agent and complies it into a string representing 
+a valid DTProbLog model that it can use to generate the next offer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string representing a valid DTProbLog model</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.discover_constraints">
 <code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Attempts to deduce new constraints from the current knowledge base. 
+see <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set containing all the newly discovered constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_unconstrained_values_by_issue">
@@ -1523,9 +1795,11 @@ any constraint.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities">
-<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._index_max_utilities">
+<code class="sig-name descname">_index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_dtp_generator.html#ConstrainedDTPGenerator._index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index the currently known utilities so we can use this as a heuristic during 
+the constraint discovery process. See <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.get_constraints">
@@ -1549,10 +1823,15 @@ any constraint.</p>
 </div>
 <div class="section" id="module-pyneg.engine.constrained_enum_generator">
 <span id="pyneg-engine-constrained-enum-generator-module"></span><h3>pyneg.engine.constrained_enum_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_enum_generator" title="Permalink to this headline">¶</a></h3>
+<p>Defines the <a class="reference internal" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator" title="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstrainedEnumGenerator</span></code></a> class, the contraint aware version of 
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EnumGenerator</span></code> see that entry for more information.</p>
 <dl class="class">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_enum_generator.</code><code class="sig-name descname">ConstrainedEnumGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, acceptance_threshold: float, constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.enum_generator.EnumGenerator" title="pyneg.engine.enum_generator.EnumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.enum_generator.EnumGenerator</span></code></a></p>
+<p>This class is equal to the <code class="xref py py-class docutils literal notranslate"><span class="pre">EnumGenerator</span></code> class but with 
+additional logic to handle constraints. See <code class="xref py py-class docutils literal notranslate"><span class="pre">EnumGenerator</span></code> for 
+more information on how the offers are generated.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, acceptance_threshold: float, constr_value: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]], auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1583,7 +1862,7 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraints">
-<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add multiple constraints to the knowledge base. Returns true if there are
 still potential acceptable solutions. If the agent doesn’t reason about 
 constrints, this should be a no-op and always return true.</p>
@@ -1610,13 +1889,30 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.satisfies_all_constraints">
-<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">to_check: Union[pyneg.comms.offer.Offer, pyneg.engine.strategy.Strategy]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the given offer or strategy  satisfies all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>to_check</strong> (<em>Union</em><em>[</em><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a><em>, </em><a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a><em>]</em>) – The offer or strategy to check</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if an object of unknown type is passed.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the given offer or strategy satisfies all known constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.index_max_utilities">
-<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator._index_max_utilities">
+<code class="sig-name descname">_index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator._index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator._index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index the currently known utilities so we can use this as a heuristic during 
+the constraint discovery process. See <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.get_unconstrained_values_by_issue">
@@ -1687,7 +1983,8 @@ overwrites all previous utilities.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment">
 <code class="sig-name descname">expand_assignment</code><span class="sig-paren">(</span><em class="sig-param">sorted_offer_indices</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.expand_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.expand_assignment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>see <code class="xref py py-func docutils literal notranslate"><span class="pre">pyneg.engine.EnumGenerator._expand_assignement()</span></code></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.generate_offer">
@@ -1732,7 +2029,17 @@ the known criteria.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.discover_constraints">
 <code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_enum_generator.html#ConstrainedEnumGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Attempts to deduce new constraints from the current knowledge base. 
+see <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set containing all the newly discovered constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_enum_generator.ConstrainedEnumGenerator.find_violated_constraint">
@@ -1776,10 +2083,15 @@ the known criteria.</p>
 </div>
 <div class="section" id="module-pyneg.engine.constrained_random_generator">
 <span id="pyneg-engine-constrained-random-generator-module"></span><h3>pyneg.engine.constrained_random_generator module<a class="headerlink" href="#module-pyneg.engine.constrained_random_generator" title="Permalink to this headline">¶</a></h3>
+<p>Defines the <a class="reference internal" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator" title="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConstrainedRandomGenerator</span></code></a> class, the contraint aware version of 
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGenerator</span></code> see that entry for more information.</p>
 <dl class="class">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.constrained_random_generator.</code><code class="sig-name descname">ConstrainedRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint], auto_constraints=True, max_generation_tries: int = 500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.random_generator.RandomGenerator" title="pyneg.engine.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.random_generator.RandomGenerator</span></code></a></p>
+<p>This class is equal to the <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGenerator</span></code> class but with 
+additional logic to handle constraints. See <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGenerator</span></code> for 
+more information on how the offers are sampled.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, constr_value: float, initial_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint], auto_constraints=True, max_generation_tries: int = 500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1834,13 +2146,18 @@ overwrites all previous utilities.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.generate_offer">
 <code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates the next offer the agent should propose.</p>
+<dd><p>Generate an offer by sampling from the current strategy until the 
+maximum amount of tries are reached or the maximum number of offers are
+generated. (this is to insure that it terminates even in impossible situations.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>NotImplementedError</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>StopIteration</strong> – [description]</p></li>
+<li><p><strong>StopIteration</strong> – [description]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The offer the agent should propose</p>
+<dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer">Offer</a></p>
@@ -1872,7 +2189,7 @@ constrints, this should be a no-op and always return true.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">
-<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">constraints: Iterable[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add multiple constraints to the knowledge base. Returns true if there are
 still potential acceptable solutions. If the agent doesn’t reason about 
 constrints, this should be a no-op and always return true.</p>
@@ -1895,7 +2212,17 @@ constrints, this should be a no-op and always return true.</p>
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints">
 <code class="sig-name descname">discover_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.discover_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Attempts to deduce new constraints from the current knowledge base. 
+see <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set containing all the newly discovered constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.get_unconstrained_values_by_issue">
@@ -1920,18 +2247,45 @@ any constraint.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints">
-<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">satisfies_all_constraints</code><span class="sig-paren">(</span><em class="sig-param">to_check: Union[pyneg.comms.offer.Offer, pyneg.engine.strategy.Strategy]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.satisfies_all_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the given offer or strategy  satisfies all known constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>to_check</strong> (<em>Union</em><em>[</em><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a><em>, </em><a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><em>Strategy</em></a><em>]</em>) – The offer or strategy to check</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if an object of unknown type is passed.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True iff the given offer or strategy satisfies all known constraints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities">
-<code class="sig-name descname">index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator._index_max_utilities">
+<code class="sig-name descname">_index_max_utilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator._index_max_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator._index_max_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index the currently known utilities so we can use this as a heuristic during 
+the constraint discovery process. See <a class="reference internal" href="../theory/index.html#constraint-discovery"><span class="std std-ref">Constraint discovery</span></a> for more information.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant">
 <code class="sig-name descname">make_strat_constraint_compliant</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/constrained_random_generator.html#ConstrainedRandomGenerator.make_strat_constraint_compliant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>When we receive a new constraint we’ll need to update the stratagy.
+This also checks whether a solution is still possible under the constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether the process has succeeded. If False, no sollutions are possible.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.find_violated_constraint">
@@ -1975,20 +2329,29 @@ any constraint.</p>
 </div>
 <div class="section" id="module-pyneg.engine.dtp_generator">
 <span id="pyneg-engine-dtp-generator-module"></span><h3>pyneg.engine.dtp_generator module<a class="headerlink" href="#module-pyneg.engine.dtp_generator" title="Permalink to this headline">¶</a></h3>
+<p>This module devines the <a class="reference internal" href="#pyneg.engine.dtp_generator.DTPGenerator" title="pyneg.engine.dtp_generator.DTPGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTPGenerator</span></code></a> class,
+which uses DTProbLog to generate optimal offers in 
+settings that include probabalistic knowledge bases.</p>
 <dl class="class">
 <dt id="pyneg.engine.dtp_generator.DTPGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.dtp_generator.</code><code class="sig-name descname">DTPGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptability_threshold: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.dtp_generator.</code><code class="sig-name descname">DTPGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptability_threshold: float, knowledge_base: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.generator.Generator" title="pyneg.engine.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.generator.Generator</span></code></a></p>
+<p>This generator class uses DTProbLog to generate optimal offers. 
+Since it uses DTProbLog it can reason about offers using utilities,
+both atomic and compound and also using arbitrary knowledge bases. 
+It does mean that it is very slow and prone to memory leaks due to the 
+python implementation of DTProbLog</p>
 <dl class="method">
 <dt id="pyneg.engine.dtp_generator.DTPGenerator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptability_threshold: float, kb: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], non_agreement_cost: float, acceptability_threshold: float, knowledge_base: List[str]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.dtp_generator.DTPGenerator.reset_generator">
 <code class="sig-name descname">reset_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.reset_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.reset_generator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset the internals of the generator so we can start anew for a new negotiaton.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.dtp_generator.DTPGenerator.add_utilities">
@@ -2036,19 +2399,76 @@ overwrites all previous utilities.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model">
-<code class="sig-name descname">compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.dtp_generator.DTPGenerator._compile_dtproblog_model">
+<code class="sig-name descname">_compile_dtproblog_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator._compile_dtproblog_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator._compile_dtproblog_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the internal knowledge of the agent and complies it into a string representing 
+a valid DTProbLog model that it can use to generate the next offer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string representing a valid DTProbLog model</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer">
-<code class="sig-name descname">extend_partial_offer</code><span class="sig-paren">(</span><em class="sig-param">partial_offer</em><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.offer.Offer]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.extend_partial_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.extend_partial_offer" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.dtp_generator.DTPGenerator._extend_partial_offer">
+<code class="sig-name descname">_extend_partial_offer</code><span class="sig-paren">(</span><em class="sig-param">partial_offer: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.offer.Offer]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator._extend_partial_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator._extend_partial_offer" title="Permalink to this definition">¶</a></dt>
+<dd><p>When some decision variables have no impact on the final utility DTProbLog will 
+generate partial answers. This function will expand those final offers into all of their
+full options so we can propose them. e.g.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">DTPGenerator</span><span class="p">(</span>
+<span class="go">    neg_space = {&quot;boolean&quot;:[&quot;True&quot;,&quot;False&quot;], &quot;dummy&quot;:[&quot;1&quot;,&quot;2&quot;]},</span>
+<span class="go">    utilities = {&quot;boolean_True&quot;:100},</span>
+<span class="go">    non_agreement_cost = -100,</span>
+<span class="go">    acceptability_threshold = 10,</span>
+<span class="go">    knowledge_base = []</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">program</span> <span class="o">=</span> <span class="n">PrologString</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">_compile_dtproblog_model</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query_output</span><span class="p">,</span> <span class="n">score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">dtproblog</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query_output</span>
+<span class="go">{boolean_True: 1}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cleaned_query_output</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">clean_query_output</span><span class="p">(</span><span class="n">query_output</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span><span class="o">.</span><span class="n">_extend_partial_offer</span><span class="p">(</span><span class="n">cleaned_query_output</span><span class="p">)</span>
+<span class="go">{[boolean-&gt;True, dummy-&gt;1], [boolean-&gt;True, dummy-&gt;2]}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>partial_offer</strong> (<em>[</em><em>type</em><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>valueerror</strong> – [description]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[description]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer">Offer</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.dtp_generator.DTPGenerator.clean_query_output">
-<code class="sig-name descname">clean_query_output</code><span class="sig-paren">(</span><em class="sig-param">query_output: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.clean_query_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.clean_query_output" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.dtp_generator.DTPGenerator._clean_query_output">
+<code class="sig-name descname">_clean_query_output</code><span class="sig-paren">(</span><em class="sig-param">query_output: Dict[Term, float]</em><span class="sig-paren">)</span> &#x2192; Dict[str, float]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator._clean_query_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator._clean_query_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>sometimes dtproblog can return things such as “choice(0,0,boolean_true)” under certain
+circumstances so we need to filter these. This function also casts the keys from 
+problog.logic.Term to str so we can manipulate them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>query_output</strong> (<em>Dict</em><em>[</em><em>problog.logic.Term</em><em>, </em><em>float</em><em>]</em>) – the raw output dictionary from DTProbLog</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary containing the cleaned assignements of the optimal offer</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.dtp_generator.DTPGenerator.generate_offer">
@@ -2063,6 +2483,50 @@ overwrites all previous utilities.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer">Offer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given constraint to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple constraints to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2087,13 +2551,50 @@ overwrites all previous utilities.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set containing all the constraints known.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A set of all known constraints.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.dtp_generator.DTPGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/dtp_generator.html#DTPGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.dtp_generator.DTPGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a set of all values associated with an issue that are not ruled out by
+any constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue to get the values for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set of all unconstrained values. Could be empty.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.engine.enum_generator">
 <span id="pyneg-engine-enum-generator-module"></span><h3>pyneg.engine.enum_generator module<a class="headerlink" href="#module-pyneg.engine.enum_generator" title="Permalink to this headline">¶</a></h3>
-<p>A very simple deterministic negotiation agent which just enumerates
-offers in order of preference. Uses breath first search.
+<p>A very simple deterministic negotiation agent which just enumerates offers in order of preference. Uses breath first search.
 see <a class="reference internal" href="#pyneg.engine.enum_generator.EnumGenerator" title="pyneg.engine.enum_generator.EnumGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnumGenerator</span></code></a> for more information.</p>
 <dl class="class">
 <dt id="pyneg.engine.enum_generator.EnumGenerator">
@@ -2187,7 +2688,7 @@ the known criteria.</p>
 
 <dl class="method">
 <dt id="pyneg.engine.enum_generator.EnumGenerator._expand_assignment">
-<code class="sig-name descname">_expand_assignment</code><span class="sig-paren">(</span><em class="sig-param">sorted_offer_indices: Tuple[int]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator._expand_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator._expand_assignment" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_expand_assignment</code><span class="sig-paren">(</span><em class="sig-param">sorted_offer_indices: Dict[str, int]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator._expand_assignment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator._expand_assignment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a typle of offer indices and generates new valid offer
 indices from them, to be used in offer generation, and
 puts them on the fronteir. For example assume there are three 
@@ -2264,6 +2765,108 @@ into actuall offers. e.g. assume we have</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given constraint to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple constraints to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint">
+<code class="sig-name descname">find_violated_constraint</code><span class="sig-paren">(</span><em class="sig-param">offer: pyneg.comms.offer.Offer</em><span class="sig-paren">)</span> &#x2192; Optional[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.find_violated_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.find_violated_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the constraint that is violating the given offer if any.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>offer</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><em>Offer</em></a>) – The offer to check</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The constraint that is being violated by the offer if any.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Optional[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set containing all the constraints known.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A set of all known constraints.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.enum_generator.EnumGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/enum_generator.html#EnumGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.enum_generator.EnumGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a set of all values associated with an issue that are not ruled out by
+any constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue to get the values for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set of all unconstrained values. Could be empty.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -2283,7 +2886,7 @@ agent engines use to generate offers. All logic relating to reasoning
 and finding potential offers should be located here.</p>
 <ul class="simple">
 <li><p>utilities: a utility mapping.</p></li>
-<li><p>kb: a knowledge base. only supported if the generator uses ProbLog</p></li>
+<li><p>knowledge_base: a knowledge base. only supported if the generator uses ProbLog</p></li>
 <li><p>acceptability_threshold: minimum utility needed for the agent to accept an offer</p></li>
 </ul>
 <dl class="method">
@@ -2461,34 +3064,142 @@ any constraint.</p>
 </div>
 <div class="section" id="module-pyneg.engine.random_generator">
 <span id="pyneg-engine-random-generator-module"></span><h3>pyneg.engine.random_generator module<a class="headerlink" href="#module-pyneg.engine.random_generator" title="Permalink to this headline">¶</a></h3>
+<p>Defines the <a class="reference internal" href="#pyneg.engine.random_generator.RandomGenerator" title="pyneg.engine.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGenerator</span></code></a> class.</p>
 <dl class="class">
 <dt id="pyneg.engine.random_generator.RandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.random_generator.</code><code class="sig-name descname">RandomGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, max_generation_tries: int = 1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.random_generator.</code><code class="sig-name descname">RandomGenerator</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, knowledge_base: List[str], acceptability_threshold: float, max_rounds: int, max_generation_tries: int = 1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyneg.engine.generator.Generator" title="pyneg.engine.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.engine.generator.Generator</span></code></a></p>
+<p>This generator generates random offers without any reasoning.
+By default it uses uniform distriutions across all issues and values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>StopIteration</strong> – when maximum number of samples for one offer or         maximum total number offers generated is exceded</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pyneg.engine.random_generator.RandomGenerator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, kb: List[str], acceptability_threshold: float, max_rounds: int, max_generation_tries: int = 1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]], utilities: Dict[str, float], evaluator: pyneg.engine.evaluator.Evaluator, non_agreement_cost: float, knowledge_base: List[str], acceptability_threshold: float, max_rounds: int, max_generation_tries: int = 1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy">
 <code class="sig-name descname">init_uniform_strategy</code><span class="sig-paren">(</span><em class="sig-param">neg_space: Dict[str, List[str]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.init_uniform_strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initialises a uniform distribution across all possible values for every issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>neg_space</strong> (<em>NegSpace</em>) – The negotiation space that the strategy will be based on.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.random_generator.RandomGenerator.generate_offer">
 <code class="sig-name descname">generate_offer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pyneg.comms.offer.Offer<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.generate_offer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.generate_offer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates the next offer the agent should propose.</p>
+<dd><p>Generate an offer by sampling from the current strategy until the 
+maximum amount of tries are reached or the maximum number of offers are
+generated. (this is to insure that it terminates even in impossible situations.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>NotImplementedError</strong> – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>StopIteration</strong> – [description]</p></li>
+<li><p><strong>StopIteration</strong> – [description]</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The offer the agent should propose</p>
+<dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer">Offer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.add_utilities">
+<code class="sig-name descname">add_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.add_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.add_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add utilities to the knowledge base. Returns true if there are 
+still potential acceptable solutions. If the evaluator doesn’t reason 
+about this, it should always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_utils</strong> (<em>AtomicDict</em>) – an atomic dictionary of the utilities to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>should return true if there are still potentially offers         possible.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.set_utilities">
+<code class="sig-name descname">set_utilities</code><span class="sig-paren">(</span><em class="sig-param">new_utils: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.set_utilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.set_utilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets the utilities in the knowledge base. Returns true if there are 
+still potential acceptable solutions. If the evaluator doesn’t reason 
+about this, it should always return true. similar to add-utilities but
+overwrites all previous utilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_utils</strong> (<em>AtomicDict</em>) – an atomic dictionary of the utilities to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>should return true if there are still potentially offers         possible.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.add_constraint">
+<code class="sig-name descname">add_constraint</code><span class="sig-paren">(</span><em class="sig-param">constraint: pyneg.comms.atomic_constraint.AtomicConstraint</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.add_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.add_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the given constraint to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.add_constraints">
+<code class="sig-name descname">add_constraints</code><span class="sig-paren">(</span><em class="sig-param">new_constraints: Set[pyneg.comms.atomic_constraint.AtomicConstraint]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.add_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.add_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple constraints to the knowledge base. Returns true if there are
+still potential acceptable solutions. If the agent doesn’t reason about 
+constrints, this should be a no-op and always return true.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>constraint</strong> (<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint"><em>AtomicConstraint</em></a>) – The constraint to add</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Whether there are still potential acceptable solutions</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2513,15 +3224,72 @@ any constraint.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.get_constraints">
+<code class="sig-name descname">get_constraints</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[pyneg.comms.atomic_constraint.AtomicConstraint]<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.get_constraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.get_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set containing all the constraints known.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A set of all known constraints.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="pyneg.comms.html#pyneg.comms.atomic_constraint.AtomicConstraint" title="pyneg.comms.atomic_constraint.AtomicConstraint">AtomicConstraint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.random_generator.RandomGenerator.get_unconstrained_values_by_issue">
+<code class="sig-name descname">get_unconstrained_values_by_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="../_modules/pyneg/engine/random_generator.html#RandomGenerator.get_unconstrained_values_by_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.random_generator.RandomGenerator.get_unconstrained_values_by_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a set of all values associated with an issue that are not ruled out by
+any constraint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue to get the values for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – </p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A set of all unconstrained values. Could be empty.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Set[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.engine.strategy">
 <span id="pyneg-engine-strategy-module"></span><h3>pyneg.engine.strategy module<a class="headerlink" href="#module-pyneg.engine.strategy" title="Permalink to this headline">¶</a></h3>
+<p>This module defines the strategy that probabalistic 
+generators can use. See <a class="reference internal" href="#pyneg.engine.strategy.Strategy" title="pyneg.engine.strategy.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strategy</span></code></a> for more information.</p>
 <dl class="class">
 <dt id="pyneg.engine.strategy.Strategy">
 <em class="property">class </em><code class="sig-prename descclassname">pyneg.engine.strategy.</code><code class="sig-name descname">Strategy</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1, verbose=&lt;Verbosity.none: 0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="pyneg.comms.html#pyneg.comms.offer.Offer" title="pyneg.comms.offer.Offer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyneg.comms.offer.Offer</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class that probabalistic generators can use to generate
+offers by sampling. A stagy consists of a distribution 
+for every issue over it’s possible values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – raised if input doesn’t have the right structure         e.g. if some of the vectors arent a distribution</p></li>
+<li><p><strong>KeyError</strong> – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="pyneg.engine.strategy.Strategy.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">values_by_issue: Union[Dict[str, Dict[str, float]], Dict[str, float]], indent_level: int = 1, verbose=&lt;Verbosity.none: 0&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.__init__" title="Permalink to this definition">¶</a></dt>
@@ -2531,22 +3299,83 @@ any constraint.</p>
 <dl class="method">
 <dt id="pyneg.engine.strategy.Strategy.get_value_dist">
 <code class="sig-name descname">get_value_dist</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; Dict[str, float]<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.get_value_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.get_value_dist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns the distribution associated with the given issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – The issue that you want to get the distribution for.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if the given issue is not known.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A distribution over the values of the given issue             represented as a dictionary.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
-<dt id="pyneg.engine.strategy.Strategy.keys">
-<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterable[str]<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pyneg.engine.strategy.Strategy.get_issues">
+<code class="sig-name descname">get_issues</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterable[str]<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.get_issues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.get_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns an iterable containing all the known issues</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Iterable containing all the known issues</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Iterable[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.strategy.Strategy.set_prob">
 <code class="sig-name descname">set_prob</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em>, <em class="sig-param">value: str</em>, <em class="sig-param">prob: float</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.set_prob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.set_prob" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the probability of the issue issue value pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue</strong> (<em>str</em>) – the issue to which the distribution is refering too</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – the value to update the probability of</p></li>
+<li><p><strong>prob</strong> (<em>float</em>) – the value to set the probability to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyneg.engine.strategy.Strategy.normalise_issue">
 <code class="sig-name descname">normalise_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.normalise_issue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.normalise_issue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Normalise distribution of the given issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<em>str</em>) – the issue who’s distribution you want to normalise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyneg.engine.strategy.Strategy.get_problog_dists">
+<code class="sig-name descname">get_problog_dists</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/pyneg/engine/strategy.html#Strategy.get_problog_dists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.engine.strategy.Strategy.get_problog_dists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the offer as a distribution over the
+atomic issue value pairs. This is just so 
+ProbLog agents can reason about them.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Offer</span><span class="p">(</span><span class="n">atomic</span><span class="p">)</span><span class="o">.</span><span class="n">get_problog_dists</span><span class="p">()</span>
+<span class="go">0.0::First_A;1.0::First_B.</span>
+<span class="go">1.0::Second_C;0.0::Second_D.</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string expressing the offer in valid ProbLog as         a distribution over the atomic issue value pairs.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

@@ -3,9 +3,9 @@ A simple evaluator that calculates the utility of an offer
 assuming :ref:`linear-additivity`
 """
 
-from typing import Dict
+from typing import Dict, Set
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.types import AtomicDict
 from pyneg.utils import atom_from_issue_value
 
@@ -104,6 +104,18 @@ class LinearEvaluator(Evaluator):
                 atom = atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
                     score += self.issue_weights[issue] * \
-                             self.utilities[atom] * prob
+                             self.utilities[atom] * prob 
 
         return score
+
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
+        print("""WARNING: attempting to use a constraint mechanism
+            with non constraint aware system. 
+            add_constraint called in {self.class.__name__}""")
+        return True
+
+    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
+        print("""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                add_constraints called in {self.class.__name__}""")
+        return True

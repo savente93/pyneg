@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,10 +146,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.constrained_random_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines the :class:`ConstrainedRandomGenerator` class, the contraint aware version of </span>
+<span class="sd">:class:`RandomGenerator` see that entry for more information.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">isclose</span>
-
+<span class="kn">from</span> <span class="nn">pyneg.engine</span> <span class="kn">import</span> <span class="n">Strategy</span> <span class="c1"># pylint: disable=ungrouped-imports</span>
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span><span class="p">,</span> <span class="n">Offer</span>
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">AtomicDict</span>
 <span class="kn">from</span> <span class="nn">pyneg.utils</span> <span class="kn">import</span> <span class="n">atom_from_issue_value</span>
@@ -157,7 +161,11 @@
 
 
 <div class="viewcode-block" id="ConstrainedRandomGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator">[docs]</a><span class="k">class</span> <span class="nc">ConstrainedRandomGenerator</span><span class="p">(</span><span class="n">RandomGenerator</span><span class="p">):</span>
-
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class is equal to the :class:`RandomGenerator` class but with </span>
+<span class="sd">        additional logic to handle constraints. See :class:`RandomGenerator` for </span>
+<span class="sd">        more information on how the offers are sampled. </span>
+<span class="sd">    &quot;&quot;&quot;</span> 
 <div class="viewcode-block" id="ConstrainedRandomGenerator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
@@ -173,13 +181,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span> <span class="o">=</span> <span class="n">constr_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span>
-                         <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">,</span> <span class="n">acceptability_threshold</span><span class="p">,</span> <span class="n">max_rounds</span><span class="p">,</span> <span class="n">max_generation_tries</span><span class="o">=</span><span class="n">max_generation_tries</span><span class="p">)</span>
+                         <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">,</span> <span class="n">acceptability_threshold</span><span class="p">,</span> 
+                         <span class="n">max_rounds</span><span class="p">,</span> <span class="n">max_generation_tries</span><span class="o">=</span><span class="n">max_generation_tries</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span> <span class="o">=</span> <span class="n">auto_constraints</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">initial_constraints</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="n">initial_constraints</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_max_utilities</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_constraints</span><span class="p">())</span></div>
 
@@ -222,12 +231,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_strat_constraint_compliant</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ConstrainedRandomGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+<div class="viewcode-block" id="ConstrainedRandomGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_constraints</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_strat_constraint_compliant</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ConstrainedRandomGenerator.discover_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.discover_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">discover_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempts to deduce new constraints from the current knowledge base. </span>
+<span class="sd">        see :ref:`constraint-discovery` for more information.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: A set containing all the newly discovered constraints.</span>
+<span class="sd">        :rtype: Set[AtomicConstraint]</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
         <span class="n">new_constraints</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">best_case</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
@@ -252,14 +268,35 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">])</span> <span class="o">-</span> <span class="n">issue_constrained_values</span>
         <span class="k">return</span> <span class="n">issue_unconstrained_values</span></div>
 
-<div class="viewcode-block" id="ConstrainedRandomGenerator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">False</span>
+<div class="viewcode-block" id="ConstrainedRandomGenerator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_check</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Offer</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the given offer or strategy  satisfies all known constraints.</span>
+<span class="sd">        </span>
+<span class="sd">        :param to_check: The offer or strategy to check</span>
+<span class="sd">        :type to_check: Union[Offer, Strategy]</span>
+<span class="sd">        :raises TypeError: if an object of unknown type is passed. </span>
+<span class="sd">        :return: True iff the given offer or strategy satisfies all known constraints.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_check</span><span class="p">,</span> <span class="n">Offer</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">to_check</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_check</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_strat</span><span class="p">(</span><span class="n">to_check</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;object is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">to_check</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead of </span>
+<span class="s2">                                Union[Offer, Strategy]. Object: </span><span class="si">{</span><span class="n">to_check</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ConstrainedRandomGenerator.index_max_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.index_max_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">index_max_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConstrainedRandomGenerator._index_max_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator._index_max_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">_index_max_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Index the currently known utilities so we can use this as a heuristic during </span>
+<span class="sd">        the constraint discovery process. See :ref:`constraint-discovery` for more information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>  
         <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">issue</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -271,16 +308,21 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_issue_util</span></div>
 
 <div class="viewcode-block" id="ConstrainedRandomGenerator.make_strat_constraint_compliant"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_random_generator.ConstrainedRandomGenerator.make_strat_constraint_compliant">[docs]</a>    <span class="k">def</span> <span class="nf">make_strat_constraint_compliant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When we receive a new constraint we&#39;ll need to update the stratagy.</span>
+<span class="sd">        This also checks whether a solution is still possible under the constraints.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: Whether the process has succeeded. If False, no sollutions are possible.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
-            <span class="c1"># if constr.is_satisfied_by_strat(self.strategy):</span>
-            <span class="c1">#     continue</span>
-
             <span class="n">issue</span> <span class="o">=</span> <span class="n">constr</span><span class="o">.</span><span class="n">issue</span>
             <span class="n">unconstrained_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span>
                 <span class="n">issue</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unconstrained_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">unconstrained_values</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="c1"># Unsatisfiable constraint so we&#39;re terminating on the next message so we won&#39;t need to update the strat</span>
+                <span class="c1"># Unsatisfiable constraint so we&#39;re terminating on </span>
+                <span class="c1"># the next message so we won&#39;t need to update the strat</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">]:</span>

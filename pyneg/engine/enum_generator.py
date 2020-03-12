@@ -1,15 +1,15 @@
-"""
-A very simple deterministic negotiation agent which just enumerates
+""" 
+A very simple deterministic negotiation agent which just enumerates \
 offers in order of preference. Uses breath first search.
 see :class:`EnumGenerator` for more information.  
 """
 
 from copy import deepcopy
 from queue import PriorityQueue
-from typing import Dict, List, Set, Tuple, cast
+from typing import Dict, List, Set, Tuple, cast, Optional
 from uuid import uuid4
 
-from pyneg.comms import Offer
+from pyneg.comms import Offer, AtomicConstraint
 from pyneg.engine.evaluator import Evaluator
 from pyneg.engine.generator import Generator
 from pyneg.types import AtomicDict, NegSpace, NestedDict
@@ -23,7 +23,7 @@ class EnumGenerator(Generator):
     only works for linear additive spaces and utilty functions.
     It uses breath first search to explore the negotiation space. 
     Raises `StopIteration` exception when it cannot find any 
-    new acceptable offers.    
+    new acceptable offers. 
 
     """
     def __init__(self, neg_space: NegSpace,
@@ -40,8 +40,7 @@ class EnumGenerator(Generator):
         self.assignement_frontier: PriorityQueue = PriorityQueue()
         self.offer_counter: int = 0
         self.generated_offers: Set[Offer] = set()
-        self.init_generator()
-
+        
     def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
@@ -131,7 +130,7 @@ class EnumGenerator(Generator):
         util = self.evaluator.calc_offer_utility(offer)
         return util >= self.acceptability_threshold
 
-    def _expand_assignment(self, sorted_offer_indices: Tuple[int]):
+    def _expand_assignment(self, sorted_offer_indices: Dict[str, int]) -> None:
         """
         Takes a typle of offer indices and generates new valid offer
         indices from them, to be used in offer generation, and
@@ -231,3 +230,33 @@ class EnumGenerator(Generator):
                     offer[issue][value] = 0
 
         return Offer(offer)
+
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
+        print("""WARNING: attempting to use a constraint mechanism
+            with non constraint aware system. 
+            add_constraint called in {self.class.__name__}""")
+        return True
+
+    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
+        print("""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                add_constraints called in {self.class.__name__}""")
+        return True
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        print("""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                find_violated_constraint called in {self.class.__name__}""")
+        return None
+
+    def get_constraints(self) -> Set[AtomicConstraint]:
+        print("""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                function get_constraints called in {self.class.__name__}""")
+        return set()
+
+    def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
+        print("""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                get_unconstrained_values_by_issue called in {self.class.__name__}""")
+        return set(self.neg_space[issue])

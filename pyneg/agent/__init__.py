@@ -7,4 +7,4 @@ needed to setup those agents.
 
 from pyneg.agent.agent import Agent
 from pyneg.agent.constr_agent import ConstrainedAgent
-from pyneg.agent.agent_factory import AgentFactory
+from pyneg.agent.agent_factory import *

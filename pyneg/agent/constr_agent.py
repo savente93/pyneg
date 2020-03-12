@@ -6,8 +6,10 @@ It basically only contains the ConstrainedAgent class
 from typing import Set
 
 from pyneg.comms import AtomicConstraint, Offer
-from pyneg.agent import Agent
 from pyneg.types import NegSpace
+
+from . import Agent
+
 
 class ConstrainedAgent(Agent):
     """

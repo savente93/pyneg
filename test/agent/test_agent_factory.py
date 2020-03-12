@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from pyneg.comms import Offer, AtomicConstraint
-from pyneg.agent import AgentFactory
+from pyneg.agent import *
 from pyneg.utils import generate_random_scenario, neg_scenario_from_util_matrices
 
 class TestAgentFactory(TestCase):
@@ -57,7 +57,7 @@ class TestAgentFactory(TestCase):
         self.violating_offer['float']["0.1"] = 1.0
 
     def test_reservation_value_is_lower_than_estimated_max_utility(self):
-        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+        agent_a = make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
                                                                         self.non_agreement_cost, set(), None)
         self.assertTrue(agent_a._absolute_reservation_value <= agent_a._engine.calc_offer_utility(self.optimal_offer))
 
@@ -76,7 +76,7 @@ class TestAgentFactory(TestCase):
         }
 
 
-        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+        agent_a = make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
                                                                         self.non_agreement_cost, set(), None)
 
         self.assertAlmostEqual(agent_a._absolute_reservation_value, 0.5*(100/3+10/3+1/3))
@@ -85,7 +85,7 @@ class TestAgentFactory(TestCase):
 
 
     def test_factory_correctly_determines_constraints(self):
-        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
+        agent_a = make_constrained_linear_concession_agent("A", self.neg_space, self.utilities, 0.5,
                                                                         self.non_agreement_cost, set(), None)
 
         self.assertTrue(AtomicConstraint("integer","5") in agent_a.get_constraints())
@@ -94,7 +94,7 @@ class TestAgentFactory(TestCase):
         numb_of_constraints = 6
         u_a, u_b = generate_random_scenario((4,4),numb_of_constraints)
         neg_space, utils_a, utils_b = neg_scenario_from_util_matrices(u_a,u_b)
-        agent_a = AgentFactory.make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.5,
+        agent_a = make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.5,
                                                                         self.non_agreement_cost, set(), None)
 
         self.assertEqual(len(agent_a.get_constraints()), numb_of_constraints, agent_a.get_constraints())
@@ -103,17 +103,17 @@ class TestAgentFactory(TestCase):
         numb_of_constraints = 2
         u_a, u_b = generate_random_scenario((4, 4), numb_of_constraints)
         neg_space, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
-        rand_a = AgentFactory.make_linear_concession_agent("A", neg_space, utils_a, 0.1,
+        rand_a = make_linear_concession_agent("A", neg_space, utils_a, 0.1,
                                                                         self.non_agreement_cost, None)
 
-        rand_b = AgentFactory.make_linear_concession_agent("B", neg_space, utils_b, 0.1,
+        rand_b = make_linear_concession_agent("B", neg_space, utils_b, 0.1,
                                                                        self.non_agreement_cost, None)
 
 
-        constr_a = AgentFactory.make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.3,
+        constr_a = make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.3,
                                                                          self.non_agreement_cost, set(), None)
 
-        constr_b = AgentFactory.make_constrained_linear_concession_agent("B", neg_space, utils_b, 0.3,
+        constr_b = make_constrained_linear_concession_agent("B", neg_space, utils_b, 0.3,
                                                                          self.non_agreement_cost, set(), None)
 
         rand_a.negotiate(rand_b)

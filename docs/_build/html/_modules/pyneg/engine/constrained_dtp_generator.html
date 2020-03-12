@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,7 +146,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.constrained_dtp_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines :class:`ConstrainedDTPGenerator` which is the constraint aware version of</span>
+<span class="sd">:class:`DTPGenerator`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span>
 <span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span>
@@ -156,12 +161,12 @@
 <span class="kn">from</span> <span class="nn">.dtp_generator</span> <span class="kn">import</span> <span class="n">DTPGenerator</span>
 
 
-<span class="c1"># TODO At the moment this class still assumes a lot of linearity</span>
-<span class="c1"># at some point this should be recitfied</span>
-
-
 <div class="viewcode-block" id="ConstrainedDTPGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator">[docs]</a><span class="k">class</span> <span class="nc">ConstrainedDTPGenerator</span><span class="p">(</span><span class="n">DTPGenerator</span><span class="p">):</span>
-
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class defines the constraint aware version of the DTPGenerator. This means that it </span>
+<span class="sd">    also uses DTProbLog to generate optimal offers but adds additional logic to deal with</span>
+<span class="sd">    constraints. For more information see :class:`DTPGenerator`</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
 <div class="viewcode-block" id="ConstrainedDTPGenerator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
@@ -173,14 +178,14 @@
                  <span class="n">auto_constraints</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span> <span class="o">=</span> <span class="n">constr_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">ConstrainedProblogEvaluator</span><span class="p">(</span>
-            <span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">,</span><span class="n">constr_value</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+            <span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">kb</span><span class="p">,</span> <span class="n">constr_value</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constr_value</span> <span class="o">=</span> <span class="n">constr_value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
         <span class="k">if</span> <span class="n">initial_constraints</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">initial_constraints</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span> <span class="o">=</span> <span class="n">auto_constraints</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">neg_space</span><span class="p">,</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">non_agreement_cost</span><span class="p">,</span> <span class="n">acceptance_threshold</span><span class="p">,</span> <span class="n">kb</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_max_utilities</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_constraints</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_constraints</span><span class="p">())</span></div>
@@ -188,38 +193,46 @@
 <div class="viewcode-block" id="ConstrainedDTPGenerator.reset_generator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.reset_generator">[docs]</a>    <span class="k">def</span> <span class="nf">reset_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset_generator</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_max_utilities</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ConstrainedDTPGenerator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">issue</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_max_utilities</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">issue</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ConstrainedDTPGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+<div class="viewcode-block" id="ConstrainedDTPGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_constraints</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index_max_utilities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_max_utilities</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="n">issue</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="ConstrainedDTPGenerator.satisfies_all_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.satisfies_all_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">satisfies_all_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks whether the given offer satisfies all known constraints.</span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: The offer to be checked.</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: True iff the given offer satisfies all known constraints.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">constr</span><span class="o">.</span><span class="n">is_satisfied_by_offer</span><span class="p">(</span><span class="n">offer</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ConstrainedDTPGenerator._add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">_add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_utilities</span><span class="p">(</span><span class="n">new_utils</span><span class="p">)</span></div>
+    <span class="c1"># def _add_utilities(self, new_utils):</span>
+    <span class="c1">#     super().add_utilities(new_utils)</span>
 
 <div class="viewcode-block" id="ConstrainedDTPGenerator.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="p">{</span>
@@ -240,14 +253,24 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span></div>
 
 <div class="viewcode-block" id="ConstrainedDTPGenerator.accepts"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.accepts">[docs]</a>    <span class="k">def</span> <span class="nf">accepts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether the given offer is acceptable under the current knowledge base. </span>
+<span class="sd">        This means calculating it&#39;s utility and checking that it is above the acceptablity </span>
+<span class="sd">        threshold. In addition, it has to satisfy all known constraints.</span>
+<span class="sd">        </span>
+<span class="sd">        :param offer: [description]</span>
+<span class="sd">        :type offer: Offer</span>
+<span class="sd">        :return: [description]</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="n">offer</span><span class="o">.</span><span class="n">get_sparse_repr</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">:</span>
             <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generated_offers</span><span class="p">[</span><span class="n">offer</span><span class="o">.</span><span class="n">get_sparse_repr</span><span class="p">()]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">util</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">calc_offer_utility</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">util</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">satisfies_all_constraints</span><span class="p">(</span><span class="n">offer</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConstrainedDTPGenerator.compile_dtproblog_model"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.compile_dtproblog_model">[docs]</a>    <span class="k">def</span> <span class="nf">compile_dtproblog_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">model_string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">compile_dtproblog_model</span><span class="p">()</span>
+<div class="viewcode-block" id="ConstrainedDTPGenerator._compile_dtproblog_model"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._compile_dtproblog_model">[docs]</a>    <span class="k">def</span> <span class="nf">_compile_dtproblog_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">model_string</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_compile_dtproblog_model</span><span class="p">()</span>
 
         <span class="n">constr_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">constr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
@@ -257,8 +280,14 @@
 
         <span class="k">return</span> <span class="n">model_string</span> <span class="o">+</span> <span class="n">constr_string</span></div>
 
-    <span class="c1"># TODO figure out a way to do non-linear constraint discovery</span>
 <div class="viewcode-block" id="ConstrainedDTPGenerator.discover_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.discover_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">discover_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempts to deduce new constraints from the current knowledge base. </span>
+<span class="sd">        see :ref:`constraint-discovery` for more information.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: A set containing all the newly discovered constraints.</span>
+<span class="sd">        :rtype: Set[AtomicConstraint]</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">new_constraints</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">best_case</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
@@ -305,13 +334,17 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">offer</span></div>
 
-<div class="viewcode-block" id="ConstrainedDTPGenerator.index_max_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator.index_max_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">index_max_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConstrainedDTPGenerator._index_max_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.constrained_dtp_generator.ConstrainedDTPGenerator._index_max_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">_index_max_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Index the currently known utilities so we can use this as a heuristic during </span>
+<span class="sd">        the constraint discovery process. See :ref:`constraint-discovery` for more information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="bp">self</span><span class="o">.</span><span class="n">max_utility_by_issue</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">issue</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">unconstrained_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unconstrained_values_by_issue</span><span class="p">(</span>
                 <span class="n">issue</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unconstrained_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">unconstrained_values</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">constraints_satisfiable</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span>
 

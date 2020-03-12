@@ -1,7 +1,7 @@
 '''
 This module defines all classes relating to communication between agents.
 Currently consists of: 
-    - AromicConstraint
+    - AtomicConstraint
     - Message
     - Offer
 '''

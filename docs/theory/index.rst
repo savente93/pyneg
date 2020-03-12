@@ -6,3 +6,9 @@ Negotiation theory 101
 Linear additivity
 -------------------
 u(\omega) = \sum_{i=0}^N e_i(\omega_i)w_i
+
+.. _constraint-discovery:
+
+Constraint discovery
+----------------------
+blurb 

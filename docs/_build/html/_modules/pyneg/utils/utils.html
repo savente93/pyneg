@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -149,7 +149,7 @@
 <span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">path</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">search</span><span class="p">,</span> <span class="n">sub</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -157,8 +157,102 @@
 
 <span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NestedDict</span>
 
+<div class="viewcode-block" id="issue_value_tuple_from_atom"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.issue_value_tuple_from_atom">[docs]</a><span class="k">def</span> <span class="nf">issue_value_tuple_from_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    takes an atomic representation of an issue value asignement and converts it into a tuple. </span>
+<span class="sd">    Also correctly handles atoms that include . in the name, e.g. &quot;&#39;float_0.9&#39;&quot; which can trip up </span>
+<span class="sd">    ProbLog. This is the inverse of :func:`atom_from_isue_value`.</span>
 
-<div class="viewcode-block" id="nested_dict_from_atom_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.nested_dict_from_atom_dict">[docs]</a><span class="k">def</span> <span class="nf">nested_dict_from_atom_dict</span><span class="p">(</span><span class="n">atom_dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NestedDict</span><span class="p">:</span>
+<span class="sd">    &gt;&gt;&gt; issue_value_tuple_from_atom(&#39;Boolean_True&#39;)</span>
+<span class="sd">    (&quot;Boolean&quot;,&quot;True)</span>
+<span class="sd">    &gt;&gt;&gt; issue_value_tuple_from_atom(&quot;&#39;float_0.9&#39;&quot;)</span>
+<span class="sd">    (&#39;float&#39;, &#39;0.9&#39;)</span>
+
+
+<span class="sd">    :param atom:  the atom to parse</span>
+<span class="sd">    :type atom: str</span>
+<span class="sd">    :raises ValueError: if the given atom does not have a valid format</span>
+<span class="sd">    :return: A tuple containing the issue and value respectively.</span>
+<span class="sd">    :rtype: Tuple[str, str]</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">reg_search</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="s2">&quot;(.*)_(.*)&quot;</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">reg_search</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Could not parse atom: </span><span class="si">{atom}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="n">atom</span><span class="p">))</span>
+
+    <span class="n">issue</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">reg_search</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    
+    <span class="c1"># atoms containing floats have an extra &#39; which we need to remove</span>
+    <span class="n">issue</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">issue</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">issue</span><span class="p">,</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="atom_from_issue_value"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_from_issue_value">[docs]</a><span class="k">def</span> <span class="nf">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    takes a tuple representation of an issue value asignement and converts it into an atmoic one. </span>
+<span class="sd">    Also correctly handles atoms that include . in the name, e.g. (&quot;float&quot;,&quot;0.9&quot;) which can trip up </span>
+<span class="sd">    ProbLog. This is the inverse of :func:`issue_value_tuple_from_atom`.</span>
+
+<span class="sd">    &gt;&gt;&gt; issue_value_tuple_from_atom((&quot;Boolean&quot;,&quot;True))</span>
+<span class="sd">    &#39;Boolean_True&#39;</span>
+<span class="sd">    &gt;&gt;&gt; issue_value_tuple_from_atom((&#39;float&#39;, &#39;0.9&#39;))</span>
+<span class="sd">    &quot;&#39;float_0.9&#39;&quot;</span>
+
+
+<span class="sd">    :param issue: The issue</span>
+<span class="sd">    :type issue: str</span>
+<span class="sd">    :param value: the value </span>
+<span class="sd">    :type value: str</span>
+<span class="sd">    :raises ValueError: if the given atom does not have a valid format</span>
+<span class="sd">    :return: A tuple containing the issue and value respectively.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">if</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">issue</span> <span class="ow">or</span> <span class="s2">&quot;_&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span> 
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">issue</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> contained illigal character: _&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">issue</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">issue</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="atom_dict_from_nested_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_dict_from_nested_dict">[docs]</a><span class="k">def</span> <span class="nf">atom_dict_from_nested_dict</span><span class="p">(</span><span class="n">nested_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a nested disctionary into an atomic one. Useful when communicating with </span>
+<span class="sd">    ProbLog. This is the inverse of :func:`nested_dict_from_atom_dict`</span>
+
+<span class="sd">    &gt;&gt;&gt; atom_dict_from_nested_dict({&quot;boolean&quot;: {&quot;True&quot;: 1.0, &quot;False&quot;: 0.0}})</span>
+<span class="sd">    {&quot;boolean_True&quot;:1.0,&quot;boolean_False&quot;:0.0}    </span>
+<span class="sd">    </span>
+<span class="sd">    :param nested_dict: The nested dictionary to convert</span>
+<span class="sd">    :type nested_dict: Dict[str, Dict[str, float]]</span>
+<span class="sd">    :return: the atomic representation of the given nested dictionary</span>
+<span class="sd">    :rtype: Dict[str, float]</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">atom_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span>
+                <span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">atom_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">atom_dict</span></div>
+
+<div class="viewcode-block" id="nested_dict_from_atom_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.nested_dict_from_atom_dict">[docs]</a><span class="k">def</span> <span class="nf">nested_dict_from_atom_dict</span><span class="p">(</span><span class="n">atom_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NestedDict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts an atomic disctionary into a nested one. Useful when communicating with </span>
+<span class="sd">    ProbLog. This is the inverse of :func:`atom_dict_from_nested_dict`</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; atom_dict_from_nested_dict({&quot;boolean_True&quot;:1.0,&quot;boolean_False&quot;:0.0})</span>
+<span class="sd">    {&quot;boolean&quot;: {&quot;True&quot;: 1.0, &quot;False&quot;: 0.0}}</span>
+<span class="sd">    </span>
+
+<span class="sd">    :param atom_dict: [description]</span>
+<span class="sd">    :type atom_dict: [type]</span>
+<span class="sd">    :return: [description]</span>
+<span class="sd">    :rtype: NestedDict</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">nested_dict</span><span class="p">:</span> <span class="n">NestedDict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atom_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="c1"># following patern is guaranteed to work since no _ in the names are allowed</span>
@@ -171,38 +265,37 @@
     <span class="k">return</span> <span class="n">nested_dict</span></div>
 
 
-<div class="viewcode-block" id="issue_value_tuple_from_atom"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.issue_value_tuple_from_atom">[docs]</a><span class="k">def</span> <span class="nf">issue_value_tuple_from_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="s2">&quot;(.*)_(.*)&quot;</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Could not parse atom: </span><span class="si">{atom}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atom</span><span class="o">=</span><span class="n">atom</span><span class="p">))</span>
+<div class="viewcode-block" id="generate_binary_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_binary_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_binary_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">tau_a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tau_b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate binary utility matrices that agents can use to negotiate. </span>
+<span class="sd">    Most useful when simulating. Shape refers to the shape of the matrix</span>
+<span class="sd">    and tau_a refers to an index in the matrix past which all entries are 1 for </span>
+<span class="sd">    one of the agent and 0 for the other. The default behaviour is specifically designed to </span>
+<span class="sd">    generate utility matrices that have no common ground so consessions will </span>
+<span class="sd">    be necessary to reach an agreement.  </span>
 
-    <span class="n">issue</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="c1"># atoms containing floats have an extra &#39; which we need to remove</span>
-    <span class="n">issue</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">issue</span><span class="p">)</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">issue</span><span class="p">,</span> <span class="n">value</span></div>
+<span class="sd">    &gt;&gt;&gt; generate_binary_utility_matrices((5,5),3)</span>
+<span class="sd">    (array([[1., 1., 1., 0., 0.],</span>
+<span class="sd">        [1., 1., 1., 0., 0.],</span>
+<span class="sd">        [1., 1., 1., 0., 0.],</span>
+<span class="sd">        [1., 1., 1., 0., 0.],</span>
+<span class="sd">        [1., 1., 1., 0., 0.]]),</span>
+<span class="sd">     array([[0., 0., 0., 1., 1.],</span>
+<span class="sd">        [0., 0., 0., 1., 1.],</span>
+<span class="sd">        [0., 0., 0., 1., 1.],</span>
+<span class="sd">        [0., 0., 0., 1., 1.],</span>
+<span class="sd">        [0., 0., 0., 1., 1.]]))</span>
 
-
-<div class="viewcode-block" id="atom_from_issue_value"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_from_issue_value">[docs]</a><span class="k">def</span> <span class="nf">atom_from_issue_value</span><span class="p">(</span><span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&#39;</span><span class="si">{issue}</span><span class="s2">_</span><span class="si">{val}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{issue}</span><span class="s2">_</span><span class="si">{val}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">issue</span><span class="o">=</span><span class="n">issue</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="atom_dict_from_nested_dict"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.atom_dict_from_nested_dict">[docs]</a><span class="k">def</span> <span class="nf">atom_dict_from_nested_dict</span><span class="p">(</span><span class="n">nested_dict</span><span class="p">):</span>
-    <span class="n">atom_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">atom</span> <span class="o">=</span> <span class="n">atom_from_issue_value</span><span class="p">(</span>
-                <span class="n">issue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-            <span class="n">atom_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">]</span> <span class="o">=</span> <span class="n">nested_dict</span><span class="p">[</span><span class="n">issue</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">atom_dict</span></div>
-
-
-<div class="viewcode-block" id="generate_binary_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_binary_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_binary_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">tau_a</span><span class="p">,</span> <span class="n">tau_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">    </span>
+<span class="sd">    :param shape: Shape that the matrices should have</span>
+<span class="sd">    :type shape: Tuple[int,int]</span>
+<span class="sd">    :param tau_a: index</span>
+<span class="sd">    :type tau_a: index of the tipping point in A&#39;s matrix</span>
+<span class="sd">    :param tau_b: index of the tipping point in B&#39;s matrix, equal to tau_a if None</span>
+<span class="sd">    :type tau_b: Optional[int]</span>
+<span class="sd">    :return: a tuple of binary utility matrices</span>
+<span class="sd">    :rtype: Tuple[Array[float], Array[float]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">u_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">u_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tau_b</span><span class="p">:</span>
@@ -213,7 +306,38 @@
     <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
 
 
-<div class="viewcode-block" id="generate_gradient_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_gradient_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_gradient_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">tau_a</span><span class="p">,</span> <span class="n">tau_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_gradient_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_gradient_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_gradient_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">tau_a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tau_b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate utility matrices that have a gradient along the horizontal axis that agents </span>
+<span class="sd">    can use to negotiate. Shape refers to the shape of the matrix</span>
+<span class="sd">    and tau_a refers to an index in the matrix that will have utlity 0 along the vertical axis.  </span>
+<span class="sd">    The default behaviour is specifically designed to generate utility matrices </span>
+<span class="sd">    that have opposing desires but some possible common ground as a </span>
+<span class="sd">    slightly more fogiving setup to :func:`generate_binary_utility_matrices` </span>
+
+<span class="sd">    &gt;&gt;&gt; generate_gradient_utility_matrices((5,5),3) </span>
+<span class="sd">        (array([[-1000.,  -500.,     0.,   500.,  1000.],</span>
+<span class="sd">                [-1000.,  -500.,     0.,   500.,  1000.],</span>
+<span class="sd">                [-1000.,  -500.,     0.,   500.,  1000.],</span>
+<span class="sd">                [-1000.,  -500.,     0.,   500.,  1000.],</span>
+<span class="sd">                [-1000.,  -500.,     0.,   500.,  1000.]]),</span>
+
+<span class="sd">         array([[ 1000.,   500.,     0.,  -500., -1000.],</span>
+<span class="sd">                [ 1000.,   500.,     0.,  -500., -1000.],</span>
+<span class="sd">                [ 1000.,   500.,     0.,  -500., -1000.],</span>
+<span class="sd">                [ 1000.,   500.,     0.,  -500., -1000.],</span>
+<span class="sd">                [ 1000.,   500.,     0.,  -500., -1000.]]))</span>
+
+<span class="sd">    </span>
+<span class="sd">    :param shape: Shape that the matrices should have</span>
+<span class="sd">    :type shape: Tuple[int,int]</span>
+<span class="sd">    :param tau_a: index</span>
+<span class="sd">    :type tau_a: index of the tipping point in A&#39;s matrix</span>
+<span class="sd">    :param tau_b: index of the tipping point in B&#39;s matrix, equal to tau_a if None</span>
+<span class="sd">    :type tau_b: Optional[int]</span>
+<span class="sd">    :return: a tuple of utility matrices</span>
+<span class="sd">    :rtype: Tuple[Array[float], Array[float]]</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">shape</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tau_b</span><span class="p">:</span>
         <span class="n">tau_b</span> <span class="o">=</span> <span class="n">tau_a</span>
@@ -228,7 +352,33 @@
     <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
 
 
-<div class="viewcode-block" id="generate_lex_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_lex_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_lex_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_lex_utility_matrices"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_lex_utility_matrices">[docs]</a><span class="k">def</span> <span class="nf">generate_lex_utility_matrices</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate utility matrices that have increasing lexicographical utilty. that agents </span>
+<span class="sd">    can use to negotiate. Shape refers to the shape of the matrix and order refers</span>
+<span class="sd">    to the exponent of the utility entries. mostly used for testing and benchmarking.  </span>
+
+<span class="sd">    &gt;&gt;&gt; generate_lex_utility_matrices((5,5),3)                                                                                                                                                                                         </span>
+<span class="sd">    &gt;&gt;&gt; </span>
+<span class="sd">    (array([[    0,     1,     8,    27,    64],</span>
+<span class="sd">            [  125,   216,   343,   512,   729],</span>
+<span class="sd">            [ 1000,  1331,  1728,  2197,  2744],</span>
+<span class="sd">            [ 3375,  4096,  4913,  5832,  6859],</span>
+<span class="sd">            [ 8000,  9261, 10648, 12167, 13824]]),</span>
+<span class="sd">    array([[13824, 12167, 10648,  9261,  8000],</span>
+<span class="sd">            [ 6859,  5832,  4913,  4096,  3375],</span>
+<span class="sd">            [ 2744,  2197,  1728,  1331,  1000],</span>
+<span class="sd">            [  729,   512,   343,   216,   125],</span>
+<span class="sd">            [   64,    27,     8,     1,     0]]))</span>
+
+<span class="sd">   </span>
+<span class="sd">    :param shape: Shape that the matrices should have</span>
+<span class="sd">    :type shape: Tuple[int, int]</span>
+<span class="sd">    :param order: exponent of the index matrices</span>
+<span class="sd">    :type order: int</span>
+<span class="sd">    :return: a tuple of utility matrices</span>
+<span class="sd">    :rtype: Tuple[Array[float], Array[float]]</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">shape</span>
     <span class="n">u_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="n">order</span>
     <span class="n">u_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">m</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="n">order</span>
@@ -236,7 +386,34 @@
     <span class="k">return</span> <span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span></div>
 
 
-<div class="viewcode-block" id="count_acceptable_offers"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.count_acceptable_offers">[docs]</a><span class="k">def</span> <span class="nf">count_acceptable_offers</span><span class="p">(</span><span class="n">u_a</span><span class="p">,</span> <span class="n">u_b</span><span class="p">,</span> <span class="n">rho_a_percentile</span><span class="p">,</span> <span class="n">rho_b_percentile</span><span class="p">,</span> <span class="n">w_a</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">w_b</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="count_acceptable_offers"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.count_acceptable_offers">[docs]</a><span class="k">def</span> <span class="nf">count_acceptable_offers</span><span class="p">(</span>
+        <span class="n">u_a</span><span class="p">,</span> 
+        <span class="n">u_b</span><span class="p">,</span> 
+        <span class="n">rho_a_percentile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+        <span class="n">rho_b_percentile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
+        <span class="n">w_a</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+        <span class="n">w_b</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Counts the number of acceptable offers for each agent as well as the number of offers that is </span>
+<span class="sd">    acceptable to both. Uses vecor arithmetic to speed up the calculation</span>
+<span class="sd">    and therefore can only be used in linear additive situations. </span>
+<span class="sd">    </span>
+<span class="sd">    :param u_a: utility matrix for A</span>
+<span class="sd">    :type u_a: Array[float]</span>
+<span class="sd">    :param u_b: Utility matrix for B</span>
+<span class="sd">    :type u_b: Array[float]</span>
+<span class="sd">    :param rho_a_percentile: Percentage of maximum utility that A considders to be acceptable.</span>
+<span class="sd">    :type rho_a_percentile: float</span>
+<span class="sd">    :param rho_b_percentile: Percentage of maximum utility that B considders to be acceptable.</span>
+<span class="sd">    :type rho_b_percentile: float</span>
+<span class="sd">    :param w_a: distribution of issue importance, defaults to uniform</span>
+<span class="sd">    :type w_a: Optional[Array[float]]</span>
+<span class="sd">    :param w_b: distribution of issue importance, defaults to uniform</span>
+<span class="sd">    :type w_b: Optional[Array[float]]</span>
+<span class="sd">    :return: A tuple with entries representing the number of offers that \</span>
+<span class="sd">        are acceptable to A, B and both resp.</span>
+<span class="sd">    :rtype: Tuple[int,int,int]</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">u_a</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">w_a</span><span class="p">:</span>
         <span class="n">w_a</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
@@ -298,7 +475,7 @@
             <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">instance_dir</span><span class="p">,</span> <span class="s2">&quot;b.npy&quot;</span><span class="p">),</span> <span class="n">constr_b</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="generate_random_scenario"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_random_scenario">[docs]</a><span class="k">def</span> <span class="nf">generate_random_scenario</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">numb_constraints</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_random_scenario"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.generate_random_scenario">[docs]</a><span class="k">def</span> <span class="nf">generate_random_scenario</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">numb_constraints</span><span class="p">):</span>
 
     <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">upper</span> <span class="o">=</span> <span class="mi">100</span>
@@ -306,7 +483,7 @@
     <span class="n">base_a</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">base_b</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">insert_difficult_constraints</span><span class="p">(</span><span class="n">base_a</span><span class="p">,</span><span class="n">base_b</span><span class="p">,</span><span class="n">numb_constraints</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">insert_difficult_constraints</span><span class="p">(</span><span class="n">base_a</span><span class="p">,</span> <span class="n">base_b</span><span class="p">,</span> <span class="n">numb_constraints</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="insert_difficult_constraints"><a class="viewcode-back" href="../../../API/pyneg.utils.html#pyneg.utils.utils.insert_difficult_constraints">[docs]</a><span class="k">def</span> <span class="nf">insert_difficult_constraints</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">numb</span><span class="p">):</span>

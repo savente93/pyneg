@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -198,7 +198,7 @@ to make the linters a bit happier.</p>
 
 <dl class="attribute">
 <dt id="pyneg.agent.agent.Agent.name">
-<code class="sig-name descname">name</code><em class="property">: str</em><em class="property"> = None</em><a class="headerlink" href="#pyneg.agent.agent.Agent.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">name</code><em class="property"> = None</em><a class="headerlink" href="#pyneg.agent.agent.Agent.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of the agent. mainly used for logging</p>
 </dd></dl>
 
@@ -462,41 +462,35 @@ the utility makes the current negotiation impossible.</p>
 </div>
 <div class="section" id="module-pyneg.agent.agent_factory">
 <span id="agent-factory"></span><h2>Agent Factory<a class="headerlink" href="#module-pyneg.agent.agent_factory" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="pyneg.agent.agent_factory.AgentFactory">
-<em class="property">class </em><code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">AgentFactory</code><a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.estimate_max_linear_utility">
-<em class="property">static </em><code class="sig-name descname">estimate_max_linear_utility</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.estimate_max_linear_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.estimate_max_linear_utility" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.estimate_max_linear_utility">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">estimate_max_linear_utility</code><span class="sig-paren">(</span><em class="sig-param">utilities: Dict[str, float]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#estimate_max_linear_utility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.estimate_max_linear_utility" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_linear_concession_agent">
-<em class="property">static </em><code class="sig-name descname">make_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, issue_weights: Optional[Dict[str, float]] = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.make_linear_concession_agent">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">make_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, issue_weights: Optional[Dict[str, float]] = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#make_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.make_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_linear_random_agent">
-<em class="property">static </em><code class="sig-name descname">make_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, issue_weights: Optional[Dict[str, float]] = None, max_rounds: int = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_linear_random_agent" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.make_linear_random_agent">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">make_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, issue_weights: Optional[Dict[str, float]] = None, max_rounds: int = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#make_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.make_linear_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_random_agent">
-<em class="property">static </em><code class="sig-name descname">make_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: Union[float, int], non_agreement_cost: float, kb: List[str], max_rounds: int = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_random_agent" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.make_random_agent">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">make_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: Union[float, int], non_agreement_cost: float, kb: List[str], max_rounds: int = None</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.agent.Agent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#make_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.make_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent">
-<em class="property">static </em><code class="sig-name descname">make_constrained_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, issue_weights: Optional[Dict[str, float]] = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.make_constrained_linear_concession_agent">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">make_constrained_linear_concession_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, issue_weights: Optional[Dict[str, float]] = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#make_constrained_linear_concession_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.make_constrained_linear_concession_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent">
-<em class="property">static </em><code class="sig-name descname">make_constrained_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, kb: List[str], issue_weights: Optional[Dict[str, float]] = None, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, max_rounds: int = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#AgentFactory.make_constrained_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.AgentFactory.make_constrained_linear_random_agent" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="pyneg.agent.agent_factory.make_constrained_linear_random_agent">
+<code class="sig-prename descclassname">pyneg.agent.agent_factory.</code><code class="sig-name descname">make_constrained_linear_random_agent</code><span class="sig-paren">(</span><em class="sig-param">name: str, neg_space: Dict[str, List[str]], utilities: Dict[str, float], reservation_value: float, non_agreement_cost: float, kb: List[str], issue_weights: Optional[Dict[str, float]] = None, initial_constraints: Optional[Set[pyneg.comms.atomic_constraint.AtomicConstraint]] = None, max_rounds: int = None, auto_constraints=True</em><span class="sig-paren">)</span> &#x2192; pyneg.agent.constr_agent.ConstrainedAgent<a class="reference internal" href="../_modules/pyneg/agent/agent_factory.html#make_constrained_linear_random_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyneg.agent.agent_factory.make_constrained_linear_random_agent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
 
 </div>
 <div class="section" id="module-pyneg.agent.constr_agent">

@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -146,30 +146,42 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pyneg.engine.random_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines the :class:`RandomGenerator` class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
 
 <span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">choice</span>
 
-<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">Offer</span><span class="p">,</span> <span class="n">AtomicConstraint</span>
-<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">NegSpace</span><span class="p">,</span> <span class="n">AtomicDict</span>
+<span class="kn">from</span> <span class="nn">pyneg.comms</span> <span class="kn">import</span> <span class="n">AtomicConstraint</span><span class="p">,</span> <span class="n">Offer</span>
+<span class="kn">from</span> <span class="nn">pyneg.types</span> <span class="kn">import</span> <span class="n">AtomicDict</span><span class="p">,</span> <span class="n">NegSpace</span>
+
 <span class="kn">from</span> <span class="nn">.evaluator</span> <span class="kn">import</span> <span class="n">Evaluator</span>
 <span class="kn">from</span> <span class="nn">.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">.strategy</span> <span class="kn">import</span> <span class="n">Strategy</span>
 
 
 <div class="viewcode-block" id="RandomGenerator"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator">[docs]</a><span class="k">class</span> <span class="nc">RandomGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This generator generates random offers without any reasoning.</span>
+<span class="sd">    By default it uses uniform distriutions across all issues and values.</span>
+
+<span class="sd">    :raises StopIteration: when maximum number of samples for one offer or \</span>
+<span class="sd">        maximum total number offers generated is exceded </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RandomGenerator.__init__"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">,</span>
                  <span class="n">utilities</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">,</span>
                  <span class="n">evaluator</span><span class="p">:</span> <span class="n">Evaluator</span><span class="p">,</span>
                  <span class="n">non_agreement_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                 <span class="n">kb</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">knowledge_base</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
                  <span class="n">acceptability_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                  <span class="n">max_rounds</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                  <span class="n">max_generation_tries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">utilities</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kb</span> <span class="o">=</span> <span class="n">kb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span> <span class="o">=</span> <span class="n">knowledge_base</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span> <span class="o">=</span> <span class="p">{</span><span class="n">issue</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
                           <span class="k">for</span> <span class="n">issue</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">neg_space</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_agreement_cost</span> <span class="o">=</span> <span class="n">non_agreement_cost</span>
@@ -182,6 +194,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">acceptability_threshold</span> <span class="o">=</span> <span class="n">acceptability_threshold</span></div>
 
 <div class="viewcode-block" id="RandomGenerator.init_uniform_strategy"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.init_uniform_strategy">[docs]</a>    <span class="k">def</span> <span class="nf">init_uniform_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">neg_space</span><span class="p">:</span> <span class="n">NegSpace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialises a uniform distribution across all possible values for every issue.</span>
+<span class="sd">                </span>
+<span class="sd">        :param neg_space: The negotiation space that the strategy will be based on.</span>
+<span class="sd">        :type neg_space: NegSpace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">strat_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">neg_space</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">issue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">strat_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -192,6 +210,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">Strategy</span><span class="p">(</span><span class="n">strat_dict</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RandomGenerator.generate_offer"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.generate_offer">[docs]</a>    <span class="k">def</span> <span class="nf">generate_offer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Offer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate an offer by sampling from the current strategy until the </span>
+<span class="sd">        maximum amount of tries are reached or the maximum number of offers are</span>
+<span class="sd">        generated. (this is to insure that it terminates even in impossible situations.)</span>
+<span class="sd">        </span>
+<span class="sd">        :raises StopIteration: [description]</span>
+<span class="sd">        :raises StopIteration: [description]</span>
+<span class="sd">        :return: [description]</span>
+<span class="sd">        :rtype: Offer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_counter</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_rounds</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
@@ -219,13 +247,52 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">round_counter</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_counter</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_counter</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_rounds</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">return_offer</span></div>
 
+<div class="viewcode-block" id="RandomGenerator.add_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">add_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">utilities</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">new_utils</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RandomGenerator.set_utilities"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.set_utilities">[docs]</a>    <span class="k">def</span> <span class="nf">set_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_utils</span><span class="p">:</span> <span class="n">AtomicDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">utilities</span> <span class="o">=</span> <span class="n">new_utils</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RandomGenerator.add_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">AtomicConstraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">            with non constraint aware system. </span>
+<span class="s2">            add_constraint called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RandomGenerator.add_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.add_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">add_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_constraints</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                add_constraints called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
 <div class="viewcode-block" id="RandomGenerator.find_violated_constraint"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.find_violated_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">find_violated_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">:</span> <span class="n">Offer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="kc">None</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                find_violated_constraint called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="RandomGenerator.get_constraints"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.get_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">get_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">AtomicConstraint</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                function get_constraints called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RandomGenerator.get_unconstrained_values_by_issue"><a class="viewcode-back" href="../../../API/pyneg.engine.html#pyneg.engine.random_generator.RandomGenerator.get_unconstrained_values_by_issue">[docs]</a>    <span class="k">def</span> <span class="nf">get_unconstrained_values_by_issue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;WARNING: attempting to use a constraint mechanism</span>
+<span class="s2">                with non constraint aware system. </span>
+<span class="s2">                get_unconstrained_values_by_issue called in </span><span class="si">{self.class.__name__}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neg_space</span><span class="p">[</span><span class="n">issue</span><span class="p">])</span></div></div>
 </pre></div>
 
            </div>
