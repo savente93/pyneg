@@ -16,3 +16,5 @@ sims/
 *sublime*
 .dockercache
 _build
+build
+dist

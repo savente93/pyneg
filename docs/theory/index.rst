@@ -6,7 +6,8 @@ Quich theory overview
 Basic terminology
 ----------------------
 
-In this section we'll give a very brief overvew into negotiaton theory to explain some of the terms used thoughout this documentaiton. For a more complete discussion of the theory see `<http://http://orca.cf.ac.uk/{lit_rev_id}/>`_ see :ref:`representations` for more information on how these are represented in this library.
+In this section we'll give a very brief overvew into negotiaton theory to explain some of the terms used thoughout this documentaiton. ..
+For a more complete discussion of the theory see `<http://http://orca.cf.ac.uk/{lit_rev_id}/>`_ see :ref:`representations` for more information on how these are represented in this library.
 
 *Issues* are the subject of the negotiatons, and the *values* are possible options for those issues. The collection of these issues as is called the *negotiation space* and is denoted as :math:`\Omega`. For example, if we wanted to model a job contract negotiaton the negotiation space might consist of the following issues and their values:
 
