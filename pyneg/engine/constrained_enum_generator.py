@@ -166,13 +166,8 @@ class ConstrainedEnumGenerator(EnumGenerator):
         offer = self._offer_from_index_dict(indices)
         if self.satisfies_all_constraints(offer):
             return offer
-<<<<<<< HEAD
-        
+
         raise ValueError("generated violating offer")
-=======
-        else:
-            raise ValueError("generated violating offer")
->>>>>>> add tests to stop infinite recursion and correctly handle initial constraints
 
     def accepts(self, offer: Offer) -> bool:
         util = self.evaluator.calc_offer_utility(offer)
