@@ -116,32 +116,33 @@ class RandomGenerator(Generator):
         self.utilities = new_utils
         return True
 
+
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
-        print("""WARNING: attempting to use a constraint mechanism
+        print(f"""WARNING: attempting to use a constraint mechanism
             with non constraint aware system. 
-            add_constraint called in {self.class.__name__}""")
+            add_constraint called in {self.__class__.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
-        print("""WARNING: attempting to use a constraint mechanism
+        print(f"""WARNING: attempting to use a constraint mechanism
                 with non constraint aware system. 
-                add_constraints called in {self.class.__name__}""")
+                add_constraints called in {self.__class__.__name__}""")
         return True
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
-        print("""WARNING: attempting to use a constraint mechanism
+        print(f"""WARNING: attempting to use a constraint mechanism
                 with non constraint aware system. 
-                find_violated_constraint called in {self.class.__name__}""")
+                find_violated_constraint called in {self.__class__.__name__}""")
         return None
 
     def get_constraints(self) -> Set[AtomicConstraint]:
-        print("""WARNING: attempting to use a constraint mechanism
+        print(f"""WARNING: attempting to use a constraint mechanism
                 with non constraint aware system. 
-                function get_constraints called in {self.class.__name__}""")
+                function get_constraints called in {self.__class__.__name__}""")
         return set()
 
     def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
-        print("""WARNING: attempting to use a constraint mechanism
+        print(f"""WARNING: attempting to use a constraint mechanism
                 with non constraint aware system. 
-                get_unconstrained_values_by_issue called in {self.class.__name__}""")
+                get_unconstrained_values_by_issue called in {self.__class__.__name__}""")
         return set(self.neg_space[issue])

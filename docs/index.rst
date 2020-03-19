@@ -4,7 +4,8 @@ Welcomde to PyNeg's documentation!
 .. toctree::
   :maxdepth: 4
 
-  API/pyneg
+  getting-started/index
   theory/index
   usage/index
-  examples/index
+  API/pyneg
+  

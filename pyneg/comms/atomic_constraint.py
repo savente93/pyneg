@@ -36,6 +36,7 @@ class AtomicConstraint():
         """
         Determines whether a perticular assignement satisfies this constraint.
         For example:
+        
         >>> AtomicConstraint("A","first").is_satisfied_by_assignment("A","first")
         False
         >>> AtomicConstraint("A","first").is_satisfied_by_assignment("A","second")
@@ -84,4 +85,4 @@ class AtomicConstraint():
         return hash((self.issue, self.value))
 
     def __repr__(self) -> str:
-        return "{issue}!={value}".format(issue=self.issue, value=self.value)
+        return f"{self.issue}!={self.value}"

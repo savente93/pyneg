@@ -1,5 +1,0 @@
-Examples
-==========
-
-Simple agents
----------------

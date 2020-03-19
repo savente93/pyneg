@@ -6,7 +6,6 @@ Available factories:
     - make_random_agent
     - make_constrained_linear_concession_agent
     - make_constrained_linear_random_agent
-
 """
 # pylint: disable=protected-access
 # because different kinds of agents need different kinds of engines and other parameters,

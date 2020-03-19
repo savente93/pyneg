@@ -15,4 +15,4 @@ venv
 sims/
 *sublime*
 .dockercache
-docs/_build/
+_build

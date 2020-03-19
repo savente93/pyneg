@@ -12,6 +12,14 @@ Wrappers
 Evaluators
 =============
 
+Evaluator module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.evaluator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Constrained Linear Evaluator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -20,7 +28,7 @@ Constrained Linear Evaluator
    :undoc-members:
    :show-inheritance:
 
-pyneg.engine.constrained\_problog\_evaluator module
+Constrained Problog Evaluator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.constrained_problog_evaluator
@@ -28,15 +36,7 @@ pyneg.engine.constrained\_problog\_evaluator module
    :undoc-members:
    :show-inheritance:
 
-pyneg.engine.evaluator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.evaluator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.engine.linear\_evaluator module
+Linear Evaluator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.linear_evaluator
@@ -44,7 +44,7 @@ pyneg.engine.linear\_evaluator module
    :undoc-members:
    :show-inheritance:
 
-pyneg.engine.problog\_evaluator module
+Problog Evaluator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.problog_evaluator
@@ -56,48 +56,7 @@ pyneg.engine.problog\_evaluator module
 Generators
 ===========
 
-pyneg.engine.constrained\_dtp\_generator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.constrained_dtp_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.engine.constrained\_enum\_generator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.constrained_enum_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.engine.constrained\_random\_generator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.constrained_random_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.engine.dtp\_generator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.dtp_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyneg.engine.enum\_generator module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: pyneg.engine.enum_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-pyneg.engine.generator module
+Generator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.generator
@@ -106,7 +65,15 @@ pyneg.engine.generator module
    :show-inheritance:
 
 
-pyneg.engine.random\_generator module
+Concession Generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.enum_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Random Generator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.random_generator
@@ -114,7 +81,44 @@ pyneg.engine.random\_generator module
    :undoc-members:
    :show-inheritance:
 
-pyneg.engine.strategy module
+
+DTProbLog Generator 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.dtp_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Constrained DTPGenerator 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.constrained_dtp_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Constrained Linear Concession Generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.constrained_enum_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Constrained Random Generator
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: pyneg.engine.constrained_random_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Misc
+===========
+
+Strategy 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: pyneg.engine.strategy

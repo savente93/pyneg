@@ -17,9 +17,8 @@ class Offer:
     and the sum of all assignements for an issue should sum to 1.0 
     (i.e. exactly one value should be assigned 1.0 and all others 0.0).
     Note that the assignements should be floats instead of ints or bools.
-    this is for compatibility with ProbLog.
-
-    e.g. 
+    this is for compatibility with ProbLog. e.g. 
+    
     >>> nested = {"First": {"A":0.0, "B":1.0}, "Second":{"C":1.0,"D":0.0}}
     >>> atomic = {"First_A":0.0, "First_B":1.0, "Second_C":1.0, "Second_D":0.0}
 

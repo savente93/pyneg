@@ -218,3 +218,33 @@ class DTPGenerator(Generator):
             raise RuntimeError()
 
         return self.offer_queue.pop()
+
+    def add_constraint(self, constraint: AtomicConstraint) -> bool:
+        print(f"""WARNING: attempting to use a constraint mechanism
+            with non constraint aware system. 
+            add_constraint called in {self.__class__.__name__}""")
+        return True
+
+    def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
+        print(f"""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                add_constraints called in {self.__class__.__name__}""")
+        return True
+
+    def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
+        print(f"""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                find_violated_constraint called in {self.__class__.__name__}""")
+        return None
+
+    def get_constraints(self) -> Set[AtomicConstraint]:
+        print(f"""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                function get_constraints called in {self.__class__.__name__}""")
+        return set()
+
+    def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
+        print(f"""WARNING: attempting to use a constraint mechanism
+                with non constraint aware system. 
+                get_unconstrained_values_by_issue called in {self.__class__.__name__}""")
+        return set(self.neg_space[issue])

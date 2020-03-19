@@ -34,6 +34,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
         self.constraints_satisfiable = True
         self.max_util = 0.0
         super().__init__(neg_space, utilities, evaluator, acceptance_threshold)
+        self.init_generator()
         self.auto_constraints = auto_constraints
         self.max_utility_by_issue: Dict[str, int] = {}
         self._index_max_utilities()
