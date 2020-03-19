@@ -1,5 +1,8 @@
-Types
+pyneg.types package
 ===================
+
+Submodules
+----------
 
 .. _msg_type:
 
@@ -18,6 +21,15 @@ Verbosity levels
 ----------------------------
 
 .. automodule:: pyneg.types.verbosity
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyneg.types
    :members:
    :undoc-members:
    :show-inheritance:

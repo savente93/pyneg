@@ -109,14 +109,13 @@ class LinearEvaluator(Evaluator):
         return score
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
-        print(f"""WARNING: attempting to use a constraint mechanism
+        print("""WARNING: attempting to use a constraint mechanism
             with non constraint aware system. 
-            add_constraint called in {self.__class__.__name__}""")
+            add_constraint called in {self.class.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
-        print(f"""WARNING: attempting to use a constraint mechanism
+        print("""WARNING: attempting to use a constraint mechanism
                 with non constraint aware system. 
-                add_constraints called in {self.__class__.__name__}""")
+                add_constraints called in {self.class.__name__}""")
         return True
-

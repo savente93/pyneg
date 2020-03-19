@@ -1,5 +1,9 @@
-Utils
+pyneg.utils package
 ===================
+
+Submodules
+----------
+
 
 .. _utils:
 

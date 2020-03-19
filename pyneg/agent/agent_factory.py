@@ -1,11 +1,11 @@
 """
 This module defines all of the factory methods for creating different types of agents.
 Available factories:
-    - make_linear_concession_agent
-    - make_linear_random_agent
-    - make_random_agent
-    - make_constrained_linear_concession_agent
-    - make_constrained_linear_random_agent
+- make_linear_concession_agent
+- make_linear_random_agent
+- make_random_agent
+- make_constrained_linear_concession_agent
+- make_constrained_linear_random_agent
 """
 # pylint: disable=protected-access
 # because different kinds of agents need different kinds of engines and other parameters,

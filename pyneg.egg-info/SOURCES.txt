@@ -1,8 +1,10 @@
+README.md
 setup.py
 pyneg/__init__.py
 pyneg.egg-info/PKG-INFO
 pyneg.egg-info/SOURCES.txt
 pyneg.egg-info/dependency_links.txt
+pyneg.egg-info/requires.txt
 pyneg.egg-info/top_level.txt
 pyneg/agent/__init__.py
 pyneg/agent/agent.py
