@@ -6,7 +6,7 @@ omit =
     */notify.py
 
 include = 
-    /home/sam/Documents/code/work/pyneg/*
+    */pyneg/*
 
 
 [html]
@@ -18,3 +18,4 @@ exclude_lines =
     def __repr__
     raise AssertionError
     raise NotImplementedError
+    print
