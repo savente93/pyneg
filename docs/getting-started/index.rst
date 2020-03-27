@@ -4,19 +4,32 @@ Getting Started
 Installation
 ---------------
 
-Requirements 
-^^^^^^^^^^^^^^
-- Numpy
-- ProbLog
+You can simply install :code:`pyneg` using :code:`pip` along with all the required dependencies like so:
 
-Optional requirements:
-^^^^^^^^^^^^^^^^^^^^^^
+.. code-block::
 
-- Pytest
-- Sphinx (building docs)
-- PySDD 
+    pip install pyneg
 
-The PySDD and it's C libraries are needed to use the agents that use ProbLog as a backend. For Installation notes on that please see the  `PySDD <https://github.com/wannesm/PySDD>`_ page.
+However, to function properly, specifically all the components that use ProbLog, the PySDD package must be installed, including the compiled and linked SDD C libraries. For Installation notes on that library please see the  `PySDD <https://github.com/wannesm/PySDD>`_ page. 
+
+Alternatively there is a Docker image available that has everything that the library needs. You can pull the docker image by using 
+
+.. code-block::
+
+    docker pull savente/pyneg:latest
+
+After that has completed successfully you can run all the unit by simply running the container: 
+
+.. code-block::
+
+    docker run savente/pyneg
+
+Alternatively, if you want an interactive shell enviroment that has everything correctly installed you can get one by using
+
+.. code-block::
+
+    docker run -it savente/pyneg /bin/bash
+
 
 Minimal Working Example
 ------------------------

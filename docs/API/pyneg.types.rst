@@ -1,4 +1,4 @@
-pyneg.types package
+Types
 ===================
 
 Submodules
