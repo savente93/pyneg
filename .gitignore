@@ -18,3 +18,4 @@ sims/
 _build
 build
 dist
+.codacy-coverage

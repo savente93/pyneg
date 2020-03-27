@@ -5,6 +5,7 @@ services:
 
 before_install:
 - docker pull savente/pyneg
+- pip install --user codecov
 
 script:
 - docker run savente/pyneg

@@ -4,6 +4,11 @@ Some simple negotiation strategies have already been implemented and provide a t
 
 for a more detailed explanation please refer to the [documentation](https://pyneg.readthedocs.io/en/latest/index.html).
 
+[![Documentation Status](https://readthedocs.org/projects/pyneg/badge/?version=latest)](https://pyneg.readthedocs.io/en/latest/?badge=latest)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/136ab4b5b06d4a208ab445ce43308321)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dvente/pyneg&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/dvente/pyneg/branch/master/graph/badge.svg)](https://codecov.io/gh/dvente/pyneg)
+[![Build Status](https://travis-ci.org/dvente/pyneg.svg?branch=master)](https://travis-ci.org/dvente/pyneg)
+
 ### Minimal Working Example
 
 
