@@ -1,5 +1,5 @@
 """
-A simple evaluator that calculates the utility of an offer 
+A simple evaluator that calculates the utility of an offer
 assuming :ref:`linear-additivity`
 """
 
@@ -15,12 +15,12 @@ from .strategy import Strategy
 
 class LinearEvaluator(Evaluator):
     """
-    Evaluates offers using linear additive calculations. 
+    Evaluates offers using linear additive calculations.
     (see :ref:`linear-additivity`)
     Utilities should be a utility function represented
     as an AtomicDict, issue weights should be a distribution over the
     issues and non_agreement_cost should be the cost of unsuccessfully
-    terminating the negotiation. 
+    terminating the negotiation.
     """
 
     def __init__(self, utilities: AtomicDict,
@@ -66,15 +66,15 @@ class LinearEvaluator(Evaluator):
         if chosen_atom in self.utilities.keys():
             return self.issue_weights[issue] * \
                    self.utilities[chosen_atom]
-        
+
         return 0
 
     def calc_offer_utility(self, offer: Offer) -> float:
         """
-        Calculates the utility of a full offer. In this implementation 
+        Calculates the utility of a full offer. In this implementation
         this is simply the dot product of the utility of all the asignements
         with their associated issue weights
-        
+
         :param offer: The offer to calculate the utility of
         :type offer: Offer
         :return: the utility the given offer is worth
@@ -88,11 +88,11 @@ class LinearEvaluator(Evaluator):
 
     def calc_strat_utility(self, strat: Strategy) -> float:
         """
-        Generalisation of an offer but works similarly. calculates the 
-        expceted utility under the strategy distribution. see 
+        Generalisation of an offer but works similarly. calculates the
+        expceted utility under the strategy distribution. see
         :class:`Strategy` for more information.
-        
-        :param strat: the strategy to calculate the utility of 
+
+        :param strat: the strategy to calculate the utility of
         :type strat: Strategy
         :return: expected utility under the given strategy with \
             current knowledge base
@@ -104,18 +104,18 @@ class LinearEvaluator(Evaluator):
                 atom = atom_from_issue_value(issue, value)
                 if atom in self.utilities.keys():
                     score += self.issue_weights[issue] * \
-                             self.utilities[atom] * prob 
+                             self.utilities[atom] * prob
 
         return score
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-            with non constraint aware system. 
+            with non constraint aware system.
             add_constraint called in {self.class.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 add_constraints called in {self.class.__name__}""")
         return True

@@ -1,6 +1,6 @@
 """
-This module defines an atomic constraint, the simples form of constraint possible. 
-It expresses that any offer which has a perticular assignement will never be accepted. 
+This module defines an atomic constraint, the simples form of constraint possible.
+It expresses that any offer which has a perticular assignement will never be accepted.
 Good baseline for addapting for more complicated constraints
 """
 
@@ -12,8 +12,8 @@ from .offer import Offer
 
 class AtomicConstraint():
     """
-        Atomic constraint, the simples form of constraint possible. 
-        It expresses that any offer which has a perticular assignement will never be accepted. 
+        Atomic constraint, the simples form of constraint possible.
+        It expresses that any offer which has a perticular assignement will never be accepted.
         Good baseline for addapting for more complicated constraints
     """
     def __init__(self, issue: str, value: str):
@@ -55,7 +55,7 @@ class AtomicConstraint():
         Checks if a whole offer is satisfied by the constraint.
         For atomic constraints this means just checking all of the
         assignements individually.
-        
+
         :param offer: The offer to be checked
         :type offer: Offer
         :return: True iff the assignement is allowed under this constraint
@@ -64,7 +64,7 @@ class AtomicConstraint():
         chosen_value = offer.get_chosen_value(self.issue)
         if chosen_value == self.value:
             return False
-        
+
         return True
 
     # string type is to avoid circular dependencies wiht AtomicConstraint
@@ -72,13 +72,13 @@ class AtomicConstraint():
         """
         Checks if a whole Stratagy is satisfied by the constraint.
         i.e. does the stratagy assign 0 probability to the constrained assignement?
-        
+
         :param strat: The strattagy to be checked
         :type strat: Stratagy
         :return: True iff the assignement is allowed under this constraint
         :rtype: bool
         """
-        return isclose(strat.get_value_dist(self.issue)[self.issue], 0)  
+        return isclose(strat.get_value_dist(self.issue)[self.issue], 0)
 
     def __hash__(self) -> int:
         return hash((self.issue, self.value))

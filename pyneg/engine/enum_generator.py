@@ -1,7 +1,7 @@
-""" 
+"""
 A very simple deterministic negotiation agent which just enumerates \
 offers in order of preference. Uses breath first search.
-see :class:`EnumGenerator` for more information.  
+see :class:`EnumGenerator` for more information.
 """
 
 from copy import deepcopy
@@ -18,12 +18,12 @@ from pyneg.utils import nested_dict_from_atom_dict
 
 class EnumGenerator(Generator):
     """
-    A simple deterministic offer generator that lists 
-    offers in order of preference. This implemantation 
+    A simple deterministic offer generator that lists
+    offers in order of preference. This implemantation
     only works for linear additive spaces and utilty functions.
-    It uses breath first search to explore the negotiation space. 
-    Raises `StopIteration` exception when it cannot find any 
-    new acceptable offers. 
+    It uses breath first search to explore the negotiation space.
+    Raises `StopIteration` exception when it cannot find any
+    new acceptable offers.
 
     """
     def __init__(self, neg_space: NegSpace,
@@ -40,7 +40,8 @@ class EnumGenerator(Generator):
         self.assignement_frontier: PriorityQueue = PriorityQueue()
         self.offer_counter: int = 0
         self.generated_offers: Set[Offer] = set()
-        
+        self.init_generator()
+
     def add_utilities(self, new_utils: AtomicDict) -> bool:
         self.utilities = {
             **self.utilities,
@@ -59,17 +60,17 @@ class EnumGenerator(Generator):
 
     def init_generator(self) -> None:
         """
-        Setup for the breath first search. This is done by 
-        indexing the negotiation space internally by utility 
-        e.g.  
+        Setup for the breath first search. This is done by
+        indexing the negotiation space internally by utility
+        e.g.
         >>> neg_space = {"boolean":["True", "False"]}
-        the utility function {"boolean_True":10,"boolean_False":100} would be converted to 
+        the utility function {"boolean_True":10,"boolean_False":100} would be converted to
         {"boolean": ["False","True"]}
         """
         self.assignement_frontier = PriorityQueue()
         nested_utils = nested_dict_from_atom_dict(self.utilities)
-        
-        # Setup a grid of assignments and their utilities so 
+
+        # Setup a grid of assignments and their utilities so
         # we can explore them later
         for issue in self.neg_space:
             if issue not in nested_utils.keys():
@@ -96,11 +97,11 @@ class EnumGenerator(Generator):
         self.sorted_utils = {
             issue:
             list(map(
-                lambda tup: tup[0], 
+                lambda tup: tup[0],
                 sorter(issue)))
             for issue in nested_utils}
 
-        # Now we can find offers by simply incrementig the indices 
+        # Now we can find offers by simply incrementig the indices
         # for this list and looking up the corresponding values
         best_offer_indices = {issue: 0 for issue in self.neg_space}
         self.offer_counter = 0
@@ -120,8 +121,8 @@ class EnumGenerator(Generator):
     def accepts(self, offer: Offer) -> bool:
         """
         Determine whether the offer is acceptble according to
-        the known criteria. 
-        
+        the known criteria.
+
         :param offer: The offer to be checked
         :type offer: Offer
         :return: True iff the offer is acceptable according to the criteria.
@@ -134,25 +135,25 @@ class EnumGenerator(Generator):
         """
         Takes a typle of offer indices and generates new valid offer
         indices from them, to be used in offer generation, and
-        puts them on the fronteir. For example assume there are three 
-        issues with each three values, and each assignement 
+        puts them on the fronteir. For example assume there are three
+        issues with each three values, and each assignement
         has utility equal to the values. i.e.
-        
+
         >>> neg_space = {"A":[1,2,3],"B":[4,5,6],"C":[7,8,9]}
-        
+
         and [A->1,B->4,C->7] would have utility 1+4+7 = 12
-        then 
-        
+        then
+
         >>> expand_assignment((2,1,1))
-        
-        would generate {(2,1,2),(2,2,2),(0,2,2)} and put them 
+
+        would generate {(2,1,2),(2,2,2),(0,2,2)} and put them
         in the fronteir. Note that the indices (i.e. the 2,1,1)
         don't correspond to the indices in the negotiation space
         but to the indices of the internal list of values sorted
-        by utility. See :func:`init_generator` for more info. 
+        by utility. See :func:`init_generator` for more info.
 
         :param sorted_offer_indices: a tuple of indices corresponding to entries \
-        in the internal list refering to vaues 
+        in the internal list refering to vaues
         :type sorted_offer_indices: Tuple[int]
         """
         for issue in self.neg_space.keys():
@@ -171,13 +172,13 @@ class EnumGenerator(Generator):
 
     def generate_offer(self) -> Offer:
         """
-        Generates offer in breath first manner. Most of the work is done in 
-        :func:`init_generator`, 
-        :func:`expand_assignement` and 
+        Generates offer in breath first manner. Most of the work is done in
+        :func:`init_generator`,
+        :func:`expand_assignement` and
         :func:`_offer_from_index_dict`
-        this function just takes the next offer from the priorityQueue and converts 
-        it into an offer. 
-        
+        this function just takes the next offer from the priorityQueue and converts
+        it into an offer.
+
         :raises StopIteration: Raised when no acceptable offers can be found.\
         in this case this is the case if we find offers that have utility \
         below acceptance threshold because we use BFS.
@@ -201,14 +202,14 @@ class EnumGenerator(Generator):
 
     def _offer_from_index_dict(self, index_dict: Dict[str, int]) -> Offer:
         """
-        converts indicies corresponding to the internal list of values 
-        into actuall offers. e.g. assume we have 
+        converts indicies corresponding to the internal list of values
+        into actuall offers. e.g. assume we have
 
         >>> neg_space = {"A":["first","second","third"],"B":["fourth","fifth","sixth"]
         ,"C":["seventh","eighth","ninth"]}
         and each assignement has utility equal to the values. i.e.
-        [A->"first",B->"forth",C->"seventh"] would have utility 1+4+7 = 12 then 
-        we would have 
+        [A->"first",B->"forth",C->"seventh"] would have utility 1+4+7 = 12 then
+        we would have
 
         >>> _offer_from_index_dict({"A":2,"C":0,"B":1}).get_sparse_str_repr()
         [A->"first",B->"fifth", C->"ninth"]
@@ -233,30 +234,30 @@ class EnumGenerator(Generator):
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-            with non constraint aware system. 
+            with non constraint aware system.
             add_constraint called in {self.class.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 add_constraints called in {self.class.__name__}""")
         return True
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 find_violated_constraint called in {self.class.__name__}""")
         return None
 
     def get_constraints(self) -> Set[AtomicConstraint]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 function get_constraints called in {self.class.__name__}""")
         return set()
 
     def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 get_unconstrained_values_by_issue called in {self.class.__name__}""")
         return set(self.neg_space[issue])

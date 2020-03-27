@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyneg",
-    version="1.0",
+    version="1.0.1",
     author="Sam Vente",
     author_email="savente93@gmail.com",
     description="A python package for simulating automated negotiations",

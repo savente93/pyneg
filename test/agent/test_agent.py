@@ -1,9 +1,9 @@
+# pylint: disable=protected-access
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock
 from pyneg.agent import *
 from pyneg.comms import Offer, Message
 from pyneg.types import MessageType
-
 
 
 class TestAgent(TestCase):
@@ -76,10 +76,18 @@ class TestAgent(TestCase):
             issue: 1 / len(self.neg_space.keys()) for issue, values in self.neg_space.items()}
 
         self.agent = make_linear_concession_agent(
-            "agent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
+            "agent",
+            self.neg_space,
+            self.utilities,
+            self.reservation_value,
+            self.non_agreement_cost,
             self.uniform_weights)
         self.opponent = make_linear_concession_agent(
-            "opponent", self.neg_space, self.utilities, self.reservation_value, self.non_agreement_cost,
+            "opponent",
+            self.neg_space,
+            self.utilities,
+            self.reservation_value,
+            self.non_agreement_cost,
             self.uniform_weights)
 
         self.agent._call_for_negotiation(self.opponent, self.agent._neg_space)
@@ -105,7 +113,7 @@ class TestAgent(TestCase):
     def test_counts_messages_correctly_in_successful_negotiation(self):
         self.agent.negotiate(self.opponent)
         # one offer and one acceptance message
-        self.assertEqual(len(self.agent._transcript), 2)
+        self.assertEqual(len(self.agent._transcript), 2, self.agent._transcript)
 
     def test_counts_messages_correctly_in_unsuccessful_negotiation(self):
         arbitrary_utilities = {
@@ -152,7 +160,7 @@ class TestAgent(TestCase):
             temp_uniform_weights)
         self.agent.negotiate(self.opponent)
         self.assertTrue(
-            self.agent._transcript[-1].is_acceptance())
+            self.agent._transcript[-1].is_acceptance(),self.agent._transcript[-1])
         self.assertTrue(self.opponent._transcript[-1].is_acceptance(),self.opponent._transcript)
 
     def test_slightly_harder_negotiation_ends_successfully(self):
@@ -199,23 +207,23 @@ class TestAgent(TestCase):
     def test_receive_acceptation_message_ends_negotiation(self):
         self.agent.negotiation_active = True
         self.agent.receive_message(self.acceptance_message)
-        self.agent._generate_next_message()
         self.assertFalse(self.agent.negotiation_active)
 
     def test_receive_acceptation_message_negotiation_was_successful(self):
+        self.agent.negotiation_active = True
         self.agent.receive_message(self.acceptance_message)
-        self.agent._generate_next_message()
         self.assertTrue(self.agent.successful)
 
     def test_receive_termination_message_ends_negotiation(self):
         self.agent.negotiation_active = True
+        self.opponent.negotiation_active = True
         self.agent.receive_message(self.termination_message)
-        self.agent._generate_next_message()
         self.assertFalse(self.agent.negotiation_active)
 
     def test_receive_termination_message_negotiation_was_unsuccessful(self):
+        self.agent.negotiation_active = True
+        self.opponent.negotiation_active = True
         self.agent.receive_message(self.termination_message)
-        self.agent._generate_next_message()
         self.assertFalse(self.agent.successful)
 
     def test_rho_of_0_still_accepts_negative_offer(self):
@@ -237,16 +245,28 @@ class TestAgent(TestCase):
 
     def test_random_agent_terminates_correctly(self):
         self.agent = make_random_agent(
-            "agent", self.neg_space, self.utilities, 1, self.non_agreement_cost,[],max_rounds=1)
+            "agent",
+            self.neg_space,
+            self.utilities,
+            1,
+            self.non_agreement_cost,
+            [],
+            max_rounds=1)
 
-        opponent_utils = {atom:-util for atom,util in self.utilities.items()}
+        opponent_utils = {atom:-util for atom, util in self.utilities.items()}
 
         self.opponent = make_random_agent(
-            "opponent", self.neg_space, opponent_utils, 1, self.non_agreement_cost, [], max_rounds=1)
+            "opponent",
+            self.neg_space,
+            opponent_utils,
+            1,
+            self.non_agreement_cost,
+            [],
+            max_rounds=1)
 
         self.agent._call_for_negotiation(self.opponent, self.neg_space)
 
-        self.agent.send_message(self.opponent, self.agent._generate_next_message())
+        self.agent.send_message(self.opponent, self.agent.generate_next_message())
         self.agent._wait_for_response(self.opponent)
         self.assertTrue(self.agent._should_exit())
 
@@ -257,18 +277,13 @@ class TestAgent(TestCase):
         self.opponent = make_linear_concession_agent(
             "opponent", self.neg_space, {"integer_5": 100}, 0.95, self.non_agreement_cost)
 
-        self.agent._call_for_negotiation(self.opponent,self.neg_space)
+        self.agent._call_for_negotiation(self.opponent, self.neg_space)
 
-        for i in range(10):
-            self.agent.send_message(self.opponent, self.agent._generate_next_message())
+        for _ in range(10):
+            self.agent.send_message(self.opponent, self.agent.generate_next_message())
             self.agent._wait_for_response(self.opponent)
             self.assertFalse(self.agent._should_exit())
 
-        self.agent.send_message(self.opponent, self.agent._generate_next_message())
+        self.agent.send_message(self.opponent, self.agent.generate_next_message())
         self.agent._wait_for_response(self.opponent)
         self.assertTrue(self.agent._should_exit())
-
-    #
-    # def test_constrained_random_agent_terminates_correctly(self):
-    #
-    # def test_constrained_concession_agent_terminates_correctly(self):

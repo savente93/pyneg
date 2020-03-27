@@ -1,7 +1,7 @@
 """
 This module devines the :class:`DTPGenerator` class,
-which uses DTProbLog to generate optimal offers in 
-settings that include probabalistic knowledge bases. 
+which uses DTProbLog to generate optimal offers in
+settings that include probabalistic knowledge bases.
 """
 
 from copy import deepcopy
@@ -26,10 +26,10 @@ if TYPE_CHECKING:
 
 class DTPGenerator(Generator):
     """
-    This generator class uses DTProbLog to generate optimal offers. 
+    This generator class uses DTProbLog to generate optimal offers.
     Since it uses DTProbLog it can reason about offers using utilities,
-    both atomic and compound and also using arbitrary knowledge bases. 
-    It does mean that it is very slow and prone to memory leaks due to the 
+    both atomic and compound and also using arbitrary knowledge bases.
+    It does mean that it is very slow and prone to memory leaks due to the
     python implementation of DTProbLog
     """
 
@@ -50,7 +50,7 @@ class DTPGenerator(Generator):
 
     def reset_generator(self):
         """
-        Reset the internals of the generator so we can start anew for a new negotiaton. 
+        Reset the internals of the generator so we can start anew for a new negotiaton.
         """
         self.generated_offers = {}
         self.offer_queue = []
@@ -70,9 +70,9 @@ class DTPGenerator(Generator):
 
     def _compile_dtproblog_model(self) -> str:
         """
-        Takes the internal knowledge of the agent and complies it into a string representing 
+        Takes the internal knowledge of the agent and complies it into a string representing
         a valid DTProbLog model that it can use to generate the next offer.
-        
+
         :return: A string representing a valid DTProbLog model
         :rtype: str
         """
@@ -95,7 +95,7 @@ class DTPGenerator(Generator):
         for sparse_offer, util in self.generated_offers.items():
             config_string = ",".join(
                 list(map(
-                    lambda x: atom_from_issue_value(x[0], x[1]), 
+                    lambda x: atom_from_issue_value(x[0], x[1]),
                     sparse_offer)))  + "."
             utility_string += "offer{} :- {}\n".format(
                 offer_count, config_string)
@@ -108,9 +108,9 @@ class DTPGenerator(Generator):
 
     def _extend_partial_offer(self, partial_offer: Dict[str, float]) -> Set[Offer]:
         """
-        When some decision variables have no impact on the final utility DTProbLog will 
+        When some decision variables have no impact on the final utility DTProbLog will
         generate partial answers. This function will expand those final offers into all of their
-        full options so we can propose them. e.g. 
+        full options so we can propose them. e.g.
 
         >>> gen = DTPGenerator(
             neg_space = {"boolean":["True","False"], "dummy":["1","2"]},
@@ -127,8 +127,8 @@ class DTPGenerator(Generator):
         >>> gen._extend_partial_offer(cleaned_query_output)
         {[boolean->True, dummy->1], [boolean->True, dummy->2]}
 
-        
-        :param partial_offer: 
+
+        :param partial_offer:
         :type partial_offer: [type]
         :raises valueerror: [description]
         :return: [description]
@@ -175,9 +175,9 @@ class DTPGenerator(Generator):
     def _clean_query_output(self, query_output: Dict['Term', float]) -> Dict[str, float]:
         """
         sometimes dtproblog can return things such as "choice(0,0,boolean_true)" under certain
-        circumstances so we need to filter these. This function also casts the keys from 
+        circumstances so we need to filter these. This function also casts the keys from
         problog.logic.Term to str so we can manipulate them.
-        
+
         :param query_output: the raw output dictionary from DTProbLog
         :type query_output: Dict[problog.logic.Term, float]
         :return: A dictionary containing the cleaned assignements of the optimal offer
@@ -185,12 +185,12 @@ class DTPGenerator(Generator):
         """
         return_dict = {}
         for atom, prob in query_output.items():
-            # sometimes dtproblog can return things 
+            # sometimes dtproblog can return things
             # like "choice(0,0,boolean_true)" so we need to filter that out
             reg_search = search(r"(\'?[A-z0-9|\.]+\_[A-z0-9|\.]+\'?)", str(atom))
             if not reg_search:
                 raise ValueError(f"Could not parse query output: {query_output}")
-            
+
             clean_atom = reg_search.group(0)
             return_dict[clean_atom] = prob
 

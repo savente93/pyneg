@@ -1,5 +1,5 @@
 """
-Defines the :class:`ConstrainedRandomGenerator` class, the contraint aware version of 
+Defines the :class:`ConstrainedRandomGenerator` class, the contraint aware version of
 :class:`RandomGenerator` see that entry for more information.
 """
 from typing import Optional, Set, List, Union, TYPE_CHECKING
@@ -14,10 +14,10 @@ from pyneg.engine import Evaluator, RandomGenerator
 
 class ConstrainedRandomGenerator(RandomGenerator):
     """
-        This class is equal to the :class:`RandomGenerator` class but with 
-        additional logic to handle constraints. See :class:`RandomGenerator` for 
-        more information on how the offers are sampled. 
-    """ 
+        This class is equal to the :class:`RandomGenerator` class but with
+        additional logic to handle constraints. See :class:`RandomGenerator` for
+        more information on how the offers are sampled.
+    """
     def __init__(self,
                  neg_space: NegSpace,
                  utilities: AtomicDict,
@@ -33,7 +33,7 @@ class ConstrainedRandomGenerator(RandomGenerator):
         self.constr_value = constr_value
         self.constraints: Set[AtomicConstraint] = set()
         super().__init__(neg_space, utilities, evaluator,
-                         non_agreement_cost, kb, acceptability_threshold, 
+                         non_agreement_cost, kb, acceptability_threshold,
                          max_rounds, max_generation_tries=max_generation_tries)
 
         self.auto_constraints = auto_constraints
@@ -90,12 +90,12 @@ class ConstrainedRandomGenerator(RandomGenerator):
 
     def discover_constraints(self) -> Set[AtomicConstraint]:
         """
-        Attempts to deduce new constraints from the current knowledge base. 
+        Attempts to deduce new constraints from the current knowledge base.
         see :ref:`constraint-discovery` for more information.
-        
+
         :return: A set containing all the newly discovered constraints.
         :rtype: Set[AtomicConstraint]
-        """ 
+        """
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(
@@ -123,13 +123,13 @@ class ConstrainedRandomGenerator(RandomGenerator):
     def satisfies_all_constraints(self, to_check: Union[Offer, Strategy]) -> bool:
         """
         Checks whether the given offer or strategy  satisfies all known constraints.
-        
+
         :param to_check: The offer or strategy to check
         :type to_check: Union[Offer, Strategy]
-        :raises TypeError: if an object of unknown type is passed. 
+        :raises TypeError: if an object of unknown type is passed.
         :return: True iff the given offer or strategy satisfies all known constraints.
         :rtype: bool
-        """        
+        """
         if isinstance(to_check, Offer):
             for constr in self.constraints:
                 if not constr.is_satisfied_by_offer(to_check):
@@ -139,16 +139,16 @@ class ConstrainedRandomGenerator(RandomGenerator):
                 if not constr.is_satisfied_by_strat(to_check):
                     return False
         else:
-            raise TypeError(f"""object is of type {type(to_check)} instead of 
+            raise TypeError(f"""object is of type {type(to_check)} instead of
                                 Union[Offer, Strategy]. Object: {to_check}""")
 
         return True
 
     def _index_max_utilities(self):
         """
-        Index the currently known utilities so we can use this as a heuristic during 
+        Index the currently known utilities so we can use this as a heuristic during
         the constraint discovery process. See :ref:`constraint-discovery` for more information.
-        """  
+        """
         self.max_utility_by_issue = {
             issue: 0 for issue in self.neg_space.keys()}
         for issue in self.neg_space.keys():
@@ -163,17 +163,17 @@ class ConstrainedRandomGenerator(RandomGenerator):
         """
         When we receive a new constraint we'll need to update the stratagy.
         This also checks whether a solution is still possible under the constraints.
-        
+
         :return: Whether the process has succeeded. If False, no sollutions are possible.
         :rtype: bool
-        """        
+        """
         for constr in self.constraints:
             issue = constr.issue
             unconstrained_values = self.get_unconstrained_values_by_issue(
                 issue)
             if not unconstrained_values:
                 self.constraints_satisfiable = False
-                # Unsatisfiable constraint so we're terminating on 
+                # Unsatisfiable constraint so we're terminating on
                 # the next message so we won't need to update the strat
                 return False
 

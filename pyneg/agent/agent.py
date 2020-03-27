@@ -169,7 +169,7 @@ class Agent:
         Sends a message to the opponent, and records the communication in the transcript
         Message should be one allowed by the protocol which is defined in :ref:`msg_type`
 
-        :param opponent: The opponent to send the message to 
+        :param opponent: The opponent to send the message to
         :type opponent: Agent
         :param msg: The message to send
         :type msg: Message
@@ -267,8 +267,11 @@ class Agent:
         """
 
         # we should never get here if we don't have an opponent
-        if not self.negotiation_active or not self.opponent:
+        if not self.negotiation_active:
             raise RuntimeError("Tried to generate next message when no negotiation active")
+
+        if not self.opponent:
+            raise RuntimeError("Tried to generate next message when no opponent was known")
 
         if self._last_offer_received_was_acceptable:
             return self._terminate(True)
@@ -289,9 +292,9 @@ class Agent:
 
     def accepts(self, offer: Offer) -> bool:
         """
-        Determines whether an offer is acceptable or not. Mostly just a passthrough 
-        to the engine who does th4e actual reasoning. 
-        
+        Determines whether an offer is acceptable or not. Mostly just a passthrough
+        to the engine who does th4e actual reasoning.
+
         :param offer: The offer to consider
         :type offer: Offer
         :return: true if the agent finds the offer acceptable
@@ -304,7 +307,7 @@ class Agent:
         Adds new utilities to the knowledge base so the engine can
         reason about them properly. Returns False if adding the utility
         makes the current negotiation impossible.
-        
+
         :param new_utils: New utility rules to be added
         :type new_utils: Dict[str, float]
         :return: Whether a solution is still possible according to the agent.
@@ -316,7 +319,7 @@ class Agent:
         """
         Overrides utilities int the knowledge base. Returns False if adding
         the utility makes the current negotiation impossible.
-        
+
         :param new_utils: New utility rules
         :type new_utils: Dict[str, float]
         :return: Whether a solution is still possible according to the agent.

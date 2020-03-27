@@ -1,6 +1,6 @@
 '''
 This module defines all classes relating to communication between agents.
-Currently consists of: 
+Currently consists of:
     - AtomicConstraint
     - Message
     - Offer

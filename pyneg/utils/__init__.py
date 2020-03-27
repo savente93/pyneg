@@ -1,6 +1,6 @@
-""" 
-Defines some functions that are useful but 
-don't really belong else where. 
+"""
+Defines some functions that are useful but
+don't really belong else where.
 Most are used for setting up scenarios, or message/offer
 format conversion.
 """

@@ -101,21 +101,42 @@ class TestAgentFactory(TestCase):
         self.assertEqual(len(agent_a.get_constraints()), numb_of_constraints, agent_a.get_constraints())
 
     def test_solution_found_by_unconstrained_agents_satisfies_constraints(self):
-        numb_of_constraints = 2
+        numb_of_constraints = 1
         u_a, u_b = generate_random_scenario((4, 4), numb_of_constraints)
         neg_space, utils_a, utils_b = neg_scenario_from_util_matrices(u_a, u_b)
-        rand_a = make_linear_concession_agent("A", neg_space, utils_a, 0.1,
-                                                                        self.non_agreement_cost, None)
+        rand_a = make_linear_concession_agent(
+            "A", 
+            neg_space, 
+            utils_a, 
+            0.1,
+            self.non_agreement_cost, 
+            None)
 
-        rand_b = make_linear_concession_agent("B", neg_space, utils_b, 0.1,
-                                                                       self.non_agreement_cost, None)
+        rand_b = make_linear_concession_agent(
+            "B", 
+            neg_space, utils_b, 
+            0.1,
+            self.non_agreement_cost, 
+            None)
 
 
-        constr_a = make_constrained_linear_concession_agent("A", neg_space, utils_a, 0.3,
-                                                                         self.non_agreement_cost, set(), None)
+        constr_a = make_constrained_linear_concession_agent(
+            "A", 
+            neg_space, 
+            utils_a, 
+            0.3,
+            self.non_agreement_cost, 
+            set(), 
+            None)
 
-        constr_b = make_constrained_linear_concession_agent("B", neg_space, utils_b, 0.3,
-                                                                         self.non_agreement_cost, set(), None)
+        constr_b = make_constrained_linear_concession_agent(
+            "B", 
+            neg_space, 
+            utils_b, 
+            0.3,
+            self.non_agreement_cost, 
+            set(), 
+            None)
 
         rand_a.negotiate(rand_b)
 

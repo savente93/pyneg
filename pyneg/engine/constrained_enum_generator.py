@@ -1,5 +1,5 @@
 """
-Defines the :class:`ConstrainedEnumGenerator` class, the contraint aware version of 
+Defines the :class:`ConstrainedEnumGenerator` class, the contraint aware version of
 :class:`EnumGenerator` see that entry for more information.
 """
 from copy import deepcopy
@@ -17,9 +17,9 @@ from .evaluator import Evaluator
 
 class ConstrainedEnumGenerator(EnumGenerator):
     """
-        This class is equal to the :class:`EnumGenerator` class but with 
-        additional logic to handle constraints. See :class:`EnumGenerator` for 
-        more information on how the offers are generated. 
+        This class is equal to the :class:`EnumGenerator` class but with
+        additional logic to handle constraints. See :class:`EnumGenerator` for
+        more information on how the offers are generated.
     """
     def __init__(self, neg_space: NegSpace,
                  utilities: AtomicDict,
@@ -46,7 +46,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         self.constraints.add(constraint)
         self.evaluator.add_constraint(constraint)
-        self._add_utilities({atom_from_issue_value(constraint.issue, constraint.value): 
+        self._add_utilities({atom_from_issue_value(constraint.issue, constraint.value):
                              self.constr_value})
         self._index_max_utilities()
         self.init_generator()
@@ -55,7 +55,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         self.constraints.update(new_constraints)
         self.evaluator.add_constraints(new_constraints)
-        self._add_utilities({atom_from_issue_value(constr.issue, constr.value): self.constr_value 
+        self._add_utilities({atom_from_issue_value(constr.issue, constr.value): self.constr_value
                              for constr in new_constraints})
         self._index_max_utilities()
         self.init_generator()
@@ -71,13 +71,13 @@ class ConstrainedEnumGenerator(EnumGenerator):
     def satisfies_all_constraints(self, to_check: Union[Offer, Strategy]) -> bool:
         """
         Checks whether the given offer or strategy  satisfies all known constraints.
-        
+
         :param to_check: The offer or strategy to check
         :type to_check: Union[Offer, Strategy]
-        :raises TypeError: if an object of unknown type is passed. 
+        :raises TypeError: if an object of unknown type is passed.
         :return: True iff the given offer or strategy satisfies all known constraints.
         :rtype: bool
-        """        
+        """
         if isinstance(to_check, Offer):
             for constr in self.constraints:
                 if not constr.is_satisfied_by_offer(to_check):
@@ -87,14 +87,14 @@ class ConstrainedEnumGenerator(EnumGenerator):
                 if not constr.is_satisfied_by_strat(to_check):
                     return False
         else:
-            raise TypeError(f"""object is of type {type(to_check)} instead of 
+            raise TypeError(f"""object is of type {type(to_check)} instead of
                                 Union[Offer, Strategy]. Object: {to_check}""")
 
         return True
 
     def _index_max_utilities(self):
         """
-            Index the currently known utilities so we can use this as a heuristic during 
+            Index the currently known utilities so we can use this as a heuristic during
             the constraint discovery process. See :ref:`constraint-discovery` for more information.
         """
         self.max_utility_by_issue = {
@@ -148,7 +148,7 @@ class ConstrainedEnumGenerator(EnumGenerator):
             offer = self._offer_from_index_dict(copied_offer_indices)
             util = self.evaluator.calc_offer_utility(offer)
             if self._offer_from_index_dict(copied_offer_indices) not in self.generated_offers:
-                # might seem stratge but if we hit a constraint 
+                # might seem stratge but if we hit a constraint
                 # we still need to keep searching in this direction
                 if util >= self.acceptability_threshold and self.satisfies_all_constraints(offer):
                     self.assignement_frontier.put(
@@ -175,12 +175,12 @@ class ConstrainedEnumGenerator(EnumGenerator):
 
     def discover_constraints(self) -> Set[AtomicConstraint]:
         """
-        Attempts to deduce new constraints from the current knowledge base. 
+        Attempts to deduce new constraints from the current knowledge base.
         see :ref:`constraint-discovery` for more information.
-        
+
         :return: A set containing all the newly discovered constraints.
         :rtype: Set[AtomicConstraint]
-        """ 
+        """
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(

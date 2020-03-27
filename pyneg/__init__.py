@@ -1,11 +1,11 @@
 """
-PyNeg is a library for implementing and simulating automated negotiatoins. 
+PyNeg is a library for implementing and simulating automated negotiatoins.
 It contains the following submodules:
 - comms
-- types 
-- agent 
+- types
+- agent
 - engine
-- utils 
+- utils
 
 see :ref:`API` or :ref:`Getting Started` in the docs for more information.
 """

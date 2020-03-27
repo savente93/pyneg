@@ -1,5 +1,5 @@
 """
-Defines the :class:`ConstrainedProblogEvaluator` class, the contraint aware version of 
+Defines the :class:`ConstrainedProblogEvaluator` class, the contraint aware version of
 :class:`ProblogEvaluator` see that entry for more information.
 """
 from typing import Optional, List, Set, Iterable, Union
@@ -13,10 +13,10 @@ from .strategy import Strategy
 
 class ConstrainedProblogEvaluator(ProblogEvaluator):
     """
-        This class is equal to the :class:`ProblogEvaluator` class but with 
-        additional logic to handle constraints. See :class:`ProblogEvaluator` for 
-        more information on how ProbLog is used. 
-    """    
+        This class is equal to the :class:`ProblogEvaluator` class but with
+        additional logic to handle constraints. See :class:`ProblogEvaluator` for
+        more information on how ProbLog is used.
+    """
     def __init__(self,
                  neg_space: NegSpace,
                  utilities: AtomicDict,
@@ -40,19 +40,19 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
     def calc_strat_utility(self, strat: Strategy) -> float:
         if not self.satisfies_all_constraints(strat):
             return self.non_agreement_cost
-        
+
         return super().calc_strat_utility(strat)
 
     def satisfies_all_constraints(self, to_check: Union[Offer, Strategy]) -> bool:
         """
         Checks whether the given offer or strategy  satisfies all known constraints.
-        
+
         :param to_check: The offer or strategy to check
         :type to_check: Union[Offer, Strategy]
-        :raises TypeError: if an object of unknown type is passed. 
+        :raises TypeError: if an object of unknown type is passed.
         :return: True iff the given offer or strategy satisfies all known constraints.
         :rtype: bool
-        """        
+        """
         if isinstance(to_check, Offer):
             for constr in self.constraints:
                 if not constr.is_satisfied_by_offer(to_check):
@@ -62,7 +62,7 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
                 if not constr.is_satisfied_by_strat(to_check):
                     return False
         else:
-            raise TypeError(f"""object is of type {type(to_check)} instead of 
+            raise TypeError(f"""object is of type {type(to_check)} instead of
                                 Union[Offer, Strategy]. Object: {to_check}""")
 
         return True
@@ -80,7 +80,7 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
 
     def add_constraints(self, new_constraints: Iterable[AtomicConstraint]) -> bool:
         self.constraints.update(new_constraints)
-        self._add_utilities({atom_from_issue_value(constraint.issue, constraint.value): 
+        self._add_utilities({atom_from_issue_value(constraint.issue, constraint.value):
                              self.constr_value
                              for constraint in self.constraints})
         for issue in self.neg_space.keys():
@@ -99,13 +99,13 @@ class ConstrainedProblogEvaluator(ProblogEvaluator):
     def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
         """
         This function returns all known values for the given issue that are not \
-        ruled out by a constraint. 
-        
+        ruled out by a constraint.
+
         :param issue: The issue to retreive the unconstrained values of.
         :type issue: str
         :return: A set containt all values of an issue that are not constrained
         :rtype: Set[AtomicConstraint]
-        """        
+        """
         issue_constrained_values = set(
             constr.value for constr in self.constraints if constr.issue == issue)
         issue_unconstrained_values = set(

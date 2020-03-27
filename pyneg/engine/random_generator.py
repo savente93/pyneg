@@ -20,7 +20,7 @@ class RandomGenerator(Generator):
     By default it uses uniform distriutions across all issues and values.
 
     :raises StopIteration: when maximum number of samples for one offer or \
-        maximum total number offers generated is exceded 
+        maximum total number offers generated is exceded
     """
     def __init__(self,
                  neg_space: NegSpace,
@@ -48,7 +48,7 @@ class RandomGenerator(Generator):
     def init_uniform_strategy(self, neg_space: NegSpace) -> None:
         """
         Initialises a uniform distribution across all possible values for every issue.
-                
+
         :param neg_space: The negotiation space that the strategy will be based on.
         :type neg_space: NegSpace
         """
@@ -63,10 +63,10 @@ class RandomGenerator(Generator):
 
     def generate_offer(self) -> Offer:
         """
-        Generate an offer by sampling from the current strategy until the 
+        Generate an offer by sampling from the current strategy until the
         maximum amount of tries are reached or the maximum number of offers are
         generated. (this is to insure that it terminates even in impossible situations.)
-        
+
         :raises StopIteration: [description]
         :raises StopIteration: [description]
         :return: [description]
@@ -118,30 +118,30 @@ class RandomGenerator(Generator):
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-            with non constraint aware system. 
+            with non constraint aware system.
             add_constraint called in {self.class.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 add_constraints called in {self.class.__name__}""")
         return True
 
     def find_violated_constraint(self, offer: Offer) -> Optional[AtomicConstraint]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 find_violated_constraint called in {self.class.__name__}""")
         return None
 
     def get_constraints(self) -> Set[AtomicConstraint]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 function get_constraints called in {self.class.__name__}""")
         return set()
 
     def get_unconstrained_values_by_issue(self, issue: str) -> Set[str]:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 get_unconstrained_values_by_issue called in {self.class.__name__}""")
         return set(self.neg_space[issue])

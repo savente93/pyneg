@@ -9,7 +9,7 @@ Available factories:
 """
 # pylint: disable=protected-access
 # because different kinds of agents need different kinds of engines and other parameters,
-# this had to be done by factories instead of init functions. 
+# this had to be done by factories instead of init functions.
 # this is why we disable protected-access warnings for htis file
 
 
@@ -33,16 +33,16 @@ STANDARD_MAX_ROUNDS = 200
 
 def estimate_max_linear_utility(utilities: Dict[str, float]) -> float:
     """
-    This function estimates the maximum utility of a linear additive utility function. 
-    It is used to calculate the absolute reservation value from the percentile that is 
-    given to the factories. This only works for linear additive functions and as such 
+    This function estimates the maximum utility of a linear additive utility function.
+    It is used to calculate the absolute reservation value from the percentile that is
+    given to the factories. This only works for linear additive functions and as such
     cannot handle knowledge bases.
-    
+
     :param utilities: The utility function repsented by an atomic dictionary
     :type utilities: Dict[str, float]
     :return: the maximum utility possible under the utility function
     :rtype: float
-    """    
+    """
     nested_utilities = nested_dict_from_atom_dict(utilities)
     max_utility_by_issue = {issue: -(10.0**10) for issue in nested_utilities}
     for issue in nested_utilities:
@@ -63,10 +63,10 @@ def make_linear_concession_agent(
     """
     This function constructs a linear constraint. That means that the resulting agent,
     calculates the utility of an offer with linear additive functions using numpy as a backend.
-    (see :ref:`linear-additivity`) It uses concession as it's statagy 
-    meaning that it uses a breath first search to discover offers 
-    and simply offers them in order of preference. 
-    
+    (see :ref:`linear-additivity`) It uses concession as it's statagy
+    meaning that it uses a breath first search to discover offers
+    and simply offers them in order of preference.
+
     :param name: Name of the agent, mainly for logging purposes
     :type name: str
     :param neg_space: The negotiation space the negotiation will take place in
@@ -74,16 +74,16 @@ def make_linear_concession_agent(
     :param utilities: The utility function of the agent represented as an atomic dictionary
     :type utilities: Dict[str, float]
     :param reservation_value: The lowest amount of utility the agent still finds acceptable, \
-        expressed as a percentage of the maximum utility 
+        expressed as a percentage of the maximum utility
     :type reservation_value: float
     :param non_agreement_cost: The utility awarded to the agent if the negotiation is unsuccessful
     :type non_agreement_cost: float
     :param issue_weights: Relative importance of the issues to the agent. Should be a distribution \
-        indexed by issues. Defaults to uniform if none is provided. 
+        indexed by issues. Defaults to uniform if none is provided.
     :type issue_weights: Optional[Dict[str, float]]
-    :return: The agent with the correct mechanisms initialised. 
+    :return: The agent with the correct mechanisms initialised.
     :rtype: Agent
-    """    
+    """
     agent = Agent()
     agent.name = name
     agent._type = "Linear Concession"
@@ -104,7 +104,6 @@ def make_linear_concession_agent(
     agent._absolute_reservation_value = reservation_value
     evaluator: Evaluator = LinearEvaluator(utilities, issue_weights, non_agreement_cost)
     generator: Generator = EnumGenerator(neg_space, utilities, evaluator, reservation_value)
-
     engine: Engine = Engine(generator, evaluator)
     if isclose(reservation_value, 0):
         engine._accepts_all = True
@@ -121,12 +120,12 @@ def make_linear_random_agent(
         reservation_value: float,
         non_agreement_cost: float,
         issue_weights: Optional[Dict[str, float]] = None,
-        max_rounds: int = None) -> Agent:         
+        max_rounds: int = None) -> Agent:
     """
-    This agent calculates utility in a linear additive way using numpy as a backend. 
-    it also uses numpy to generate random offers by sampling from the strategy distribution. 
-    This is initialised as a uniform distribution across all possible values for every issue. 
-    
+    This agent calculates utility in a linear additive way using numpy as a backend.
+    it also uses numpy to generate random offers by sampling from the strategy distribution.
+    This is initialised as a uniform distribution across all possible values for every issue.
+
 
     :param name: Name of the agent, mainly for logging purposes
     :type name: str
@@ -135,20 +134,20 @@ def make_linear_random_agent(
     :param utilities: The utility function of the agent represented as an atomic dictionary
     :type utilities: Dict[str, float]
     :param reservation_value: The lowest amount of utility the agent still finds acceptable, \
-        expressed as a percentage of the maximum utility 
+        expressed as a percentage of the maximum utility
     :type reservation_value: float
     :param non_agreement_cost: The utility awarded to the agent if the negotiation is unsuccessful
     :type non_agreement_cost: float
     :param issue_weights: Relative importance of the issues to the agent. Should be a distribution \
-        Defaults to uniform if none is provided. 
+        Defaults to uniform if none is provided.
     :type issue_weights: Optional[Dict[str, float]]
     :param max_rounds: Maximum number of rounds the agent will try to generate an offer. \
         This is to make sure that even impossible negotiations terminate. Defaults to 200
     :type max_rounds: int, optional
-    :return:  The agent with the correct mechanisms initialised. 
+    :return:  The agent with the correct mechanisms initialised.
     :rtype: Agent
     """
-    
+
     agent = Agent()
     agent.name = name
     agent._type = "Linear Random"
@@ -198,10 +197,10 @@ def make_random_agent(
         knowledge_base: List[str],
         max_rounds: int = None) -> Agent:
     """
-    This agent uses ProbLog as a backend to evaluate offers. That means that it can 
-    handle non-linear utility functions and non trivial (probabalistic) knowledge bases. 
-    However this does also mean that it is relatively slow 
-    
+    This agent uses ProbLog as a backend to evaluate offers. That means that it can
+    handle non-linear utility functions and non trivial (probabalistic) knowledge bases.
+    However this does also mean that it is relatively slow
+
     :param name: Name of the agent, mainly for logging purposes
     :type name: str
     :param neg_space: The negotiation space the negotiation will take place in
@@ -209,7 +208,7 @@ def make_random_agent(
     :param utilities: The utility function of the agent represented as an atomic dictionary
     :type utilities: Dict[str, float]
     :param reservation_value: The lowest amount of utility the agent still finds acceptable, \
-        expressed as a percentage of the maximum utility 
+        expressed as a percentage of the maximum utility
     :type reservation_value: float
     :param non_agreement_cost: The utility awarded to the agent if the negotiation is unsuccessful
     :type non_agreement_cost: float
@@ -219,9 +218,9 @@ def make_random_agent(
     :param max_rounds: Maximum number of rounds the agent will try to generate an offer. \
         This is to make sure that even impossible negotiations terminate. Defaults to 200
     :type max_rounds: int, optional
-    :return:  The agent with the correct mechanisms initialised. 
+    :return:  The agent with the correct mechanisms initialised.
     :rtype: Agent
-    """    
+    """
     agent = Agent()
     agent.name = name
     agent._type = "Random"
@@ -237,15 +236,15 @@ def make_random_agent(
 
     agent._absolute_reservation_value = reservation_value
     evaluator: Evaluator = ProblogEvaluator(neg_space,
-                                            utilities, 
-                                            non_agreement_cost, 
+                                            utilities,
+                                            non_agreement_cost,
                                             knowledge_base)
     generator: Generator = RandomGenerator(
-        neg_space, 
-        utilities, 
-        evaluator, 
-        reservation_value, 
-        knowledge_base, 
+        neg_space,
+        utilities,
+        evaluator,
+        reservation_value,
+        knowledge_base,
         reservation_value, max_rounds)
 
     engine = Engine(generator, evaluator)
@@ -257,8 +256,8 @@ def make_random_agent(
 
 
 def make_constrained_linear_concession_agent(
-        name: str, 
-        neg_space: NegSpace, 
+        name: str,
+        neg_space: NegSpace,
         utilities: Dict[str, float],
         reservation_value: float, non_agreement_cost: float,
         initial_constraints: Optional[Set[AtomicConstraint]] = None,
@@ -267,13 +266,13 @@ def make_constrained_linear_concession_agent(
     """
     This function constructs a linear constraint agent. That means that the resulting agent,
     calculates the utility of an offer with linear additive functions using numpy as a backend.
-    (see :ref:`linear-additivity`) It uses concession as it's statagy 
-    meaning that it uses a breath first search to discover offers 
-    and simply offers them in order of preference. In addition both the search 
-    and evaluation procedures know how to correctly handle any constraints. 
-    These can be givin to the agent apriori, deduced automatically from the 
-    utility function or received from the opponent. 
-    
+    (see :ref:`linear-additivity`) It uses concession as it's statagy
+    meaning that it uses a breath first search to discover offers
+    and simply offers them in order of preference. In addition both the search
+    and evaluation procedures know how to correctly handle any constraints.
+    These can be givin to the agent apriori, deduced automatically from the
+    utility function or received from the opponent.
+
     :param name: Name of the agent, mainly for logging purposes
     :type name: str
     :param neg_space: The negotiation space the negotiation will take place in
@@ -281,7 +280,7 @@ def make_constrained_linear_concession_agent(
     :param utilities: The utility function of the agent represented as an atomic dictionary
     :type utilities: Dict[str, float]
     :param reservation_value: The lowest amount of utility the agent still finds acceptable, \
-        expressed as a percentage of the maximum utility 
+        expressed as a percentage of the maximum utility
     :type reservation_value: float
     :param non_agreement_cost: The utility awarded to the agent if the negotiation is unsuccessful
     :type non_agreement_cost: float
@@ -289,15 +288,15 @@ def make_constrained_linear_concession_agent(
         at the beginning defaults to empty if none are given.
     :type initial_constraints: Optional[Set[AtomicConstraint]]
     :param issue_weights: Relative importance of the issues to the agent. Should be a distribution \
-        indexed by issues. Defaults to uniform if none is provided. 
+        indexed by issues. Defaults to uniform if none is provided.
     :type issue_weights: Optional[Dict[str, float]]
     :param auto_constraints: Whether the agent should attempt to automatically deduce \
-        whether constraints can be created. ONly works for linear additive utility functions. 
+        whether constraints can be created. ONly works for linear additive utility functions.
         defaults to True
     :type auto_constraints: bool
-    :return: The agent with the correct mechanisms initialised. 
+    :return: The agent with the correct mechanisms initialised.
     :rtype: ConstrainedAgent
-    """      
+    """
 
     agent = ConstrainedAgent()
     agent.name = name
@@ -322,18 +321,18 @@ def make_constrained_linear_concession_agent(
     constr_value = -2 * estimate_max_utility
     agent._absolute_reservation_value = reservation_value
     evaluator: Evaluator = ConstrainedLinearEvaluator(
-        utilities, 
-        issue_weights, 
-        non_agreement_cost, 
-        constr_value, 
+        utilities,
+        issue_weights,
+        non_agreement_cost,
+        constr_value,
         initial_constraints)
     generator: Generator = ConstrainedEnumGenerator(
-        neg_space, 
-        utilities, 
-        evaluator, 
+        neg_space,
+        utilities,
+        evaluator,
         reservation_value,
-        constr_value, 
-        initial_constraints, 
+        constr_value,
+        initial_constraints,
         auto_constraints=auto_constraints)
 
     engine: Engine = Engine(generator, evaluator)
@@ -357,7 +356,7 @@ def make_constrained_linear_random_agent(
         auto_constraints=True) -> ConstrainedAgent:
     """
     [summary]
-    
+
     :param name: Name of the agent, mainly for logging purposes
     :type name: str
     :param neg_space: The negotiation space the negotiation will take place in
@@ -365,18 +364,18 @@ def make_constrained_linear_random_agent(
     :param utilities: The utility function of the agent represented as an atomic dictionary
     :type utilities: Dict[str, float]
     :param reservation_value: The lowest amount of utility the agent still finds acceptable, \
-        expressed as a percentage of the maximum utility 
+        expressed as a percentage of the maximum utility
     :type reservation_value: float
     :param non_agreement_cost: The utility awarded to the agent if the negotiation is unsuccessful
     :type non_agreement_cost: float
     :param issue_weights: Relative importance of the issues to the agent. Should be a distribution \
-        Defaults to uniform if none is provided. 
+        Defaults to uniform if none is provided.
     :type issue_weights: Optional[Dict[str, float]]
     :param knowledge_base: Any aditional rules that should be known to the agent \
         represented as a list of valid ProbLog statements.
     :type knowledge_base: List[str]
     :param issue_weights: Relative importance of the issues to the agent. Should be a distribution \
-        indexed by issues. Defaults to uniform if none is provided. 
+        indexed by issues. Defaults to uniform if none is provided.
     :type issue_weights: Optional[Dict[str, float]]
     :param initial_constraints: A set containing all constraints known to the agent \
         at the beginning defaults to empty if none are given.
@@ -385,12 +384,12 @@ def make_constrained_linear_random_agent(
         This is to make sure that even impossible negotiations terminate. Defaults to 200
     :type max_rounds: int, optional
     :param auto_constraints: Whether the agent should attempt to automatically deduce \
-        whether constraints can be created. ONly works for linear additive utility functions. 
+        whether constraints can be created. ONly works for linear additive utility functions.
         defaults to True
     :type auto_constraints: bool
-    :return: The agent with the correct mechanisms initialised. 
+    :return: The agent with the correct mechanisms initialised.
     :rtype: ConstrainedAgent
-    """    
+    """
     agent = ConstrainedAgent()
     agent.name = name
     agent._type = "Constrained Linear Random"
@@ -418,21 +417,21 @@ def make_constrained_linear_random_agent(
     constr_value = -2 * estimate_max_utility
     agent._absolute_reservation_value = reservation_value
     evaluator: Evaluator = ConstrainedLinearEvaluator(
-        utilities, 
-        issue_weights, 
-        non_agreement_cost, 
-        constr_value, 
+        utilities,
+        issue_weights,
+        non_agreement_cost,
+        constr_value,
         initial_constraints)
     generator: Generator = ConstrainedRandomGenerator(
-        neg_space, 
-        utilities, 
-        evaluator, 
-        non_agreement_cost, 
-        knowledge_base, 
+        neg_space,
+        utilities,
+        evaluator,
+        non_agreement_cost,
+        knowledge_base,
         reservation_value,
-        max_rounds, 
-        constr_value, 
-        initial_constraints, 
+        max_rounds,
+        constr_value,
+        initial_constraints,
         auto_constraints=auto_constraints)
 
     engine: Engine = Engine(generator, evaluator)

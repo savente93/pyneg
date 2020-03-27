@@ -1,5 +1,5 @@
 """
-This module defines the strategy that probabalistic 
+This module defines the strategy that probabalistic
 generators can use. See :class:`Strategy` for more information.
 """
 
@@ -14,9 +14,9 @@ from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value
 class Strategy():
     """
     A class that probabalistic generators can use to generate
-    offers by sampling. A stagy consists of a distribution 
-    for every issue over it's possible values. 
-    
+    offers by sampling. A stagy consists of a distribution
+    for every issue over it's possible values.
+
     :raises ValueError: raised if input doesn't have the right structure \
         e.g. if some of the vectors arent a distribution
     :raises KeyError: [description]
@@ -49,8 +49,8 @@ class Strategy():
 
     def get_value_dist(self, issue: str) -> Dict[str, float]:
         """
-        returns the distribution associated with the given issue. 
-        
+        returns the distribution associated with the given issue.
+
         :param issue: The issue that you want to get the distribution for.
         :type issue: str
         :raises KeyError: if the given issue is not known.
@@ -66,7 +66,7 @@ class Strategy():
     def get_issues(self) -> Iterable[str]:
         """
         returns an iterable containing all the known issues
-        
+
         :return: Iterable containing all the known issues
         :rtype: Iterable[str]
         """
@@ -75,20 +75,20 @@ class Strategy():
     def set_prob(self, issue: str, value: str, prob: float) -> None:
         """
         Sets the probability of the issue issue value pair.
-        
+
         :param issue: the issue to which the distribution is refering too
         :type issue: str
-        :param value: the value to update the probability of 
+        :param value: the value to update the probability of
         :type value: str
-        :param prob: the value to set the probability to 
+        :param prob: the value to set the probability to
         :type prob: float
         """
         self.values_by_issue[issue][value] = prob
 
     def normalise_issue(self, issue: str) -> None:
         """
-        Normalise distribution of the given issue. 
-        
+        Normalise distribution of the given issue.
+
         :param issue: the issue who's distribution you want to normalise
         :type issue: str
         """
@@ -99,8 +99,8 @@ class Strategy():
     def get_problog_dists(self) -> str:
         """
         Formats the offer as a distribution over the
-        atomic issue value pairs. This is just so 
-        ProbLog agents can reason about them. 
+        atomic issue value pairs. This is just so
+        ProbLog agents can reason about them.
 
         >>> Offer(atomic).get_problog_dists()
         0.0::First_A;1.0::First_B.
@@ -108,7 +108,7 @@ class Strategy():
 
 
         :return: A string expressing the offer in valid ProbLog as \
-        a distribution over the atomic issue value pairs. 
+        a distribution over the atomic issue value pairs.
         :rtype: str
         """
         return_string = ""

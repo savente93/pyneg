@@ -1,5 +1,5 @@
 """
-Defines the Offer class. 
+Defines the Offer class.
 """
 from typing import Dict, Union, cast, List, Iterable, Tuple, FrozenSet
 
@@ -11,15 +11,15 @@ from pyneg.utils import nested_dict_from_atom_dict, atom_from_issue_value
 
 class Offer:
     """
-    This essentially is a function from all of 
-    the issue value pairs to {0.0,1.0}. Can be repesended as a 
+    This essentially is a function from all of
+    the issue value pairs to {0.0,1.0}. Can be repesended as a
     NestedDict or an AtomicDict. The assignements should be binary
-    and the sum of all assignements for an issue should sum to 1.0 
+    and the sum of all assignements for an issue should sum to 1.0
     (i.e. exactly one value should be assigned 1.0 and all others 0.0).
     Note that the assignements should be floats instead of ints or bools.
     this is for compatibility with ProbLog.
 
-    e.g. 
+    e.g.
     >>> nested = {"First": {"A":0.0, "B":1.0}, "Second":{"C":1.0,"D":0.0}}
     >>> atomic = {"First_A":0.0, "First_B":1.0, "Second_C":1.0, "Second_D":0.0}
 
@@ -35,7 +35,7 @@ class Offer:
         if isinstance(next(iter(values_by_issue.values())), dict):
             self.values_by_issue: NestedDict = cast(
                 NestedDict, values_by_issue)
-        
+
         # is it an Atomic dictionary?
         elif isinstance(next(iter(values_by_issue.values())), float):
             # convert to nested dict so checking for validity is easier
@@ -65,13 +65,13 @@ class Offer:
                         self.values_by_issue[issue][value])
 
     # will return the one value which is assigned 1
-    # there is guaranteed to be exactly one value with a 
+    # there is guaranteed to be exactly one value with a
     # non zero choice
     def get_chosen_value(self, issue: str) -> str:
         """
         Each issue has exactly one value that it "chooses" i.e. has assigned 1 to.
-        This one returns that value. 
-        
+        This one returns that value.
+
         :param issue: The issue of which you want to get the chosen value.
         :type issue: str
         :raises RuntimeError: raises when no choice is made
@@ -91,7 +91,7 @@ class Offer:
         """
         Checks whether the passed issue value pair is the
         one chosen by this offer
-        
+
         :param issue: The issue to check
         :type issue: str
         :param value: The value to check
@@ -104,7 +104,7 @@ class Offer:
     def get_issues(self) -> Iterable[str]:
         """
         Returns all issues associated with this offer
-        
+
         :return: an iterable containting the issues associated with this offer
         :rtype: Iterable[str]
         """
@@ -130,8 +130,8 @@ class Offer:
     def get_problog_dists(self) -> str:
         """
         Formats the offer as a distribution over the
-        atomic issue value pairs. This is just so 
-        ProbLog agents can reason about them. 
+        atomic issue value pairs. This is just so
+        ProbLog agents can reason about them.
 
         >>> Offer(atomic).get_problog_dists()
         0.0::First_A;1.0::First_B.
@@ -139,7 +139,7 @@ class Offer:
 
 
         :return: A string expressing the offer in valid ProbLog as \
-        a distribution over the atomic issue value pairs. 
+        a distribution over the atomic issue value pairs.
         :rtype: str
         """
         return_string = ""
@@ -158,16 +158,16 @@ class Offer:
     def get_sparse_repr(self) -> FrozenSet[Tuple[str, str]]:
         """
         returns a sparse reperesentation of itself. This means a frozenset of
-        issue value pairs, where the value is the one assigned byt the offer. 
+        issue value pairs, where the value is the one assigned byt the offer.
         Handy for logging and hashing
 
         >>> Offer(atomic).get_sparse_repr()
-        frozenset({('First', 'B'), ('Second', 'C')}) 
-        
+        frozenset({('First', 'B'), ('Second', 'C')})
+
         :return: A frozen set containt assigned issue value pairs
         :rtype: FrozenSet[Tuple[str,str]]
         """
-        return frozenset({(issue, self.get_chosen_value(issue)) 
+        return frozenset({(issue, self.get_chosen_value(issue))
                           for issue in self.values_by_issue.keys()})
 
     def get_sparse_str_repr(self) -> str:
@@ -175,13 +175,13 @@ class Offer:
         returns a sparse string reperesentation of itself. Mainly useful for logging
 
         >>> Offer(atomic).get_sparse_str_repr()
-        [First->B, Second->C] 
-        
+        [First->B, Second->C]
+
         :return: A string of the mapping
         :rtype: str
         """
         return "[" \
-            + ", ".join([f"{issue}->{self.get_chosen_value(issue)}" for 
+            + ", ".join([f"{issue}->{self.get_chosen_value(issue)}" for
                          issue in self.values_by_issue.keys()]) \
             + "]"
 

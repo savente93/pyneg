@@ -15,10 +15,10 @@ from .dtp_generator import DTPGenerator
 
 class ConstrainedDTPGenerator(DTPGenerator):
     """
-    This class defines the constraint aware version of the DTPGenerator. This means that it 
+    This class defines the constraint aware version of the DTPGenerator. This means that it
     also uses DTProbLog to generate optimal offers but adds additional logic to deal with
     constraints. For more information see :class:`DTPGenerator`
-    """    
+    """
     def __init__(self,
                  neg_space: NegSpace,
                  utilities: AtomicDict,
@@ -71,12 +71,12 @@ class ConstrainedDTPGenerator(DTPGenerator):
     def satisfies_all_constraints(self, offer: Offer) -> bool:
         """
         checks whether the given offer satisfies all known constraints.
-        
+
         :param offer: The offer to be checked.
         :type offer: Offer
         :return: True iff the given offer satisfies all known constraints.
         :rtype: bool
-        """        
+        """
         for constr in self.constraints:
             if not constr.is_satisfied_by_offer(offer):
                 return False
@@ -106,15 +106,15 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
     def accepts(self, offer: Offer) -> bool:
         """
-        Determines whether the given offer is acceptable under the current knowledge base. 
-        This means calculating it's utility and checking that it is above the acceptablity 
+        Determines whether the given offer is acceptable under the current knowledge base.
+        This means calculating it's utility and checking that it is above the acceptablity
         threshold. In addition, it has to satisfy all known constraints.
-        
+
         :param offer: [description]
         :type offer: Offer
         :return: [description]
         :rtype: bool
-        """        
+        """
         if offer.get_sparse_repr() in self.generated_offers:
             util = self.generated_offers[offer.get_sparse_repr()]
         else:
@@ -134,12 +134,12 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
     def discover_constraints(self) -> Set[AtomicConstraint]:
         """
-        Attempts to deduce new constraints from the current knowledge base. 
+        Attempts to deduce new constraints from the current knowledge base.
         see :ref:`constraint-discovery` for more information.
-        
+
         :return: A set containing all the newly discovered constraints.
         :rtype: Set[AtomicConstraint]
-        """        
+        """
         new_constraints = set()
         for issue in self.neg_space.keys():
             best_case = sum(
@@ -188,9 +188,9 @@ class ConstrainedDTPGenerator(DTPGenerator):
 
     def _index_max_utilities(self):
         """
-        Index the currently known utilities so we can use this as a heuristic during 
+        Index the currently known utilities so we can use this as a heuristic during
         the constraint discovery process. See :ref:`constraint-discovery` for more information.
-        """        
+        """
         self.max_utility_by_issue = {
             issue: 0 for issue in self.neg_space.keys()}
         for issue in self.neg_space.keys():

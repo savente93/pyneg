@@ -1,5 +1,5 @@
 """
-This module defines the :class:`ProblogEvaluator` class. 
+This module defines the :class:`ProblogEvaluator` class.
 """
 from typing import Dict, List, Set
 
@@ -16,12 +16,12 @@ from .strategy import Strategy
 
 class ProblogEvaluator(Evaluator):
     """
-    This evaluator uses ProbLog to calculate the utility of offers. 
-    That means that it can deal with probabalistic as well as deterministic 
+    This evaluator uses ProbLog to calculate the utility of offers.
+    That means that it can deal with probabalistic as well as deterministic
     knowledge bases and use them correctly to infer consequences.
-    This is however, much slower than the other classes. The knowledge base 
-    should be represented as valid ProbLog statements see 
-    https://dtai.cs.kuleuven.be/problog/ for more information. 
+    This is however, much slower than the other classes. The knowledge base
+    should be represented as valid ProbLog statements see
+    https://dtai.cs.kuleuven.be/problog/ for more information.
     """
     def __init__(self,
                  neg_space: NegSpace,
@@ -37,9 +37,9 @@ class ProblogEvaluator(Evaluator):
     def calc_probabilities_of_utilities(self, offer: Offer) -> Dict[str, float]:
         """
         Uses ProbLog and the known knowledge_base to calculate the probability
-        of each of the known utilities to occur so we can use it to calculate the 
-        expected utility of an offer. 
-        
+        of each of the known utilities to occur so we can use it to calculate the
+        expected utility of an offer.
+
         :param offer: The offer you want to calculate the utility of
         :type offer: Offer
         :return: A dictionary with known utilities as keys and the probability \
@@ -55,10 +55,10 @@ class ProblogEvaluator(Evaluator):
 
     def compile_problog_model(self, offer: Offer) -> str:
         """
-        Compile the offer, knowledge base and known utilities into a string 
-        representing a valid ProbLog model. 
-        
-        :param offer: The offer that needs to be incoprated into the model. 
+        Compile the offer, knowledge base and known utilities into a string
+        representing a valid ProbLog model.
+
+        :param offer: The offer that needs to be incoprated into the model.
         :type offer: Offer
         :return: A string representation of the model including knowledge base and utilities
         :rtype: str
@@ -89,12 +89,12 @@ class ProblogEvaluator(Evaluator):
         """
         Calculate the expected utility of a strategy, meaning the expected
         utility of an offer that is sampled from this strattegy under the current
-        knowledge base. 
-        
+        knowledge base.
+
         :param strat: The strat to calculate the expected utility.
         :type strat: Strategy
         :return: The expected utility of the strategy under the current knowledge base \
-            and utilities. 
+            and utilities.
         :rtype: float
         """
         score = 0.0
@@ -110,7 +110,7 @@ class ProblogEvaluator(Evaluator):
         atom = atom_from_issue_value(issue, value)
         if atom in self.utilities.keys():
             return self.utilities[atom]
-        
+
         return 0.0
 
     def set_utilities(self, new_utils: AtomicDict) -> bool:
@@ -119,12 +119,12 @@ class ProblogEvaluator(Evaluator):
 
     def add_constraint(self, constraint: AtomicConstraint) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-            with non constraint aware system. 
+            with non constraint aware system.
             add_constraint called in {self.class.__name__}""")
         return True
 
     def add_constraints(self, new_constraints: Set[AtomicConstraint]) -> bool:
         print("""WARNING: attempting to use a constraint mechanism
-                with non constraint aware system. 
+                with non constraint aware system.
                 add_constraints called in {self.class.__name__}""")
         return True

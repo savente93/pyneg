@@ -1,5 +1,5 @@
 """
-This module defines the Message class, which is the main mode of communication between agents. 
+This module defines the Message class, which is the main mode of communication between agents.
 """
 
 from typing import Optional
@@ -11,10 +11,10 @@ from .offer import Offer
 
 class Message():
     """
-    This class is the main mode of communication between agents. 
+    This class is the main mode of communication between agents.
     It contains a sender and recipient name (mainly for logging purposes),
-    a type (defined in :ref:`msg_type`), and optionally an offer and 
-    constraint. The message contain an offer if and only if it is either ACCEPT or OFFER. 
+    a type (defined in :ref:`msg_type`), and optionally an offer and
+    constraint. The message contain an offer if and only if it is either ACCEPT or OFFER.
     """
     def __init__(self, sender_name: str,
                  recipient_name: str,
@@ -49,7 +49,7 @@ class Message():
     def is_empty(self) -> bool:
         """
         Checks whether the message is empty
-        
+
         :return: True iff the message is empty
         :rtype: bool
         """
@@ -58,7 +58,7 @@ class Message():
     def is_acceptance(self) -> bool:
         """
         Checks whether the message is one of acceptance
-        
+
         :return: True iff sender accepts the offer in this message
         :rtype: bool
         """
@@ -66,8 +66,8 @@ class Message():
 
     def is_termination(self) -> bool:
         """
-        Checks whether the message signals one party is ending the negotiation early. 
-        
+        Checks whether the message signals one party is ending the negotiation early.
+
         :return: True iff sender is ending the negotiation early
         :rtype: bool
         """
@@ -76,7 +76,7 @@ class Message():
     def has_constraint(self) -> bool:
         """
         Checks whether the message has a constraint
-        
+
         :return: True iff the message has a constraint
         :rtype: bool
         """
@@ -85,7 +85,7 @@ class Message():
     def is_offer(self) -> bool:
         """
         Checks whether the message contains an offer
-        
+
         :return: True iff the message contains an offer
         :rtype: bool
         """
@@ -94,7 +94,7 @@ class Message():
     def get_constraint(self) -> AtomicConstraint:
         """
         Returns the constraint associated with this message
-        
+
         :raises ValueError: Raised if the message does not contain a constraint
         :return: The constraint associated with this message
         :rtype: AtomicConstraint
@@ -104,10 +104,10 @@ class Message():
         return self.constraint
 
     def __hash__(self):
-        return hash([self.sender_name, 
-                     self.recipient_name, 
-                     self.type_, 
-                     self.offer, 
+        return hash([self.sender_name,
+                     self.recipient_name,
+                     self.type_,
+                     self.offer,
                      self.constraint])
 
     def __eq__(self, other: object) -> bool:

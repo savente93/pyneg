@@ -23,6 +23,8 @@ class TestEnumGenerator(TestCase):
         self.generator = EnumGenerator(
             self.issues, self.utilities, self.evaluator, self.arbitrary_reservation_value)
 
+        self.generator.init_generator()
+
     def test_generates_best_offer_first_time(self):
         best_offer = Offer(nested_dict_from_atom_dict({'issue0_0': 0.0, 'issue0_1': 0.0, 'issue0_2': 1.0,
                                                        'issue1_0': 0.0, 'issue1_1': 0.0, 'issue1_2': 1.0,
@@ -86,23 +88,31 @@ class TestEnumGenerator(TestCase):
             self.generator.generate_offer()
 
     def test_terminates_after_all_offers_are_generated(self):
-        neg_space_size = reduce(lambda x, y: x * y, [len(self.issues[issue]) for issue in self.issues.keys()])
+        neg_space_size = reduce(
+            lambda x, y: x * y,
+            [len(self.issues[issue]) for issue in self.issues]
+        )
+
+
         offer_list = []
-        for i in range(neg_space_size):
-            offer = self.generator.generate_offer()
-            print(offer)
-            print(i)
-            offer_list.append(offer)
+        for _ in range(neg_space_size):
+                offer = self.generator.generate_offer()
+                offer_list.append(offer)
 
         with self.assertRaises(StopIteration):
             self.generator.generate_offer()
 
     def test_generates_all_possible_offers(self):
-        neg_space_size = reduce(lambda x, y: x * y, [len(self.issues[issue]) for issue in self.issues.keys()])
+        neg_space_size = reduce(
+            lambda x, y: x * y,
+            [len(self.issues[issue]) for issue in self.issues]
+            )
         offer_list = []
-        for _ in range(neg_space_size):
-            offer_list.append(self.generator.generate_offer())
-        self.assertEqual(len(offer_list), neg_space_size)
+        for _ in range(neg_space_size - 1):
+            offer = self.generator.generate_offer()
+            offer_list.append(offer)
+
+        self.assertEqual(len(offer_list), neg_space_size - 1)
 
     def test_all_offers_are_generated_in_dec_order_of_util(self):
 
@@ -111,7 +121,7 @@ class TestEnumGenerator(TestCase):
             "integer": list(map(str, range(10))),
             "float": ["{0:.1f}".format(0.1 * i) for i in range(10)]
         }
-        neg_space_size = reduce(lambda x, y: x * y, [len(temp_neg_space[issue]) for issue in temp_neg_space.keys()])
+        neg_space_size = reduce(lambda x, y: x * y, [len(temp_neg_space[issue]) for issue in temp_neg_space])
 
         temp_utilities = {
             "boolean_True": 1000.0,
@@ -125,13 +135,16 @@ class TestEnumGenerator(TestCase):
         }
         temp_reservation_value = -(10 ** 10) + 1
         temp_non_agreement_cost = -(10 ** 10)
-        evaluator = LinearEvaluator(temp_utilities, {issue: 1/3 for issue in temp_neg_space.keys()},
-                                               temp_non_agreement_cost)
+        evaluator = LinearEvaluator(
+            temp_utilities,
+            {issue: 1/3 for issue in temp_neg_space},
+            temp_non_agreement_cost)
         generator = EnumGenerator(temp_neg_space, temp_utilities, evaluator, temp_reservation_value)
+        generator.init_generator()
         offer = generator.generate_offer()
         util = evaluator.calc_offer_utility(offer)
         transcript = [(offer, util)]
-        for i in range(neg_space_size-1):
+        for _ in range(neg_space_size-1):
             offer = generator.generate_offer()
             util = evaluator.calc_offer_utility(offer)
             transcript.append((offer, util))
